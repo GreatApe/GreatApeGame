@@ -13,8 +13,10 @@ struct GreatApeGameApp: App {
 
     var body: some Scene {
         WindowGroup {
+            //            MyTestView()
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(Store())
+            //                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
