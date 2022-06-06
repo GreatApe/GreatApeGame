@@ -85,6 +85,11 @@ struct AppState {
         return achieved + [.init(level: last.level + 1, time: last.time, achieved: false)]
     }
 
+    func shouldLevelUp(after result: PlayResult) -> Bool {
+        let last5 = results.suffix(5).filter { $0.success && $0.level == result.level }
+        return last5.count == 5 && bestTimes[result.level + 1] == nil
+    }
+
     mutating func addResults(_ newResults: [PlayResult]) {
         results.append(contentsOf: newResults)
 
@@ -116,6 +121,11 @@ struct AppState {
     }
 }
 
+struct Feedback {
+    let message: Text
+    let autoDismiss: Bool
+}
+
 enum ReadyState: Equatable {
     case normal(ScoreLine)
     case menu([MenuEntry])
@@ -137,9 +147,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             if let results = try? environment.persistence.loadResults() {
                 state.addResults(results)
                 state.setupLevelAndTime()
-            }
-            for result in state.results.filter(\.success) {
-                print("\(result.level): \(result.time)")
             }
 
         case .tapRing:
@@ -201,10 +208,12 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             try? environment.persistence.save(result: result)
 
             if result.success {
-                state.screen = .ready(.normal(.success(oldTime: state.time)))
-
-//                state.screen = .ready(.normal(.levelUp(oldLevel: state.level)))
-//                state.level += 1
+                if state.shouldLevelUp(after: result) {
+                    state.screen = .ready(.normal(.levelUp(oldLevel: state.level)))
+                    state.level += 1
+                } else {
+                    state.screen = .ready(.normal(.success(oldTime: state.time)))
+                }
 
             } else {
                 state.screen = .ready(.normal(.failure(oldTime: state.time)))

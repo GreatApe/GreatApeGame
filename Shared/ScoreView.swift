@@ -1,5 +1,5 @@
 //
-//  FeedbackView.swift
+//  ScoreView.swift
 //  GreatApeTest
 //
 //  Created by Gustaf Kugelberg on 23/02/2022.
