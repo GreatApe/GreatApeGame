@@ -71,7 +71,6 @@ struct AppState {
     var time: Double = Constants.startTime
 
     var screen: Screen = .welcome
-    var loadedScores: Bool = false
 
     // Computed
 
@@ -95,8 +94,17 @@ struct AppState {
         }
     }
 
+    mutating func clearResults() {
+        results = []
+        bestTimes = [:]
+    }
+
     mutating func setupLevelAndTime() {
-        guard let latest = results.last else { return }
+        guard let latest = results.last else {
+            level = Constants.startLevel
+            time = Constants.startTime
+            return
+        }
         level = latest.level
         time = latest.time
     }
@@ -159,7 +167,16 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .subMenu(let newEntries):
                     state.screen = .ready(.menu(newEntries))
                 case .action(let item):
-                    print("Perform action: \(item)")
+                    switch item {
+                        case .reallyReset:
+                            environment.persistence.resetResults()
+                            state.clearResults()
+                            state.setupLevelAndTime()
+                        case .cancelReset:
+                            break
+                        default:
+                            break
+                    }
                     state.screen = .ready(.normal(.display))
                 case .error:
                     state.screen = .ready(.normal(.display))

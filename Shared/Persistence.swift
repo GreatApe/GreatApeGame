@@ -40,6 +40,10 @@ struct PersistenceController {
             .map(\.result)
     }
 
+    func resetResults() {
+        container.viewContext.reset()
+    }
+
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
