@@ -32,13 +32,11 @@ final class Store: ObservableObject {
 }
 
 class AppEnvironment {
-//    func saveData()
-
-
+    let persistence: PersistenceController = .shared
 }
 
 enum AppAction {
-    case resumed
+    case startup
 
     // Ready
     case tapRing
@@ -69,8 +67,8 @@ struct AppState {
     private(set) var results: [PlayResult] = [] // TODO: Read from disk
     private(set) var bestTimes: [Int: Double] = [:] // [2: 1, 3: 0.8, 4: 0.9, 5: 0.6, 6: 1, 7: 1, 8: 1, 9: 1, 10: 3, 11: 2.1]
 
-    var level: Int = Constants.startLevel // TODO: Calculate from results
-    var time: Double = Constants.startTime // TODO: Calculate from results
+    var level: Int = Constants.startLevel
+    var time: Double = Constants.startTime
 
     var screen: Screen = .welcome
     var loadedScores: Bool = false
@@ -88,30 +86,20 @@ struct AppState {
         return achieved + [.init(level: last.level + 1, time: last.time, achieved: false)]
     }
 
-    mutating func saveResult(_ result: PlayResult) {
-        results.append(result)
+    mutating func addResults(_ newResults: [PlayResult]) {
+        results.append(contentsOf: newResults)
 
-        if let bestTime = bestTimes[result.level], bestTime < result.time { return }
-        bestTimes[result.level] = result.time
+        for result in newResults.filter(\.success) {
+            if let bestTime = bestTimes[result.level], bestTime < result.time { return }
+            bestTimes[result.level] = result.time
+        }
     }
-//
-//    mutating func loadResults(_ results: [PlayResult]) {
-//        setupLevelAndTime(results)
-//        setupBestTimes(results)
-//    }
-//
-//    private mutating func setupBestTimes(_ results: [PlayResult]) {
-//        for result in results {
-//    if let bestTime = bestTimes[result.level], bestTime < result.time { return }
-//    bestTimes[result.level] = result.time
-//        }
-//    }
-//
-//    private mutating func setupLevelAndTime(_ results: [PlayResult]) {
-//        guard let latest = results.last else { return }
-//        level = latest.level
-//        time = latest.time
-//    }
+
+    mutating func setupLevelAndTime() {
+        guard let latest = results.last else { return }
+        level = latest.level
+        time = latest.time
+    }
 
     enum Screen: Equatable {
         case welcome
@@ -137,9 +125,14 @@ enum ScoreLine: Equatable {
 
 private func reducer(_ state: inout AppState, action: AppAction, environment: AppEnvironment) {
     switch action {
-        case .resumed:
-
-            break
+        case .startup:
+            if let results = try? environment.persistence.loadResults() {
+                state.addResults(results)
+                state.setupLevelAndTime()
+            }
+            for result in state.results.filter(\.success) {
+                print("\(result.level): \(result.time)")
+            }
 
         case .tapRing:
             guard case .ready = state.screen else { break }
@@ -187,8 +180,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
         case .played(let result):
             guard case .playing = state.screen else { break }
-
-            state.saveResult(result)
+            state.addResults([result])
+            try? environment.persistence.save(result: result)
 
             if result.success {
                 state.screen = .ready(.normal(.success(oldTime: state.time)))

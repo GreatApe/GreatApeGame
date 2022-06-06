@@ -7,14 +7,44 @@
 
 import CoreData
 
+extension PlayResultEntity {
+    func setup(with result: PlayResult) {
+        timestamp = .now
+        level = Int16(result.level)
+        time = result.time
+        missedBox = result.missedBox.map(Int16.init) ?? -1
+        elapsed = result.elapsed
+    }
+
+    var result: PlayResult {
+        .init(level: Int(level),
+              time: time,
+              missedBox: missedBox == -1 ? nil : Int(missedBox),
+              elapsed: elapsed)
+    }
+}
+
 struct PersistenceController {
     static let shared = PersistenceController()
+
+    func save(result: PlayResult) throws {
+        let context = container.viewContext
+        let newItem = PlayResultEntity(context: context)
+        newItem.setup(with: result)
+        try context.save()
+    }
+
+    func loadResults() throws -> [PlayResult] {
+        try container.viewContext
+            .fetch(PlayResultEntity.fetchRequest())
+            .map(\.result)
+    }
 
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
+            let newItem = PlayResultEntity(context: viewContext)
             newItem.timestamp = Date()
         }
         do {

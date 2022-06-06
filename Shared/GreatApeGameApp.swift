@@ -9,14 +9,14 @@ import SwiftUI
 
 @main
 struct GreatApeGameApp: App {
-    let persistenceController = PersistenceController.shared
+//    let persistenceController = PersistenceController.shared
 
     var body: some Scene {
         WindowGroup {
             //            MyTestView()
             ContentView()
                 .environmentObject(Store())
-            //                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+//                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

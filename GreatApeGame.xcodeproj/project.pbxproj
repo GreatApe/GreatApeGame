@@ -31,7 +31,6 @@
 		223BEB4A284D580D0053E5A8 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		223BEB4B284D58100053E5A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		223BEB50284D58100053E5A8 /* GreatApeGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GreatApeGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		223BEB58284D58100053E5A8 /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
 		223BEB6B284D5AB20053E5A8 /* ScoreView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		223BEB6C284D5AB20053E5A8 /* GeometryExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryExtensions.swift; sourceTree = "<group>"; };
 		223BEB6D284D5AB20053E5A8 /* ReadyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadyView.swift; sourceTree = "<group>"; };
@@ -61,7 +60,6 @@
 			children = (
 				223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */,
 				223BEB45284D580D0053E5A8 /* Shared */,
-				223BEB57284D58100053E5A8 /* macOS */,
 				223BEB51284D58100053E5A8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -94,14 +92,6 @@
 				223BEB50284D58100053E5A8 /* GreatApeGame.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		223BEB57284D58100053E5A8 /* macOS */ = {
-			isa = PBXGroup;
-			children = (
-				223BEB58284D58100053E5A8 /* macOS.entitlements */,
-			);
-			path = macOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
