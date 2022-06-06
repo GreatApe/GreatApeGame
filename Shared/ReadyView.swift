@@ -50,7 +50,7 @@ struct ReadyView: View {
     }
 
     private var scoreVM: ScoreView.ViewModel? {
-        guard case .normal(let scoreLine) = vm.state else { return nil }
+        guard case .normal(let scoreLine, _) = vm.state else { return nil }
         return .init(level: vm.level,
                      time: vm.time,
                      scoreLine: scoreLine,

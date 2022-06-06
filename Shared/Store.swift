@@ -121,13 +121,13 @@ struct AppState {
     }
 }
 
-struct Feedback {
+struct Feedback: Equatable {
     let message: Text
     let autoDismiss: Bool
 }
 
 enum ReadyState: Equatable {
-    case normal(ScoreLine)
+    case normal(ScoreLine, Feedback?)
     case menu([MenuEntry])
     case scoreboard
 
@@ -161,7 +161,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             guard case .ready(.scoreboard) = state.screen else { break }
             state.level = line.level
             state.time = line.time
-            state.screen = .ready(.normal(.display))
+            state.screen = .ready(.normal(.display, nil))
 
         case .tapMenuButton:
             guard case .ready = state.screen else { break }
@@ -176,7 +176,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .action(let item):
                     switch item {
                         case .reallyReset:
-                            environment.persistence.resetResults()
+                            try? environment.persistence.resetResults()
                             state.clearResults()
                             state.setupLevelAndTime()
                         case .cancelReset:
@@ -184,15 +184,15 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                         default:
                             break
                     }
-                    state.screen = .ready(.normal(.display))
+                    state.screen = .ready(.normal(.display, nil))
                 case .error:
-                    state.screen = .ready(.normal(.display))
+                    state.screen = .ready(.normal(.display, nil))
             }
 
         case .tapBackground:
             switch state.screen {
                 case .welcome, .ready(.menu), .ready(.scoreboard):
-                    state.screen = .ready(.normal(.display))
+                    state.screen = .ready(.normal(.display, nil))
                 case .ready(.normal), .playing, .ready:
                     state.level += 1
                     break
@@ -207,19 +207,17 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.addResults([result])
             try? environment.persistence.save(result: result)
 
-            if result.success {
-                if state.shouldLevelUp(after: result) {
-                    state.screen = .ready(.normal(.levelUp(oldLevel: state.level)))
-                    state.level += 1
-                } else {
-                    state.screen = .ready(.normal(.success(oldTime: state.time)))
-                }
+            if state.shouldLevelUp(after: result) {
+                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), nil))
+                state.level += 1
+            } else if result.success {
+                state.screen = .ready(.normal(.success(oldTime: state.time), nil))
+                state.time = state.time * (1 + Constants.timeDeltaSuccess)
 
             } else {
-                state.screen = .ready(.normal(.failure(oldTime: state.time)))
+                state.screen = .ready(.normal(.failure(oldTime: state.time), nil))
+                state.time = state.time * (1 + Constants.timeDeltaFailure)
             }
-            let delta = result.success ? Constants.timeDeltaSuccess : Constants.timeDeltaFailure
-            state.time = state.time * (1 + delta)
     }
 }
 

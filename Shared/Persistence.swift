@@ -40,8 +40,12 @@ struct PersistenceController {
             .map(\.result)
     }
 
-    func resetResults() {
-        container.viewContext.reset()
+    func resetResults() throws {
+        guard let results = try? container.viewContext.fetch(PlayResultEntity.fetchRequest()) else { return }
+        for result in results {
+            container.viewContext.delete(result)
+        }
+        try container.viewContext.save()
     }
 
     static var preview: PersistenceController = {
