@@ -7,19 +7,50 @@
 
 import SwiftUI
 
-struct Message: Equatable {
+private extension String {
+    static let goodJob = "Good job"
+
+    static let scoreboard = "Tap the score to see all your best times in the scoreboard"
+
+    static let levelChange = "Tap a line on the scoreboard to try that level"
+
+    static let copied = "Your best times have been copied to the clipboard!"
+
+    static let didReset = "All scores have been cleared"
+
+    static let didNotReset = "Scores were not reset"
+
+    static let easy = "This is getting easy"
+
+    static func levelUp(boxes: Int) -> String {
+        "Let's try \(boxes) boxes"
+    }
+}
+
+struct Messages: Equatable {
     let strings: [String]
-    let delay: Double
-    let keep: Bool
+    var delay: Double = 0
+    var stay: Bool = false
+
+    static let goodJob: Self = .init(strings: [.goodJob])
+    static let scoreboard: Self = .init(strings: [.scoreboard])
+    static let levelChange: Self = .init(strings: [.levelChange])
+    static let copied: Self = .init(strings: [.copied])
+    static let didReset: Self = .init(strings: [.didReset])
+    static let didNotReset: Self = .init(strings: [.didNotReset])
+
+    static func levelUp(_ level: Int) -> Self {
+        .init(strings: [.easy, .levelUp(boxes: level)], delay: 1, stay: false)
+    }
 }
 
 struct MessagesView: View {
-    let vm: Message
+    let vm: ViewModel
     @State private var start: Date = .now
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.1)) { context in
-            let timePassed = context.date.timeIntervalSince(start)
+        TimelineView(.periodic(from: .now, by: 0.25)) { context in
+            let timePassed = context.date.timeIntervalSince(start) - epsilon
             ZStack {
                 ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                     MessageView(text: string, phase: phase(for: index, after: timePassed))
@@ -28,17 +59,20 @@ struct MessagesView: View {
         }
     }
 
-    private func phase(for i: Int, after timePassed: Double) -> Double {
-        (timePassed - vm.delay) / timePerMessage >= Double(i) ? 1 : 0
+    private func phase(for i: Int, after timePassed: Double) -> FadePhase {
+        let stay = vm.stay && i == vm.strings.endIndex - 1
+        return (timePassed - vm.delay) / timePerMessage > epsilon + Double(i) ? (stay ? .showing : .after) : .before
     }
 
-    typealias ViewModel = Message
+    typealias ViewModel = Messages
     private let timePerMessage: Double = 2
+    private let epsilon = 0.01
+
 }
 
 struct MessageView: View {
     let text: String
-    let phase: Double
+    let phase: FadePhase
 
     var body: some View {
         ApeText(verbatim: text)
@@ -62,6 +96,7 @@ struct ReadyView: View {
             ScoreboardView(vm: scoreboardVM)
 
             if let messageVM = messageVM {
+                let _ = print("MESSAGE: \(messageVM.strings)")
                 MessagesView(vm: messageVM)
                     .frame(width: 0.7 * vm.size.width)
             }

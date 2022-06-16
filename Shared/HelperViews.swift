@@ -120,17 +120,33 @@ struct RightMaskShape: Shape {
 }
 
 extension View {
-    func messageFade(_ phase: Double) -> some View {
-        modifier(MessageModifier(phase: phase))
+    func messageFade(_ phase: FadePhase) -> some View {
+        let x: Double
+        switch phase {
+            case .before: x = 0
+            case .showing: x = midPhasePoint
+            case .after: x = 1
+        }
+
+        return modifier(MessageModifier(x: x, r: midPhasePoint))
     }
+
+    private var midPhasePoint: Double { 0.7 }
+}
+
+enum FadePhase: Equatable {
+    case before
+    case showing
+    case after
 }
 
 struct MessageModifier: ViewModifier, Animatable {
-    var phase: Double
+    var x: Double
+    let r: Double
 
     var animatableData: Double {
-        set { phase = newValue }
-        get { phase }
+        set { x = newValue }
+        get { x }
     }
 
     func body(content: Content) -> some View {
@@ -140,18 +156,16 @@ struct MessageModifier: ViewModifier, Animatable {
     }
 
     private var scale: Double {
-        phase < r ? 0.6 + 0.4 * unitSin(phase / r) : 1
+        x < r ? 0.6 + 0.4 * unitSin(x / r) : 1
     }
 
     private var opacity: Double {
-        phase < r ? unitSin(phase / r) : 1 - unitSin((phase - r) / (1 - r))
+        x < r ? unitSin(x / r) : 1 - unitSin((x - r) / (1 - r))
     }
 
     private func unitSin(_ x: Double) -> Double {
         sin(0.5 * x * .pi)
     }
-
-    private let r: Double = 0.7
 }
 
 extension CGRect {

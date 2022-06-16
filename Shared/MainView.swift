@@ -61,6 +61,7 @@ struct MainView: View {
 
 struct WelcomeView: View {
     @EnvironmentObject private var store: Store
+    @State private var didShowVideo: Bool = false
 
     var body: some View {
         ZStack(alignment: .center) {
@@ -68,9 +69,12 @@ struct WelcomeView: View {
                 .fill(.clear)
                 .contentShape(Rectangle())
                 .onTapGesture { store.send(.tapBackground) }
-            ApeText(Text("Hello"))
-                .retro()
+            MessagesView(vm: introVM)
                 .disabled(true)
         }
+    }
+
+    private var introVM: MessagesView.ViewModel {
+        .init(strings: ["Hello", "How are you"], delay: 0, stay: true)
     }
 }

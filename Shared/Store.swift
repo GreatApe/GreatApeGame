@@ -122,7 +122,7 @@ struct AppState {
 }
 
 enum ReadyState: Equatable {
-    case normal(ScoreLine, Message?)
+    case normal(ScoreLine, Messages?)
     case menu([MenuEntry])
     case scoreboard
 
@@ -174,12 +174,14 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                             try? environment.persistence.resetResults()
                             state.clearResults()
                             state.setupLevelAndTime()
+                            state.screen = .ready(.normal(.display, .didReset))
                         case .cancelReset:
-                            break
+                            state.screen = .ready(.normal(.display, .didNotReset))
+                        case .shareScore:
+                            state.screen = .ready(.normal(.display, .copied))
                         default:
-                            break
+                            state.screen = .ready(.normal(.display, nil))
                     }
-                    state.screen = .ready(.normal(.display, nil))
                 case .error:
                     state.screen = .ready(.normal(.display, nil))
             }
@@ -201,18 +203,17 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.addResults([result])
             try? environment.persistence.save(result: result)
 
-//            if state.shouldLevelUp(after: result) {
+            if state.shouldLevelUp(after: result) {
                 let level = state.level + 1
-            let message = Message(strings: [.easy, .levelUp(boxes: level), .easy, .easy, .easy], delay: 1, keep: false)
-                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), message))
-//                state.level = level
-//            } else if result.success {
-//                state.screen = .ready(.normal(.success(oldTime: state.time), nil))
-//                state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
-//            } else {
-//                state.screen = .ready(.normal(.failure(oldTime: state.time), nil))
-//                state.time += max(0.01, state.time * Constants.timeDeltaFailure)
-//            }
+                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level)))
+                state.level = level
+            } else if result.success {
+                state.screen = .ready(.normal(.success(oldTime: state.time), .goodJob))
+                state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
+            } else {
+                state.screen = .ready(.normal(.failure(oldTime: state.time), nil))
+                state.time += max(0.01, state.time * Constants.timeDeltaFailure)
+            }
     }
 }
 
@@ -247,21 +248,5 @@ extension ReadyState: CustomStringConvertible {
             case .scoreboard:
                 return "scoreboard"
         }
-    }
-}
-
-extension String {
-    static let goodJob = "Good job"
-
-    static let scoreboard = "Tap the score to see all your best times in the scoreboard"
-
-    static let levelChange = "Tap a line on the scoreboard to try that level"
-
-    static let copied = "Your best times have been copied to the clipboard!"
-
-    static let easy = "This is getting easy"
-
-    static func levelUp(boxes: Int) -> String {
-        "Let's try \(boxes) boxes"
     }
 }
