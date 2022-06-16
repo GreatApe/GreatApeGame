@@ -78,6 +78,7 @@ struct ApeText: View {
 
     var body: some View {
         text
+            .multilineTextAlignment(.center)
             .font(font)
             .foregroundColor(.white)
     }
@@ -116,6 +117,41 @@ struct RightMaskShape: Shape {
     func path(in rect: CGRect) -> Path {
         .init(rect.right(ratio: ratio))
     }
+}
+
+extension View {
+    func messageFade(_ phase: Double) -> some View {
+        modifier(MessageModifier(phase: phase))
+    }
+}
+
+struct MessageModifier: ViewModifier, Animatable {
+    var phase: Double
+
+    var animatableData: Double {
+        set { phase = newValue }
+        get { phase }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(scale)
+            .opacity(opacity)
+    }
+
+    private var scale: Double {
+        phase < r ? 0.6 + 0.4 * unitSin(phase / r) : 1
+    }
+
+    private var opacity: Double {
+        phase < r ? unitSin(phase / r) : 1 - unitSin((phase - r) / (1 - r))
+    }
+
+    private func unitSin(_ x: Double) -> Double {
+        sin(0.5 * x * .pi)
+    }
+
+    private let r: Double = 0.7
 }
 
 extension CGRect {

@@ -7,6 +7,47 @@
 
 import SwiftUI
 
+struct Message: Equatable {
+    let strings: [String]
+    let delay: Double
+    let keep: Bool
+}
+
+struct MessagesView: View {
+    let vm: Message
+    @State private var start: Date = .now
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 0.1)) { context in
+            let timePassed = context.date.timeIntervalSince(start)
+            ZStack {
+                ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
+                    MessageView(text: string, phase: phase(for: index, after: timePassed))
+                }
+            }
+        }
+    }
+
+    private func phase(for i: Int, after timePassed: Double) -> Double {
+        (timePassed - vm.delay) / timePerMessage >= Double(i) ? 1 : 0
+    }
+
+    typealias ViewModel = Message
+    private let timePerMessage: Double = 2
+}
+
+struct MessageView: View {
+    let text: String
+    let phase: Double
+
+    var body: some View {
+        ApeText(verbatim: text)
+            .messageFade(phase)
+            .animation(.linear(duration: 2), value: phase)
+            .retro()
+    }
+}
+
 struct ReadyView: View {
     let vm: ViewModel
 
@@ -20,6 +61,10 @@ struct ReadyView: View {
             MultiLineView(lines: vm.menuItems, action: vm.tapMenu, contents: MenuText.init)
             ScoreboardView(vm: scoreboardVM)
 
+            if let messageVM = messageVM {
+                MessagesView(vm: messageVM)
+                    .frame(width: 0.7 * vm.size.width)
+            }
             if let scoreVM = scoreVM {
                 Group {
                     MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
@@ -55,6 +100,11 @@ struct ReadyView: View {
                      time: vm.time,
                      scoreLine: scoreLine,
                      achievedTime: vm.achievedTime)
+    }
+
+    private var messageVM: MessagesView.ViewModel? {
+        guard case .normal(_, let message) = vm.state else { return nil }
+        return message
     }
 
     private var scoreboardVM: ScoreboardView.ViewModel {

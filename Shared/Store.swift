@@ -13,7 +13,7 @@ enum Constants {
     static let startLevel: Int = 2
     static let shapeSize: Double = 0.1
     static let startTime: Double = 1
-    static let timeDeltaSuccess: Double = -0.05
+    static let timeDeltaSuccess: Double = 0.05
     static let timeDeltaFailure: Double = 0.025
 }
 
@@ -64,8 +64,8 @@ struct PlayResult {
 }
 
 struct AppState {
-    private(set) var results: [PlayResult] = [] // TODO: Read from disk
-    private(set) var bestTimes: [Int: Double] = [:] // [2: 1, 3: 0.8, 4: 0.9, 5: 0.6, 6: 1, 7: 1, 8: 1, 9: 1, 10: 3, 11: 2.1]
+    private(set) var results: [PlayResult] = []
+    private(set) var bestTimes: [Int: Double] = [:]
 
     var level: Int = Constants.startLevel
     var time: Double = Constants.startTime
@@ -121,13 +121,8 @@ struct AppState {
     }
 }
 
-struct Feedback: Equatable {
-    let message: Text
-    let autoDismiss: Bool
-}
-
 enum ReadyState: Equatable {
-    case normal(ScoreLine, Feedback?)
+    case normal(ScoreLine, Message?)
     case menu([MenuEntry])
     case scoreboard
 
@@ -194,7 +189,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .welcome, .ready(.menu), .ready(.scoreboard):
                     state.screen = .ready(.normal(.display, nil))
                 case .ready(.normal), .playing, .ready:
-                    state.level += 1
                     break
             }
 
@@ -207,17 +201,18 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.addResults([result])
             try? environment.persistence.save(result: result)
 
-            if state.shouldLevelUp(after: result) {
-                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), nil))
-                state.level += 1
-            } else if result.success {
-                state.screen = .ready(.normal(.success(oldTime: state.time), nil))
-                state.time = state.time * (1 + Constants.timeDeltaSuccess)
-
-            } else {
-                state.screen = .ready(.normal(.failure(oldTime: state.time), nil))
-                state.time = state.time * (1 + Constants.timeDeltaFailure)
-            }
+//            if state.shouldLevelUp(after: result) {
+                let level = state.level + 1
+            let message = Message(strings: [.easy, .levelUp(boxes: level), .easy, .easy, .easy], delay: 1, keep: false)
+                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), message))
+//                state.level = level
+//            } else if result.success {
+//                state.screen = .ready(.normal(.success(oldTime: state.time), nil))
+//                state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
+//            } else {
+//                state.screen = .ready(.normal(.failure(oldTime: state.time), nil))
+//                state.time += max(0.01, state.time * Constants.timeDeltaFailure)
+//            }
     }
 }
 
@@ -252,5 +247,21 @@ extension ReadyState: CustomStringConvertible {
             case .scoreboard:
                 return "scoreboard"
         }
+    }
+}
+
+extension String {
+    static let goodJob = "Good job"
+
+    static let scoreboard = "Tap the score to see all your best times in the scoreboard"
+
+    static let levelChange = "Tap a line on the scoreboard to try that level"
+
+    static let copied = "Your best times have been copied to the clipboard!"
+
+    static let easy = "This is getting easy"
+
+    static func levelUp(boxes: Int) -> String {
+        "Let's try \(boxes) boxes"
     }
 }
