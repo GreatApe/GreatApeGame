@@ -175,9 +175,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                             state.clearResults()
                             state.setupLevelAndTime()
                             state.screen = .ready(.normal(.display, .didReset))
-                        case .cancelReset:
-                            state.screen = .ready(.normal(.display, .didNotReset))
                         case .shareScore:
+                            UIPasteboard.general.string = state.bestTimes.shareString
                             state.screen = .ready(.normal(.display, .copied))
                         default:
                             state.screen = .ready(.normal(.display, nil))
@@ -190,7 +189,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             switch state.screen {
                 case .welcome, .ready(.menu), .ready(.scoreboard):
                     state.screen = .ready(.normal(.display, nil))
-                case .ready(.normal), .playing, .ready:
+                case .ready(.normal(_, let messages?)) where messages.stay:
+                    state.screen = .ready(.normal(.display, nil))
+                default:
                     break
             }
 

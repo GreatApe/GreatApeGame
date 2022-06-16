@@ -8,7 +8,9 @@
 import SwiftUI
 
 private extension String {
-    static let goodJob = "Good job"
+    static let goodJob = "Good job!"
+
+    static let tryAgain = "Try again!"
 
     static let scoreboard = "Tap the score to see all your best times in the scoreboard"
 
@@ -17,8 +19,6 @@ private extension String {
     static let copied = "Your best times have been copied to the clipboard!"
 
     static let didReset = "All scores have been cleared"
-
-    static let didNotReset = "Scores were not reset"
 
     static let easy = "This is getting easy"
 
@@ -33,11 +33,11 @@ struct Messages: Equatable {
     var stay: Bool = false
 
     static let goodJob: Self = .init(strings: [.goodJob])
+    static let tryAgain: Self = .init(strings: [.tryAgain])
     static let scoreboard: Self = .init(strings: [.scoreboard])
     static let levelChange: Self = .init(strings: [.levelChange])
-    static let copied: Self = .init(strings: [.copied])
+    static let copied: Self = .init(strings: [.copied], stay: true)
     static let didReset: Self = .init(strings: [.didReset])
-    static let didNotReset: Self = .init(strings: [.didNotReset])
 
     static func levelUp(_ level: Int) -> Self {
         .init(strings: [.easy, .levelUp(boxes: level)], delay: 1, stay: false)
@@ -96,11 +96,12 @@ struct ReadyView: View {
             ScoreboardView(vm: scoreboardVM)
 
             if let messageVM = messageVM {
-                let _ = print("MESSAGE: \(messageVM.strings)")
                 MessagesView(vm: messageVM)
                     .frame(width: 0.7 * vm.size.width)
+                    .allowsHitTesting(false)
             }
-            if let scoreVM = scoreVM {
+            let hideButtons = messageVM?.stay == true
+            if !hideButtons, let scoreVM = scoreVM {
                 Group {
                     MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
                         .position(vm.menuButtonPosition)

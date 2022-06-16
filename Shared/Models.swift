@@ -58,3 +58,4 @@ extension Double {
         formatted(.number.precision(.significantDigits(self < 0.1 ? 1 : (self < 1 ? 2 : 3)))) + " s"
     }
 }
+
