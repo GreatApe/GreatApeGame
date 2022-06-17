@@ -83,10 +83,18 @@ extension View {
     var ape: some View {
         modifier(ApeModifier())
     }
+
+    var apeLarge: some View {
+        modifier(ApeModifier(large: true))
+    }
 }
 
 struct ApeModifier: ViewModifier {
-    private let font: Font = .custom("Futura Medium", size: 30, relativeTo: .title)
+    private let font: Font
+
+    init(large: Bool = false) {
+        self.font = .custom("Futura Medium", size: large ? 50 : 30, relativeTo: .title)
+    }
 
     func body(content: Content) -> some View {
         content
@@ -143,7 +151,7 @@ extension View {
         return modifier(MessageModifier(x: x, r: midPhasePoint))
     }
 
-    private var midPhasePoint: Double { 0.5 }
+    private var midPhasePoint: Double { 0.3 }
 }
 
 enum FadePhase: Equatable {

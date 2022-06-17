@@ -76,6 +76,6 @@ struct WelcomeView: View {
     }
 
     private var introVM: MessagesView.ViewModel {
-        .init(strings: ["Hello", "How are you"], delay: 0, stay: true)
+        .init(strings: ["Hello 0", "How are you 1", "How are 2", "How are 3", "How are 4"], delay: 0.5, stay: true)
     }
 }
