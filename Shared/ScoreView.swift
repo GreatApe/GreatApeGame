@@ -75,7 +75,7 @@ private extension Double {
 private let slideDuration: Double = 1
 
 struct TimeView: View {
-    var time: Double
+    let time: Double
 
     var body: some View {
         ApeText(verbatim: "2345")

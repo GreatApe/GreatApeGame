@@ -46,16 +46,12 @@ func scoreContribution(level: Int, time: Double) -> Int {
 }
 
 func shareDescription(level: Int, time: Double) -> String {
-    String.boxLine(level, solid: true) + " " + time.timeString
+    String.boxLine(level, solid: true) + " " + time.timeString + " s"
 }
 
 extension Double {
     var timeString: String {
-        formatted(.number.precision(.significantDigits(self < 0.1 ? 1 : 2))) + " s"
-    }
-
-    var animationTimeString: String {
-        formatted(.number.precision(.significantDigits(self < 0.1 ? 1 : (self < 1 ? 2 : 3)))) + " s"
+        formatted(.number.precision(.fractionLength(2)))
     }
 }
 

@@ -15,6 +15,7 @@ struct ScoreboardView: View {
             ScrollView(showsIndicators: false) {
                 MultiLineView(lines: vm.scoreboard, action: vm.tapScoreboard, contents: ScoreboardLineView.init)
                     .retro()
+                    .frame(minHeight: vm.size.height)
             }
             .onTapGesture(perform: vm.tapBackground)
             .onChange(of: vm.scoreboard) { lines in
@@ -28,6 +29,7 @@ struct ScoreboardView: View {
     }
 
     struct ViewModel {
+        let size: CGSize
         let level: Int
         let scoreboard: [ScoreboardLine]
         let tapScoreboard: (ScoreboardLine) -> Void
@@ -53,7 +55,7 @@ struct ScoreboardLineView: View {
 
     var body: some View {
         HStack {
-            ApeBoxes(boxes: line.level, solid: line.achieved)
+            LevelBoxes(count: line.level, solid: line.achieved)
                 .alignmentGuide(.menuAlignment) { d in d[.trailing] }
             if line.achieved {
                 ApeText(Text(line.time.timeString))

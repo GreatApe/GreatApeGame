@@ -44,40 +44,52 @@ struct MultiLineView<T: Identifiable, Contents: View>: View {
     private let unitDelay: Double = 0.05
 }
 
-struct ApeBoxes: View {
-    let boxes: Int
-    let solid: Bool
-
-    var body: some View {
-        ApeText(verbatim: .boxLine(boxes, solid: solid))
-            .lineLimit(1)
-    }
-}
-
 extension String {
     static func boxLine(_ count: Int, solid: Bool) -> String {
         .init(repeating: solid ? "■" : "□", count: count)
     }
 }
 
+struct ApeLabel: View {
+    let systemName: String
+    let text: Text
+
+    var body: some View {
+        HStack {
+            Image(systemName: systemName)
+            text
+        }
+        .ape
+    }
+}
+
 struct ApeText: View {
     let text: Text
-    let italic: Bool
-    private let font: Font
 
     init(verbatim string: String) {
         self.init(Text(verbatim: string))
     }
 
-    init(_ text: Text, italic: Bool = false) {
+    init(_ text: Text) {
         self.text = text
-        self.italic = italic
-        let fontName = "Futura Medium" + (italic ? " Italic" : "")
-        self.font = .custom(fontName, size: 30, relativeTo: .title)
     }
 
     var body: some View {
-        text
+        text.ape
+    }
+}
+
+extension View {
+    var ape: some View {
+        modifier(ApeModifier())
+    }
+}
+
+struct ApeModifier: ViewModifier {
+    private let font: Font = .custom("Futura Medium", size: 30, relativeTo: .title)
+
+    func body(content: Content) -> some View {
+        content
             .multilineTextAlignment(.center)
             .font(font)
             .foregroundColor(.white)
@@ -131,7 +143,7 @@ extension View {
         return modifier(MessageModifier(x: x, r: midPhasePoint))
     }
 
-    private var midPhasePoint: Double { 0.7 }
+    private var midPhasePoint: Double { 0.5 }
 }
 
 enum FadePhase: Equatable {

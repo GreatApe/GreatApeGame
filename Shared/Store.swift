@@ -42,6 +42,7 @@ enum AppAction {
     case tapRing
     case tapMenuButton
     case tapScoreLine
+    case tapShare
     case tapScoreboard(ScoreboardLine)
     case tapMenu(MenuItem)
 
@@ -88,6 +89,10 @@ struct AppState {
     func shouldLevelUp(after result: PlayResult) -> Bool {
         let last5 = results.suffix(5).filter { $0.success && $0.level == result.level }
         return last5.count == 5 && bestTimes[result.level + 1] == nil
+    }
+
+    func shouldMakeEasier(after result: PlayResult) -> Bool {
+        results.suffix(3).filter { !$0.success && $0.time == result.time }.count == 3
     }
 
     mutating func addResults(_ newResults: [PlayResult]) {
@@ -185,6 +190,10 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                     state.screen = .ready(.normal(.display, nil))
             }
 
+        case .tapShare:
+            UIPasteboard.general.string = state.bestTimes.shareString
+            state.screen = .ready(.normal(.display, .copied))
+
         case .tapBackground:
             switch state.screen {
                 case .welcome, .ready(.menu), .ready(.scoreboard):
@@ -211,8 +220,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             } else if result.success {
                 state.screen = .ready(.normal(.success(oldTime: state.time), .goodJob))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
-            } else {
-                state.screen = .ready(.normal(.failure(oldTime: state.time), nil))
+            } else if state.shouldMakeEasier(after: result) {
+                state.screen = .ready(.normal(.failure(oldTime: state.time), .easier))
                 state.time += max(0.01, state.time * Constants.timeDeltaFailure)
             }
     }
@@ -222,7 +231,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
 extension AppState: CustomStringConvertible {
     var description: String {
-        "\(level) \(time.timeString), \(screen)"
+        "\(level) \(time.timeString) s, \(screen)"
     }
 }
 

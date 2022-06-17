@@ -10,7 +10,7 @@ import SwiftUI
 private extension String {
     static let goodJob = "Good job!"
 
-    static let tryAgain = "Try again!"
+    static let easier = "Let's make it a little easier"
 
     static let scoreboard = "Tap the score to see all your best times in the scoreboard"
 
@@ -19,6 +19,8 @@ private extension String {
     static let copied = "Your best times have been copied to the clipboard!"
 
     static let didReset = "All scores have been cleared"
+
+//    static let about = "This game was designed and developed by Unfair Advantage. "
 
     static let easy = "This is getting easy"
 
@@ -33,7 +35,7 @@ struct Messages: Equatable {
     var stay: Bool = false
 
     static let goodJob: Self = .init(strings: [.goodJob])
-    static let tryAgain: Self = .init(strings: [.tryAgain])
+    static let easier: Self = .init(strings: [.easier])
     static let scoreboard: Self = .init(strings: [.scoreboard])
     static let levelChange: Self = .init(strings: [.levelChange])
     static let copied: Self = .init(strings: [.copied], stay: true)
@@ -61,7 +63,7 @@ struct MessagesView: View {
 
     private func phase(for i: Int, after timePassed: Double) -> FadePhase {
         let stay = vm.stay && i == vm.strings.endIndex - 1
-        return (timePassed - vm.delay) / timePerMessage > epsilon + Double(i) ? (stay ? .showing : .after) : .before
+        return (timePassed - vm.delay) / timePerMessage > Double(i) ? (stay ? .showing : .after) : .before
     }
 
     typealias ViewModel = Messages
@@ -93,32 +95,60 @@ struct ReadyView: View {
                 .onTapGesture(perform: vm.tapBackground)
                 .gesture(dragGesture)
             MultiLineView(lines: vm.menuItems, action: vm.tapMenu, contents: MenuText.init)
-            ScoreboardView(vm: scoreboardVM)
-
-            if let messageVM = messageVM {
-                MessagesView(vm: messageVM)
-                    .frame(width: 0.7 * vm.size.width)
-                    .allowsHitTesting(false)
-            }
-            let hideButtons = messageVM?.stay == true
-            if !hideButtons, let scoreVM = scoreVM {
-                Group {
-                    MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
-                        .position(vm.menuButtonPosition)
-                    RingButton(ringSize: vm.buttonSize, action: vm.tapRing)
-                        .position(vm.readyButtonPosition)
-
-                    if !vm.hideScore {
-                        Button(action: vm.tapScoreLine) {
-                            ScoreView(vm: scoreVM)
-                        }
-                        .frame(height: vm.size.height, alignment: .top)
-                    }
-                }
-                .transition(.retro)
-            }
+            scoreBoard
+            message
+            controls
         }
     }
+
+    // View components
+
+    @ViewBuilder
+    private var scoreBoard: some View {
+        ScoreboardView(vm: scoreboardVM)
+        if vm.showScoreboard {
+            HStack {
+                Spacer()
+                Button(action: vm.tapShare) {
+                    Image(systemName: "square.and.arrow.up")
+                        .ape
+                        .retro()
+                }
+            }
+            .transition(.retro(1))
+        }
+    }
+
+    @ViewBuilder
+    private var message: some View {
+        if let messageVM = messageVM {
+            MessagesView(vm: messageVM)
+                .frame(width: 0.7 * vm.size.width)
+                .allowsHitTesting(false)
+        }
+    }
+
+    @ViewBuilder
+    private var controls: some View {
+        if messageVM?.stay != true, let scoreVM = scoreVM {
+            Group {
+                MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
+                    .position(vm.menuButtonPosition)
+                RingButton(ringSize: vm.buttonSize, action: vm.tapRing)
+                    .position(vm.readyButtonPosition)
+
+                if !vm.hideScore {
+                    Button(action: vm.tapScoreLine) {
+                        ScoreView(vm: scoreVM)
+                    }
+                    .frame(height: vm.size.height, alignment: .top)
+                }
+            }
+            .transition(.retro)
+        }
+    }
+
+    // View helpers
 
     @GestureState private var dragOffset: CGFloat = 0
 
@@ -144,7 +174,8 @@ struct ReadyView: View {
     }
 
     private var scoreboardVM: ScoreboardView.ViewModel {
-        .init(level: vm.level,
+        .init(size: vm.size,
+              level: vm.level,
               scoreboard: vm.scoreboard,
               tapScoreboard: vm.tapScoreboard,
               tapBackground: vm.tapBackground)
@@ -158,6 +189,7 @@ struct ReadyView: View {
         let achievedTime: Bool
         let scoreboardLines: [ScoreboardLine]
         let tapScoreLine: () -> Void
+        let tapShare: () -> Void
         let tapScoreboard: (ScoreboardLine) -> Void
         let tapMenu: (MenuItem) -> Void
         let tapBackground: () -> Void
@@ -170,7 +202,8 @@ struct ReadyView: View {
             return entries.map(\.item)
         }
 
-        var scoreboard: [ScoreboardLine] { state == .scoreboard && !hideScore ? scoreboardLines : [] }
+        var showScoreboard: Bool { state == .scoreboard && !hideScore }
+        var scoreboard: [ScoreboardLine] { showScoreboard ? scoreboardLines : [] }
 
         var hideScore: Bool { !scoreboardLines.contains(where: \.achieved) }
 
