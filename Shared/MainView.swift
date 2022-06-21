@@ -26,7 +26,6 @@ struct MainView: View {
         switch store.state.screen {
             case .welcome(let state):
                 WelcomeView(vm: welcomeVM(state: state))
-                    .border(.purple)
             case .ready(let state):
                 ReadyView(vm: readyVM(state: state))
                     .transition(.retro)

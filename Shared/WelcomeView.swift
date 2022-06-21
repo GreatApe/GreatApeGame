@@ -32,14 +32,9 @@ struct WelcomeView: View {
                     MessagesView(vm: introVM)
                         .disabled(true)
                 case .clip:
-//                    GeometryReader { proxy in
-                        PlayerView(player: player)
-//                            .border(.green)
-//                            .frame(width: proxy.size.width, height: proxy.size.width)
-                            .border(.yellow)
-//                    }
-                    .border(.red)
-                    .onAppear(perform: movieStart)
+                    PlayerView(player: player)
+                        .scaleEffect(1.35)
+                        .onAppear(perform: movieStart)
             }
         }
     }
