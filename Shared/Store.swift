@@ -71,7 +71,7 @@ struct AppState {
     var level: Int = Constants.startLevel
     var time: Double = Constants.startTime
 
-    var screen: Screen = .welcome
+    var screen: Screen = .welcome(.clip)
 
     // Computed
 
@@ -120,10 +120,16 @@ struct AppState {
     }
 
     enum Screen: Equatable {
-        case welcome
+        case welcome(WelcomeState)
         case ready(ReadyState)
         case playing
     }
+}
+
+enum WelcomeState: Equatable {
+    case splash
+    case introText
+    case clip
 }
 
 enum ReadyState: Equatable {

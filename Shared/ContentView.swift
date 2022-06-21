@@ -35,7 +35,11 @@ struct ContentView: View {
     }
 
     private var scale: CGFloat {
-        store.state.screen == .welcome ? 1 : scaleFactor
+        if case .welcome = store.state.screen {
+            return 1
+        } else {
+            return scaleFactor
+        }
     }
 
     private let boardSize: CGSize = .init(width: 0.75, height: 0.9)

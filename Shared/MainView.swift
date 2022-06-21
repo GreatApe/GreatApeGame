@@ -24,8 +24,9 @@ struct MainView: View {
 
     var body: some View {
         switch store.state.screen {
-            case .welcome:
-                WelcomeView()
+            case .welcome(let state):
+                WelcomeView(vm: welcomeVM(state: state))
+                    .border(.purple)
             case .ready(let state):
                 ReadyView(vm: readyVM(state: state))
                     .transition(.retro)
@@ -35,6 +36,11 @@ struct MainView: View {
         }
     }
 
+    private func welcomeVM(state: WelcomeState) -> WelcomeView.ViewModel {
+        .init(state: state,
+              tapBackground: store[.tapBackground])
+    }
+    
     private func readyVM(state: ReadyState) -> ReadyView.ViewModel {
         .init(size: size,
               state: state,
@@ -57,25 +63,5 @@ struct MainView: View {
               level: store.state.level,
               time: store.state.time,
               played: { store.send(.played($0)) })
-    }
-}
-
-struct WelcomeView: View {
-    @EnvironmentObject private var store: Store
-    @State private var didShowVideo: Bool = false
-
-    var body: some View {
-        ZStack(alignment: .center) {
-            Rectangle()
-                .fill(.clear)
-                .contentShape(Rectangle())
-                .onTapGesture { store.send(.tapBackground) }
-            MessagesView(vm: introVM)
-                .disabled(true)
-        }
-    }
-
-    private var introVM: MessagesView.ViewModel {
-        .init(strings: ["Hello 0", "How are you 1", "How are 2", "How are 3", "How are 4"], delay: 0.5, stay: true)
     }
 }
