@@ -49,6 +49,7 @@ struct ReadyView: View {
             MessagesView(vm: messageVM)
                 .frame(width: 0.7 * vm.size.width)
                 .allowsHitTesting(false)
+                .border(.red)
         }
     }
 

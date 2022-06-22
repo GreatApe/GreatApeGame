@@ -232,6 +232,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             } else if state.shouldMakeEasier(after: result) {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier))
                 state.time += max(0.01, state.time * Constants.timeDeltaFailure)
+            } else {
+                state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain))
             }
     }
 }

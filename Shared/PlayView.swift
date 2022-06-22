@@ -56,18 +56,19 @@ struct PlayView: View {
     }
 
     private func generateLocations() -> [CGPoint] {
-        var result: [CGPoint] = []
+        let paddedSide = vm.boxSize * (1 + Constants.margin)
+        let origin = 0.5 * vm.size.asPoint - 0.5 * paddedSide * CGPoint(x: Constants.columns - 1, y: Constants.rows - 1)
+
+        var result: Set<Int> = []
+
         while result.count < vm.level {
-            let point: CGPoint = .random(in: vm.rect)
-            guard result.allSatisfy({ abs($0.x - point.x) > vm.radius || abs($0.y - point.y) > vm.radius }) else { continue }
-            result.append(point)
+            result.insert(Int.random(in: 0..<Constants.rows * Constants.columns))
         }
 
-        return result
+        return result.map { i in
+            origin + paddedSide * CGPoint(x: i / Constants.rows, y: i % Constants.rows )
+        }
     }
-
-    // r * b + (r + 1) * m * b = h
-    //  b = h / (r * (1 + m) + m)
 
     struct ViewModel {
         let size: CGSize
@@ -75,10 +76,12 @@ struct PlayView: View {
         let time: Double
         let played: (PlayResult) -> Void
 
-        var radius: CGFloat { 1.5 * boxSize }
-        var rect: CGRect { .init(origin: .zero, size: size).insetBy(dx: 1.5 * boxSize, dy: 0.5 * boxSize) }
-
-        var boxSize: CGFloat { size.height / (CGFloat(Constants.rows) * (1 + Constants.margin) + Constants.margin) }
+        var boxSize: CGFloat {
+            let m = Constants.margin
+            let width = size.width / (CGFloat(Constants.columns) * (1 + m) + m)
+            let height = size.height / (CGFloat(Constants.rows) * (1 + m) + m)
+            return min(width, height)
+        }
 
         func missed(at number: Int, after elapsed: Double) {
             played(.init(level: level, time: time, missedBox: number, elapsed: elapsed))

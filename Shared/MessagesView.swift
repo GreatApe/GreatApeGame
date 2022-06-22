@@ -51,6 +51,7 @@ struct Messages: Equatable {
     var stay: Bool = false
 
     static let goodJob: Self = .init(strings: [.goodJob])
+    static let tryAgain: Self = .init(strings: [.tryAgain])
     static let easier: Self = .init(strings: [.easier])
     static let scoreboard: Self = .init(strings: [.scoreboard])
     static let levelChange: Self = .init(strings: [.levelChange])
@@ -65,7 +66,9 @@ struct Messages: Equatable {
 private extension String {
     static let goodJob = "Good job!"
 
-    static let easier = "Let's make it a little easier"
+    static let tryAgain = "Try again!"
+
+    static let easier = "Let's make it easier"
 
     static let scoreboard = "Tap the score to see all your best times in the scoreboard"
 
