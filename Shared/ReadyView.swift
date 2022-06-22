@@ -133,7 +133,7 @@ struct ReadyView: View {
 
         var menuButtonPosition: CGPoint { insetRect[.bottomTrailing] }
         var readyButtonPosition: CGPoint { insetRect[.bottomLeading] }
-        var buttonSize: CGFloat { size.smallerSide * Constants.shapeSize }
+        var buttonSize: CGFloat { size.smallerSide * Constants.controlSize }
 
         private var insetRect: CGRect { .init(origin: .zero, size: size).insetBy(dx: buttonMargin, dy: buttonMargin) }
         private var buttonMargin: CGFloat { size.smallerSide * buttonMarginRatio }

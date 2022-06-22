@@ -66,6 +66,9 @@ struct PlayView: View {
         return result
     }
 
+    // r * b + (r + 1) * m * b = h
+    //  b = h / (r * (1 + m) + m)
+
     struct ViewModel {
         let size: CGSize
         let level: Int
@@ -74,7 +77,8 @@ struct PlayView: View {
 
         var radius: CGFloat { 1.5 * boxSize }
         var rect: CGRect { .init(origin: .zero, size: size).insetBy(dx: 1.5 * boxSize, dy: 0.5 * boxSize) }
-        var boxSize: CGFloat { Constants.shapeSize * size.smallerSide }
+
+        var boxSize: CGFloat { size.height / (CGFloat(Constants.rows) * (1 + Constants.margin) + Constants.margin) }
 
         func missed(at number: Int, after elapsed: Double) {
             played(.init(level: level, time: time, missedBox: number, elapsed: elapsed))

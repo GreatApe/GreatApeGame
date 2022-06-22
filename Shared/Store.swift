@@ -10,8 +10,11 @@ import SwiftUI
 import Combine
 
 enum Constants {
+    static let rows: Int = 7
+    static let columns: Int = 10
+    static let margin: CGFloat = 0.14
+    static let controlSize: CGFloat = 0.14
     static let startLevel: Int = 2
-    static let shapeSize: Double = 0.1
     static let startTime: Double = 1
     static let timeDeltaSuccess: Double = 0.05
     static let timeDeltaFailure: Double = 0.025
@@ -71,7 +74,7 @@ struct AppState {
     var level: Int = Constants.startLevel
     var time: Double = Constants.startTime
 
-    var screen: Screen = .welcome(.clip)
+    var screen: Screen = .ready(.normal(.display, nil))
 
     // Computed
 
