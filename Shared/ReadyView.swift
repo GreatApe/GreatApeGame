@@ -47,9 +47,8 @@ struct ReadyView: View {
     private var message: some View {
         if let messageVM = messageVM {
             MessagesView(vm: messageVM)
-                .frame(width: 0.7 * vm.size.width)
+                .frame(width: 0.75 * vm.size.width)
                 .allowsHitTesting(false)
-                .border(.red)
         }
     }
 
