@@ -44,13 +44,22 @@ struct MessageView: View {
     }
 }
 
+extension Optional {
+    var asArray: [Wrapped] {
+        map { [$0] } ?? []
+    }
+}
+
 struct Messages: Equatable {
     let strings: [String]
     var delay: Double = 0
     var timePerMessage: Double = 2
     var stay: Bool = false
 
-    static let goodJob: Self = .init(strings: [.goodJob])
+    static func success() -> Self {
+        .init(strings: String.successStrings.randomElement().asArray)
+    }
+
     static let tryAgain: Self = .init(strings: [.tryAgain])
     static let easier: Self = .init(strings: [.easier])
     static let scoreboard: Self = .init(strings: [.scoreboard])
@@ -59,12 +68,19 @@ struct Messages: Equatable {
     static let didReset: Self = .init(strings: [.didReset])
 
     static func levelUp(_ level: Int) -> Self {
-        .init(strings: [.easy, .levelUp(boxes: level)], delay: 1, stay: false)
+        .init(strings: String.levelUp(boxes: level), delay: 1, stay: false)
     }
 }
 
 private extension String {
-    static let goodJob = "Good job!"
+    static let welcome1 = "Are you smarter than a chimpanzee?"
+    static let welcome2 = "Tap the numbers in order, like this"
+
+    static let welcome3 = "Ayumu can to 10, how many can you handle?"
+
+
+
+    static let successStrings = ["Awesome", "Fantastic", "Amazing", "Nice work", "Great!", "Not bad!"]
 
     static let tryAgain = "Try again!"
 
@@ -78,11 +94,14 @@ private extension String {
 
     static let didReset = "All scores have been cleared"
 
-    static let about = "Designed and developed by Unfair Advantage. Taking comissions at sales@unfair.me"
+    static let about = "Designed and developed by Unfair Advantage. sales@unfair.me"
 
-    static let easy = "This is getting easy"
 
-    static func levelUp(boxes: Int) -> String {
-        "Let's try \(boxes) boxes"
+    static func levelUp(boxes: Int) -> [String] {
+        if boxes == 3 {
+            return ["Good job!", "Now let's try with 3 boxes"]
+        } else {
+            return ["This is getting easy", "Let's try \(boxes) boxes"]
+        }
     }
 }

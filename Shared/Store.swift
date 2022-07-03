@@ -90,8 +90,9 @@ struct AppState {
     }
 
     func shouldLevelUp(after result: PlayResult) -> Bool {
-        let last5 = results.suffix(5).filter { $0.success && $0.level == result.level }
-        return last5.count == 5 && bestTimes[result.level + 1] == nil
+        let tries = result.level == 2 ? 1 : 5
+        let last5 = results.suffix(tries).filter { $0.success && $0.level == result.level }
+        return last5.count == tries && bestTimes[result.level + 1] == nil
     }
 
     func shouldMakeEasier(after result: PlayResult) -> Bool {
@@ -227,7 +228,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level)))
                 state.level = level
             } else if result.success {
-                state.screen = .ready(.normal(.success(oldTime: state.time), .goodJob))
+                state.screen = .ready(.normal(.success(oldTime: state.time), .success()))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
             } else if state.shouldMakeEasier(after: result) {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier))
