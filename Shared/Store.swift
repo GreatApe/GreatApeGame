@@ -35,6 +35,7 @@ final class Store: ObservableObject {
 }
 
 class AppEnvironment {
+    @UserDefault(key: "hasSeenIntro", defaultValue: false) var hasSeenIntro: Bool
     let persistence: PersistenceController = .shared
 }
 
@@ -204,17 +205,20 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
         case .finishedSplash:
             guard case .splash = state.screen else { break }
-            state.screen = .welcome
+            if environment.hasSeenIntro {
+                state.screen = .ready(.normal(.display, nil))
+            } else {
+                state.screen = .welcome
+            }
 
         case .finishedIntro:
             guard case .welcome = state.screen else { break }
             state.screen = .ready(.normal(.display, nil))
+            environment.hasSeenIntro = true
 
         case .tapBackground:
             switch state.screen {
-                case .splash:
-                    break
-                case .welcome, .ready(.menu), .ready(.scoreboard):
+                case .splash where environment.hasSeenIntro, .welcome where environment.hasSeenIntro, .ready(.menu), .ready(.scoreboard):
                     state.screen = .ready(.normal(.display, nil))
                 case .ready(.normal(_, let messages?)) where messages.stay:
                     state.screen = .ready(.normal(.display, nil))
