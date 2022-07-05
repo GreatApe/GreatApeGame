@@ -49,6 +49,7 @@ enum AppAction {
     case tapScoreboard(ScoreboardLine)
     case tapMenu(MenuItem)
 
+    case finishedSplash
     case finishedIntro
     case tapBackground
 
@@ -201,12 +202,18 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             UIPasteboard.general.string = state.bestTimes.shareString
             state.screen = .ready(.normal(.display, .copied))
 
+        case .finishedSplash:
+            guard case .splash = state.screen else { break }
+            state.screen = .welcome
+
         case .finishedIntro:
             guard case .welcome = state.screen else { break }
             state.screen = .ready(.normal(.display, nil))
 
         case .tapBackground:
             switch state.screen {
+                case .splash:
+                    break
                 case .welcome, .ready(.menu), .ready(.scoreboard):
                     state.screen = .ready(.normal(.display, nil))
                 case .ready(.normal(_, let messages?)) where messages.stay:
