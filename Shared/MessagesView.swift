@@ -72,11 +72,11 @@ struct Messages: Equatable {
     }
 }
 
-private extension String {
+extension String {
     static let welcome1 = "Are you smarter than a chimpanzee?"
     static let welcome2 = "Tap the numbers in order, like this"
 
-    static let welcome3 = "Ayumu can to 10, how many can you handle?"
+    static let welcome3 = "Ayumu can do 10, how many can you handle?"
 
 
 

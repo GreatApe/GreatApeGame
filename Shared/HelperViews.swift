@@ -139,28 +139,31 @@ struct RightMaskShape: Shape {
     }
 }
 
-extension View {
-    func messageFade(_ phase: FadePhase) -> some View {
-        let x: Double
-        switch phase {
-            case .before: x = 0
-            case .showing: x = midPhasePoint
-            case .after: x = 1
-        }
-
-        return modifier(MessageModifier(x: x, r: midPhasePoint))
-    }
-
-    private var midPhasePoint: Double { 0.3 }
-}
-
 enum FadePhase: Equatable {
     case before
     case showing
     case after
 }
 
-struct MessageModifier: ViewModifier, Animatable {
+// MARK: Message fade
+
+extension View {
+    func messageFade(_ phase: FadePhase) -> some View {
+        let midPoint = MessageFadeModifier.midPhasePoint
+        let x: Double
+        switch phase {
+            case .before: x = 0
+            case .showing: x = midPoint
+            case .after: x = 1
+        }
+
+        return modifier(MessageFadeModifier(x: x, r: midPoint))
+    }
+
+    private var messageFadeMidPhasePoint: Double { 0.3 }
+}
+
+struct MessageFadeModifier: ViewModifier, Animatable {
     var x: Double
     let r: Double
 
@@ -175,12 +178,60 @@ struct MessageModifier: ViewModifier, Animatable {
             .opacity(opacity)
     }
 
+    static let midPhasePoint: Double = 0.3
+
     private var scale: Double {
         x < r ? 0.6 + 0.4 * unitSin(x / r) : 1
     }
 
     private var opacity: Double {
         x < r ? unitSin(x / r) : 1 - unitSin((x - r) / (1 - r))
+    }
+
+    private func unitSin(_ x: Double) -> Double {
+        sin(0.5 * x * .pi)
+    }
+}
+
+// MARK: Simple fade
+
+extension View {
+    func simpleFade(_ phase: FadePhase, ramp: Double) -> some View {
+        let x: Double
+        switch phase {
+            case .before: x = 0
+            case .showing: x = 0.5
+            case .after: x = 1
+        }
+
+        return modifier(SimpleFadeModifier(x: x, ramp: ramp))
+    }
+}
+
+struct SimpleFadeModifier: ViewModifier, Animatable {
+    var x: Double
+    let ramp: Double
+
+    var animatableData: Double {
+        set { x = newValue }
+        get { x }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(opacity)
+    }
+
+    private var opacity: Double {
+        switch x {
+            case ..<ramp:
+                return 0
+            case (1 - ramp)...:
+                return 0
+            default:
+                return 1
+        }
+//        x < r ? unitSin(x / r) : 1 - unitSin((x - r) / (1 - r))
     }
 
     private func unitSin(_ x: Double) -> Double {
