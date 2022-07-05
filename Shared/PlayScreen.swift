@@ -1,5 +1,5 @@
 //
-//  PlayView.swift
+//  PlayScreen.swift
 //  GreatApeTest
 //
 //  Created by Gustaf Kugelberg on 23/02/2022.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PlayView: View {
+struct PlayScreen: View {
     @State private var boxes: [BoxModel] = []
     @State private var showNumbers: Bool = true
     @State private var appeared: Date = .now

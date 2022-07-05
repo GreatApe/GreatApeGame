@@ -108,7 +108,7 @@ struct MenuText: View {
     let item: MenuItem
 
     var body: some View {
-        ApeText(ReadyView.ViewModel.text(for: item))
+        ApeText(ReadyScreen.ViewModel.text(for: item))
             .retro()
     }
 }

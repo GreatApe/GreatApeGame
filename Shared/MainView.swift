@@ -25,25 +25,31 @@ struct MainView: View {
     var body: some View {
         switch store.state.screen {
             case .splash:
-                WelcomeView(vm: welcomeVM)
+                WelcomeScreen(vm: welcomeVM)
             case .welcome:
-                WelcomeView(vm: welcomeVM)
+                WelcomeScreen(vm: welcomeVM)
             case .ready(let state):
-                ReadyView(vm: readyVM(state: state))
+                ReadyScreen(vm: readyVM(state: state))
                     .transition(.retro)
             case .playing:
-                PlayView(vm: playVM)
+                PlayScreen(vm: playVM)
                     .transition(.retro)
         }
     }
 
-    private var welcomeVM: WelcomeView.ViewModel {
+    private var splashVM: SplashScreen.ViewModel {
         .init(tapBackground: store[.tapBackground],
               finished: store[.finishedIntro]
         )
     }
 
-    private func readyVM(state: ReadyState) -> ReadyView.ViewModel {
+    private var welcomeVM: WelcomeScreen.ViewModel {
+        .init(tapBackground: store[.tapBackground],
+              finished: store[.finishedIntro]
+        )
+    }
+
+    private func readyVM(state: ReadyState) -> ReadyScreen.ViewModel {
         .init(size: size,
               state: state,
               level: store.state.level,
@@ -59,7 +65,7 @@ struct MainView: View {
               tapMenuButton: store[.tapMenuButton])
     }
 
-    private var playVM: PlayView.ViewModel {
+    private var playVM: PlayScreen.ViewModel {
         .init(size: size,
               level: store.state.level,
               time: store.state.time,

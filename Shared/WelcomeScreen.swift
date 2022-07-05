@@ -1,5 +1,5 @@
 //
-//  WelcomeView.swift
+//  WelcomeScreen.swift
 //  GreatApeGame (iOS)
 //
 //  Created by Gustaf Kugelberg on 21/06/2022.
@@ -10,13 +10,7 @@ import AVKit
 
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
-//struct UnfairLogo: Shape {
-//    func path(in rect: CGRect) -> Path {
-//        <#code#>
-//    }
-//}
-
-struct WelcomeView: View {
+struct WelcomeScreen: View {
     let vm: ViewModel
     @State private var start: Date = .now
 

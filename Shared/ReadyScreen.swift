@@ -1,5 +1,5 @@
 //
-//  ReadyView.swift
+//  ReadyScreen.swift
 //  GreatApeTest
 //
 //  Created by Gustaf Kugelberg on 23/02/2022.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ReadyView: View {
+struct ReadyScreen: View {
     let vm: ViewModel
 
     var body: some View {
