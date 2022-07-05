@@ -27,7 +27,6 @@ struct MainView: View {
             case .welcome(let state):
                 VStack {
                     WelcomeView(vm: welcomeVM(state: state))
-                    WelcomeView3(vm: welcomeVM3(state: state))
                 }
             case .ready(let state):
                 ReadyView(vm: readyVM(state: state))
@@ -39,11 +38,6 @@ struct MainView: View {
     }
 
     private func welcomeVM(state: WelcomeState) -> WelcomeView.ViewModel {
-        .init(state: state,
-              tapBackground: store[.tapBackground])
-    }
-
-    private func welcomeVM3(state: WelcomeState) -> WelcomeView3.ViewModel {
         .init(state: state,
               tapBackground: store[.tapBackground])
     }

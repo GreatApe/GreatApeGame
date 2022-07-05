@@ -139,33 +139,42 @@ struct RightMaskShape: Shape {
     }
 }
 
-enum FadePhase: Equatable {
-    case before
-    case showing
-    case after
+enum FadePhase: Int, Equatable {
+    case before = -1
+    case showing = 0
+    case after = 1
+
+    init(time: Double, timing: Timing) {
+        switch time {
+            case ..<timing.startFadeIn: self = .before
+            case timing.startFadeOut...: self = .after
+            default: self = .showing
+        }
+    }
 }
 
 // MARK: Message fade
 
 extension View {
-    func messageFade(_ phase: FadePhase) -> some View {
-        let midPoint = MessageFadeModifier.midPhasePoint
-        let x: Double
-        switch phase {
-            case .before: x = 0
-            case .showing: x = midPoint
-            case .after: x = 1
-        }
-
-        return modifier(MessageFadeModifier(x: x, r: midPoint))
+    func messageFade(_ time: Double, timing: Timing) -> some View {
+        fade(time, timing: timing, using: MessageFadeModifier.init)
     }
 
-    private var messageFadeMidPhasePoint: Double { 0.3 }
+    func fade<Fader: ViewModifier & Animatable>(_ time: Double, timing: Timing, using fader: (Double) -> Fader) -> some View {
+        let phase: FadePhase
+        switch time {
+            case ..<timing.startFadeIn: phase = .before
+            case timing.startFadeOut...: phase = .after
+            default: phase = .showing
+        }
+
+        return modifier(fader(Double(phase.rawValue)))
+            .animation(.linear(duration: phase == .showing ? timing.fadeIn : timing.fadeOut), value: phase)
+    }
 }
 
 struct MessageFadeModifier: ViewModifier, Animatable {
     var x: Double
-    let r: Double
 
     var animatableData: Double {
         set { x = newValue }
@@ -178,18 +187,16 @@ struct MessageFadeModifier: ViewModifier, Animatable {
             .opacity(opacity)
     }
 
-    static let midPhasePoint: Double = 0.3
-
     private var scale: Double {
-        x < r ? 0.6 + 0.4 * unitSin(x / r) : 1
+        x < 0 ? 0.6 + 0.4 * unitSin(x + 1) : 1
     }
 
     private var opacity: Double {
-        x < r ? unitSin(x / r) : 1 - unitSin((x - r) / (1 - r))
+        x < 0 ? unitSin(x + 1) : 1 - unitSin(x)
     }
 
     private func unitSin(_ x: Double) -> Double {
-        sin(0.5 * x * .pi)
+        sin(0.5 * .pi * x)
     }
 }
 

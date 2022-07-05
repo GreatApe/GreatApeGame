@@ -13,35 +13,24 @@ struct MessagesView: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.25)) { context in
-            let timePassed = context.date.timeIntervalSince(start) - epsilon
+            let time = context.date.timeIntervalSince(start) - epsilon - vm.delay
             ZStack {
                 ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
-                    MessageView(text: string, duration: vm.timePerMessage, phase: phase(for: index, after: timePassed))
+                    ApeText(verbatim: string)
+                        .messageFade(time, timing: timing(index: index))
                 }
             }
+            .retro()
         }
     }
 
-    private func phase(for i: Int, after timePassed: Double) -> FadePhase {
-        let stay = vm.stay && i == vm.strings.endIndex - 1
-        return (timePassed - vm.delay) / vm.timePerMessage > Double(i) ? (stay ? .showing : .after) : .before
+    private func timing(index: Int) -> Timing {
+        .triangle(start: vm.timePerMessage * Double(index), duration: vm.timePerMessage, relativePeak: 0.3)
+        .staying(vm.stay && index == vm.strings.endIndex - 1)
     }
 
     typealias ViewModel = Messages
     private let epsilon = 0.01
-}
-
-struct MessageView: View {
-    let text: String
-    let duration: Double
-    let phase: FadePhase
-
-    var body: some View {
-        ApeText(verbatim: text)
-            .messageFade(phase)
-            .animation(.linear(duration: duration), value: phase)
-            .retro()
-    }
 }
 
 extension Optional {
