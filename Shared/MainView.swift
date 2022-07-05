@@ -55,7 +55,6 @@ struct MainView: View {
               tapScoreboard: { store.send(.tapScoreboard($0)) },
               tapMenu: { store.send(.tapMenu($0)) },
               tapBackground: store[.tapBackground],
-              swipe: { store.send(.swipe($0)) },
               tapRing: store[.tapRing],
               tapMenuButton: store[.tapMenuButton])
     }

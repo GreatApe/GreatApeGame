@@ -51,7 +51,6 @@ enum AppAction {
 
     case finishedIntro
     case tapBackground
-    case swipe(CGFloat)
 
     // Playing
     case played(PlayResult)
@@ -215,10 +214,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 default:
                     break
             }
-
-        case .swipe(let offset):
-            guard case .ready(.normal) = state.screen else { break }
-            state.time = max(min(state.time - 0.001 * offset, 5), 0.05)
 
         case .played(let result):
             guard case .playing = state.screen else { break }

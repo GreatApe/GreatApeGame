@@ -16,7 +16,6 @@ struct ReadyView: View {
                 .fill(.clear)
                 .contentShape(Rectangle())
                 .onTapGesture(perform: vm.tapBackground)
-                .gesture(dragGesture)
             MultiLineView(lines: vm.menuItems, action: vm.tapMenu, contents: MenuText.init)
             scoreBoard
             message
@@ -73,16 +72,6 @@ struct ReadyView: View {
 
     // View helpers
 
-    @GestureState private var dragOffset: CGFloat = 0
-
-    private var dragGesture: some Gesture {
-        DragGesture(minimumDistance: 5)
-            .updating($dragOffset) { value, state, transaction in
-                vm.swipe(value.translation.height - state)
-                state = value.translation.height
-            }
-    }
-
     private var scoreVM: ScoreView.ViewModel? {
         guard case .normal(let scoreLine, _) = vm.state else { return nil }
         return .init(level: vm.level,
@@ -116,7 +105,6 @@ struct ReadyView: View {
         let tapScoreboard: (ScoreboardLine) -> Void
         let tapMenu: (MenuItem) -> Void
         let tapBackground: () -> Void
-        let swipe: (CGFloat) -> Void
         let tapRing: () -> Void
         let tapMenuButton: () -> Void
 
