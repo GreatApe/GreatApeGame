@@ -57,7 +57,6 @@ struct WelcomeView: View {
     private let epsilon: Double = 0.01
 
     struct ViewModel {
-        let size: CGSize
         let tapBackground: () -> Void
 
         let delay: Double = 0.5

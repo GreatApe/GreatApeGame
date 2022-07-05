@@ -38,8 +38,7 @@ struct MainView: View {
     }
 
     private var welcomeVM: WelcomeView.ViewModel {
-        .init(size: size,
-              tapBackground: store[.tapBackground])
+        .init(tapBackground: store[.tapBackground])
     }
 
     private func readyVM(state: ReadyState) -> ReadyView.ViewModel {
