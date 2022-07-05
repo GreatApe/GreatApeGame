@@ -21,15 +21,15 @@ struct WelcomeScreen: View {
                 .contentShape(Rectangle())
                 .onTapGesture(perform: vm.tapBackground)
             ApeText(verbatim: .welcome1)
-                .messageFade(time, timing: .init(start: 0, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
+                .messageFade(time, timing: .init(start: 1, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
             ApeText(verbatim: .welcome2)
-                .messageFade(time, timing: .init(start: 3, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
+                .messageFade(time, timing: .init(start: 4, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
             VideoClipView()
-                .transitionFade(time, timing: .symmetric(start: 6, duration: 13, fade: 0.5))
+                .transitionFade(time, timing: .symmetric(start: 7, duration: 13, fade: 0.5))
             ApeText(verbatim: .welcome3)
-                .messageFade(time, timing: .init(start: 19, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
+                .messageFade(time, timing: .init(start: 20, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
         }
     }
@@ -37,7 +37,6 @@ struct WelcomeScreen: View {
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
-        let delay: Double = 0.5
     }
 }
 

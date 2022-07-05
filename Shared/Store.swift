@@ -76,7 +76,7 @@ struct AppState {
     var level: Int = Constants.startLevel
     var time: Double = Constants.startTime
 
-    var screen: Screen = .welcome
+    var screen: Screen = .splash
 
     // Computed
 
@@ -204,6 +204,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.screen = .ready(.normal(.display, .copied))
 
         case .finishedSplash:
+            print("finishedSplash")
             guard case .splash = state.screen else { break }
             if environment.hasSeenIntro {
                 state.screen = .ready(.normal(.display, nil))

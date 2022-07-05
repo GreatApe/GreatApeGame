@@ -25,7 +25,7 @@ struct MainView: View {
     var body: some View {
         switch store.state.screen {
             case .splash:
-                WelcomeScreen(vm: welcomeVM)
+                SplashScreen(vm: splashVM)
             case .welcome:
                 WelcomeScreen(vm: welcomeVM)
             case .ready(let state):
@@ -36,13 +36,13 @@ struct MainView: View {
                     .transition(.retro)
         }
     }
-
+    
     private var splashVM: SplashScreen.ViewModel {
         .init(tapBackground: store[.tapBackground],
-              finished: store[.finishedIntro]
+              finished: store[.finishedSplash]
         )
     }
-
+    
     private var welcomeVM: WelcomeScreen.ViewModel {
         .init(tapBackground: store[.tapBackground],
               finished: store[.finishedIntro]

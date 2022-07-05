@@ -31,7 +31,7 @@ struct TStack<Content: View>: View {
             ZStack {
                 content(time)
                     .onChange(of: time) { t in
-                        if t > 22 {
+                        if t > finishTime {
                             finished()
                         }
                     }
@@ -105,8 +105,6 @@ extension View {
     func simpleFade(_ time: Double, timing: Timing) -> some View {
         fade(time, timing: timing, using: SimpleFade.init)
     }
-
-
 
     func fade<Fader: ViewModifier & Animatable>(_ time: Double, timing: Timing, using fader: (Double) -> Fader) -> some View {
         let phase: FadePhase = .init(time: time, timing: timing)

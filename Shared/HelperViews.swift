@@ -139,6 +139,16 @@ struct RightMaskShape: Shape {
     }
 }
 
+extension CGRect {
+    func left(ratio: CGFloat) -> CGRect {
+        .init(origin: origin, size: .init(width: width * ratio, height: height))
+    }
+
+    func right(ratio: CGFloat) -> CGRect {
+        .init(origin: .init(x: width * (1 - ratio), y: origin.y), size: .init(width: width * ratio, height: height))
+    }
+}
+
 struct MyTestView: View {
     @State private var time: Double = 1.56
     @State private var level: Int = 5
