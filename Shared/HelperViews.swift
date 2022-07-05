@@ -156,24 +156,35 @@ enum FadePhase: Int, Equatable {
 // MARK: Message fade
 
 extension View {
-    func messageFade(_ time: Double, timing: Timing) -> some View {
-        fade(time, timing: timing, using: MessageFadeModifier.init)
-    }
-
-    func fade<Fader: ViewModifier & Animatable>(_ time: Double, timing: Timing, using fader: (Double) -> Fader) -> some View {
-        let phase: FadePhase
-        switch time {
-            case ..<timing.startFadeIn: phase = .before
-            case timing.startFadeOut...: phase = .after
-            default: phase = .showing
+    @ViewBuilder
+    func transitionFade(_ time: Double, timing: Timing, transition: AnyTransition = .opacity) -> some View {
+        let phase: FadePhase = .init(time: time, timing: timing)
+        if phase == .showing {
+            self
+                .transition(.asymmetric(insertion: transition.animation(.easeIn(duration: timing.fadeIn)),
+                                        removal: transition.animation(.easeOut(duration: timing.fadeOut))))
         }
 
+    }
+
+    func messageFade(_ time: Double, timing: Timing) -> some View {
+        fade(time, timing: timing, using: MessageFade.init)
+    }
+
+    func simpleFade(_ time: Double, timing: Timing) -> some View {
+        fade(time, timing: timing, using: SimpleFade.init)
+    }
+
+
+
+    func fade<Fader: ViewModifier & Animatable>(_ time: Double, timing: Timing, using fader: (Double) -> Fader) -> some View {
+        let phase: FadePhase = .init(time: time, timing: timing)
         return modifier(fader(Double(phase.rawValue)))
             .animation(.linear(duration: phase == .showing ? timing.fadeIn : timing.fadeOut), value: phase)
     }
 }
 
-struct MessageFadeModifier: ViewModifier, Animatable {
+struct MessageFade: ViewModifier, Animatable {
     var x: Double
 
     var animatableData: Double {
@@ -202,22 +213,8 @@ struct MessageFadeModifier: ViewModifier, Animatable {
 
 // MARK: Simple fade
 
-extension View {
-    func simpleFade(_ phase: FadePhase, ramp: Double) -> some View {
-        let x: Double
-        switch phase {
-            case .before: x = 0
-            case .showing: x = 0.5
-            case .after: x = 1
-        }
-
-        return modifier(SimpleFadeModifier(x: x, ramp: ramp))
-    }
-}
-
-struct SimpleFadeModifier: ViewModifier, Animatable {
+struct SimpleFade: ViewModifier, Animatable {
     var x: Double
-    let ramp: Double
 
     var animatableData: Double {
         set { x = newValue }
@@ -230,19 +227,7 @@ struct SimpleFadeModifier: ViewModifier, Animatable {
     }
 
     private var opacity: Double {
-        switch x {
-            case ..<ramp:
-                return 0
-            case (1 - ramp)...:
-                return 0
-            default:
-                return 1
-        }
-//        x < r ? unitSin(x / r) : 1 - unitSin((x - r) / (1 - r))
-    }
-
-    private func unitSin(_ x: Double) -> Double {
-        sin(0.5 * x * .pi)
+        1 - abs(x)
     }
 }
 

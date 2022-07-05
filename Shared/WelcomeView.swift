@@ -34,23 +34,24 @@ struct WelcomeView: View {
                     .onTapGesture(perform: vm.tapBackground)
 
                 ApeText(verbatim: .welcome1)
-                    .messageFade(time, timing: .triangle(start: 0, duration: 2, relativePeak: 0.3))
+                    .messageFade(time, timing: .init(start: 0, duration: 2, fadeIn: 0.6, fadeOut: 1))
+                    .retro()
                 ApeText(verbatim: .welcome2)
-                    .messageFade(time, timing: .triangle(start: 2, duration: 2, relativePeak: 0.3))
+                    .messageFade(time, timing: .init(start: 2, duration: 2, fadeIn: 0.6, fadeOut: 1))
+                    .retro()
+                PlayerView(player: player)
+                    .scaleEffect(1.35)
+                    .onAppear(perform: startClip)
+                    .transitionFade(time, timing: .symmetric(start: 4, duration: 10))
                 ApeText(verbatim: .welcome3)
-                    .messageFade(time, timing: .triangle(start: 4, duration: 2, relativePeak: 0.3).staying())
-
-
-                //                    PlayerView(player: player)
-                //                        .scaleEffect(1.35)
-                //                        .onAppear(perform: movieStart)
-
+                    .messageFade(time, timing: .init(start: 10, duration: 2, fadeIn: 0.6, fadeOut: 1))
+                    .retro()
             }
-            .retro()
         }
     }
 
     private func startClip() {
+        print("START CLIP")
         player.seek(to: CMTime(seconds: 0, preferredTimescale: 600))
         player.play()
     }
@@ -58,6 +59,7 @@ struct WelcomeView: View {
     private let epsilon: Double = 0.01
 
     struct ViewModel {
+        let size: CGSize
         let state: WelcomeState
         let tapBackground: () -> Void
 
@@ -67,25 +69,25 @@ struct WelcomeView: View {
 
 struct Timing {
     let start: Double
-    let end: Double
+    let duration: Double
     let fadeIn: Double
     let fadeOut: Double
 
     var startFadeIn: Double { start }
 
-    var startFadeOut: Double { end - fadeOut }
+    var startFadeOut: Double { start + duration - fadeOut }
 
-    static func simpleFade(start: Double, end: Double, fade: Double) -> Self {
-        .init(start: start, end: end, fadeIn: fade, fadeOut: fade)
+    static func symmetric(start: Double, duration: Double, fade: Double = 0.1) -> Self {
+        .init(start: start, duration: duration, fadeIn: fade, fadeOut: fade)
     }
 
     static func triangle(start: Double, duration: Double, relativePeak: Double) -> Self  {
-        .init(start: start, end: start + duration, fadeIn: relativePeak * duration, fadeOut: (1 - relativePeak) * duration)
+        .init(start: start, duration: duration, fadeIn: relativePeak * duration, fadeOut: (1 - relativePeak) * duration)
     }
 
     func staying(_ active: Bool = true) -> Self {
         guard active else { return self }
-        return .init(start: start, end: .infinity, fadeIn: fadeIn, fadeOut: 0)
+        return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
     }
 
 }

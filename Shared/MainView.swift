@@ -25,9 +25,7 @@ struct MainView: View {
     var body: some View {
         switch store.state.screen {
             case .welcome(let state):
-                VStack {
-                    WelcomeView(vm: welcomeVM(state: state))
-                }
+                WelcomeView(vm: welcomeVM(state: state))
             case .ready(let state):
                 ReadyView(vm: readyVM(state: state))
                     .transition(.retro)
@@ -38,10 +36,11 @@ struct MainView: View {
     }
 
     private func welcomeVM(state: WelcomeState) -> WelcomeView.ViewModel {
-        .init(state: state,
+        .init(size: size,
+              state: state,
               tapBackground: store[.tapBackground])
     }
-    
+
     private func readyVM(state: ReadyState) -> ReadyView.ViewModel {
         .init(size: size,
               state: state,
