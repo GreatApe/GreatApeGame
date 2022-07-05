@@ -27,6 +27,7 @@
 		227DF99E2861BD8B003EA6BC /* AyumuShort.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 227DF99D2861BD8B003EA6BC /* AyumuShort.mp4 */; };
 		22A4BB7A2874EC9500FFFAE4 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */; };
 		22A4BB7C2874F02D00FFFAE4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */; };
+		22A4BB7E2874F68F00FFFAE4 /* TStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7D2874F68F00FFFAE4 /* TStack.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		227DF99D2861BD8B003EA6BC /* AyumuShort.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AyumuShort.mp4; sourceTree = "<group>"; };
 		22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		22A4BB7D2874F68F00FFFAE4 /* TStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TStack.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 				223BEB6F284D5AB20053E5A8 /* Scoreboard.swift */,
 				223BEB6B284D5AB20053E5A8 /* ScoreView.swift */,
 				223BEB70284D5AB20053E5A8 /* HelperViews.swift */,
+				22A4BB7D2874F68F00FFFAE4 /* TStack.swift */,
 				22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */,
 				223BEB4A284D580D0053E5A8 /* Persistence.swift */,
 				223BEB4B284D58100053E5A8 /* Assets.xcassets */,
@@ -196,6 +199,7 @@
 				223BEB76284D5AB20053E5A8 /* ReadyScreen.swift in Sources */,
 				223BEB7C284D5AB20053E5A8 /* HelperViews.swift in Sources */,
 				223BEB74284D5AB20053E5A8 /* GeometryExtensions.swift in Sources */,
+				22A4BB7E2874F68F00FFFAE4 /* TStack.swift in Sources */,
 				223BEB7E284D5AB20053E5A8 /* PlayScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

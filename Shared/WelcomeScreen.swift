@@ -15,34 +15,24 @@ struct WelcomeScreen: View {
     @State private var start: Date = .now
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.1)) { context in
-            let time = context.date.timeIntervalSince(start) - epsilon - vm.delay
-            ZStack {
-                Rectangle()
-                    .fill(.clear)
-                    .contentShape(Rectangle())
-                    .onTapGesture(perform: vm.tapBackground)
-                ApeText(verbatim: .welcome1)
-                    .messageFade(time, timing: .init(start: 0, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
-                    .retro()
-                ApeText(verbatim: .welcome2)
-                    .messageFade(time, timing: .init(start: 3, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
-                    .retro()
-                VideoClipView()
-                    .transitionFade(time, timing: .symmetric(start: 6, duration: 13, fade: 0.5))
-                ApeText(verbatim: .welcome3)
-                    .messageFade(time, timing: .init(start: 19, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
-                    .retro()
-            }
-            .onChange(of: time) { t in
-                if t > 22 {
-                    vm.finished()
-                }
-            }
+        TStack(after: 22, perform: vm.finished) { time in
+            Rectangle()
+                .fill(.clear)
+                .contentShape(Rectangle())
+                .onTapGesture(perform: vm.tapBackground)
+            ApeText(verbatim: .welcome1)
+                .messageFade(time, timing: .init(start: 0, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
+                .retro()
+            ApeText(verbatim: .welcome2)
+                .messageFade(time, timing: .init(start: 3, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
+                .retro()
+            VideoClipView()
+                .transitionFade(time, timing: .symmetric(start: 6, duration: 13, fade: 0.5))
+            ApeText(verbatim: .welcome3)
+                .messageFade(time, timing: .init(start: 19, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
+                .retro()
         }
     }
-
-    private let epsilon: Double = 0.01
 
     struct ViewModel {
         let tapBackground: () -> Void
