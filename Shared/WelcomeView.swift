@@ -8,7 +8,6 @@
 import SwiftUI
 import AVKit
 
-
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
 //struct UnfairLogo: Shape {
@@ -32,26 +31,24 @@ struct WelcomeView: View {
                     .fill(.clear)
                     .contentShape(Rectangle())
                     .onTapGesture(perform: vm.tapBackground)
-
                 ApeText(verbatim: .welcome1)
-                    .messageFade(time, timing: .init(start: 0, duration: 2, fadeIn: 0.6, fadeOut: 1))
+                    .messageFade(time, timing: .init(start: 0, duration: 3, fadeIn: 0.6, fadeOut: 1.2))
                     .retro()
                 ApeText(verbatim: .welcome2)
-                    .messageFade(time, timing: .init(start: 2, duration: 2, fadeIn: 0.6, fadeOut: 1))
+                    .messageFade(time, timing: .init(start: 3.5, duration: 3, fadeIn: 0.6, fadeOut: 1.2))
                     .retro()
                 PlayerView(player: player)
                     .scaleEffect(1.35)
                     .onAppear(perform: startClip)
-                    .transitionFade(time, timing: .symmetric(start: 4, duration: 10))
+                    .transitionFade(time, timing: .symmetric(start: 7, duration: 12))
                 ApeText(verbatim: .welcome3)
-                    .messageFade(time, timing: .init(start: 10, duration: 2, fadeIn: 0.6, fadeOut: 1))
+                    .messageFade(time, timing: .init(start: 20, duration: 3, fadeIn: 0.6, fadeOut: 1.2))
                     .retro()
             }
         }
     }
 
     private func startClip() {
-        print("START CLIP")
         player.seek(to: CMTime(seconds: 0, preferredTimescale: 600))
         player.play()
     }
