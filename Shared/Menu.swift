@@ -15,6 +15,9 @@ enum MenuItem: Int, Equatable {
 
     case reallyReset
     case cancelReset
+
+    case watchAgain
+    case tryGame
 }
 
 extension MenuItem: Identifiable {
@@ -30,6 +33,12 @@ ApeMenu {
         Row(.reallyReset)
         Row(.cancelReset)
     }
+}
+
+let videoMenu =
+ApeMenu {
+    Row(.watchAgain)
+    Row(.tryGame)
 }
 
 typealias ApeMenu = [MenuEntry]

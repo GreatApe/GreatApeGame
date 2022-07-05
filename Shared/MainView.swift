@@ -24,8 +24,10 @@ struct MainView: View {
 
     var body: some View {
         switch store.state.screen {
-            case .welcome(let state):
-                WelcomeView(vm: welcomeVM(state: state))
+            case .splash:
+                WelcomeView(vm: welcomeVM)
+            case .welcome:
+                WelcomeView(vm: welcomeVM)
             case .ready(let state):
                 ReadyView(vm: readyVM(state: state))
                     .transition(.retro)
@@ -35,9 +37,8 @@ struct MainView: View {
         }
     }
 
-    private func welcomeVM(state: WelcomeState) -> WelcomeView.ViewModel {
+    private var welcomeVM: WelcomeView.ViewModel {
         .init(size: size,
-              state: state,
               tapBackground: store[.tapBackground])
     }
 

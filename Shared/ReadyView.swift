@@ -56,12 +56,11 @@ struct ReadyView: View {
     private var controls: some View {
         if messageVM?.stay != true, let scoreVM = scoreVM {
             Group {
-                MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
-                    .position(vm.menuButtonPosition)
                 RingButton(ringSize: vm.buttonSize, action: vm.tapRing)
                     .position(vm.readyButtonPosition)
-
                 if !vm.hideScore {
+                    MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
+                        .position(vm.menuButtonPosition)
                     Button(action: vm.tapScoreLine) {
                         ScoreView(vm: scoreVM)
                     }
@@ -153,6 +152,10 @@ struct ReadyView: View {
                     return Text("Reset all my scores")
                 case .cancelReset:
                     return Text("Cancel")
+                case .watchAgain:
+                    return Text("Replay the clip")
+                case .tryGame:
+                    return Text("I want to try!")
             }
         }
     }

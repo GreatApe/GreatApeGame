@@ -74,7 +74,7 @@ struct AppState {
     var level: Int = Constants.startLevel
     var time: Double = Constants.startTime
 
-    var screen: Screen = .welcome(.fullIntro)
+    var screen: Screen = .welcome
 
     // Computed
 
@@ -124,15 +124,11 @@ struct AppState {
     }
 
     enum Screen: Equatable {
-        case welcome(WelcomeState)
+        case splash
+        case welcome
         case ready(ReadyState)
         case playing
     }
-}
-
-enum WelcomeState: Equatable {
-    case splashOnly
-    case fullIntro
 }
 
 enum ReadyState: Equatable {
@@ -249,6 +245,8 @@ extension AppState: CustomStringConvertible {
 extension AppState.Screen: CustomStringConvertible {
     var description: String {
         switch self {
+            case .splash:
+                return "splash"
             case .welcome:
                 return "welcome"
             case .ready(let state):

@@ -32,17 +32,18 @@ struct WelcomeView: View {
                     .contentShape(Rectangle())
                     .onTapGesture(perform: vm.tapBackground)
                 ApeText(verbatim: .welcome1)
-                    .messageFade(time, timing: .init(start: 0, duration: 3, fadeIn: 0.6, fadeOut: 1.2))
+                    .messageFade(time, timing: .init(start: 0, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
                     .retro()
                 ApeText(verbatim: .welcome2)
-                    .messageFade(time, timing: .init(start: 3.5, duration: 3, fadeIn: 0.6, fadeOut: 1.2))
+                    .messageFade(time, timing: .init(start: 3.5, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
                     .retro()
-                PlayerView(player: player)
-                    .scaleEffect(1.35)
-                    .onAppear(perform: startClip)
-                    .transitionFade(time, timing: .symmetric(start: 7, duration: 12))
+                VideoClipView()
+                    .transitionFade(time, timing: .symmetric(start: 7, duration: 13, fade: 0.5))
                 ApeText(verbatim: .welcome3)
-                    .messageFade(time, timing: .init(start: 20, duration: 3, fadeIn: 0.6, fadeOut: 1.2))
+                    .messageFade(time, timing: .init(start: 21, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
+                    .retro()
+                ApeText(verbatim: .welcome4)
+                    .messageFade(time, timing: .inOnly(start: 24.5, fadeIn: 0.6))
                     .retro()
             }
         }
@@ -57,10 +58,24 @@ struct WelcomeView: View {
 
     struct ViewModel {
         let size: CGSize
-        let state: WelcomeState
         let tapBackground: () -> Void
 
         let delay: Double = 0.5
+    }
+}
+
+struct VideoClipView: View {
+    private let player = AVPlayer(url: videoURL)
+
+    var body: some View {
+        PlayerView(player: player)
+            .scaleEffect(1.35)
+            .onAppear(perform: startClip)
+    }
+
+    private func startClip() {
+        player.seek(to: CMTime(seconds: 0, preferredTimescale: 600))
+        player.play()
     }
 }
 
@@ -78,6 +93,10 @@ struct Timing {
         .init(start: start, duration: duration, fadeIn: fade, fadeOut: fade)
     }
 
+    static func inOnly(start: Double, fadeIn: Double = 0.1) -> Self {
+        return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
+    }
+
     static func triangle(start: Double, duration: Double, relativePeak: Double) -> Self  {
         .init(start: start, duration: duration, fadeIn: relativePeak * duration, fadeOut: (1 - relativePeak) * duration)
     }
@@ -86,7 +105,6 @@ struct Timing {
         guard active else { return self }
         return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
     }
-
 }
 
 struct PlayerView: UIViewRepresentable {
