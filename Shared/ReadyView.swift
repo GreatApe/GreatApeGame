@@ -152,10 +152,6 @@ struct ReadyView: View {
                     return Text("Reset all my scores")
                 case .cancelReset:
                     return Text("Cancel")
-                case .watchAgain:
-                    return Text("Replay the clip")
-                case .tryGame:
-                    return Text("I want to try!")
             }
         }
     }

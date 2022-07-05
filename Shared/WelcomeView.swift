@@ -17,10 +17,7 @@ private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "Ayumu
 //}
 
 struct WelcomeView: View {
-    private let player = AVPlayer(url: videoURL)
-
     let vm: ViewModel
-
     @State private var start: Date = .now
 
     var body: some View {
@@ -32,33 +29,30 @@ struct WelcomeView: View {
                     .contentShape(Rectangle())
                     .onTapGesture(perform: vm.tapBackground)
                 ApeText(verbatim: .welcome1)
-                    .messageFade(time, timing: .init(start: 0, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
+                    .messageFade(time, timing: .init(start: 0, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                     .retro()
                 ApeText(verbatim: .welcome2)
-                    .messageFade(time, timing: .init(start: 3.5, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
+                    .messageFade(time, timing: .init(start: 3, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                     .retro()
                 VideoClipView()
-                    .transitionFade(time, timing: .symmetric(start: 7, duration: 13, fade: 0.5))
+                    .transitionFade(time, timing: .symmetric(start: 6, duration: 13, fade: 0.5))
                 ApeText(verbatim: .welcome3)
-                    .messageFade(time, timing: .init(start: 21, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
-                    .retro()
-                ApeText(verbatim: .welcome4)
-                    .messageFade(time, timing: .inOnly(start: 24.5, fadeIn: 0.6))
+                    .messageFade(time, timing: .init(start: 19, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
                     .retro()
             }
+            .onChange(of: time) { t in
+                if t > 22 {
+                    vm.finished()
+                }
+            }
         }
-    }
-
-    private func startClip() {
-        player.seek(to: CMTime(seconds: 0, preferredTimescale: 600))
-        player.play()
     }
 
     private let epsilon: Double = 0.01
 
     struct ViewModel {
         let tapBackground: () -> Void
-
+        let finished: () -> Void
         let delay: Double = 0.5
     }
 }
