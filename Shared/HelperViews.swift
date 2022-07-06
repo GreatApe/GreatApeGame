@@ -113,8 +113,17 @@ struct MenuText: View {
     }
 }
 
+enum Side: Double {
+    case left = 0
+    case right = 1
+}
+
 struct LeftMaskShape: Shape {
-    var ratio: Double
+    private var ratio: Double
+
+    init(side: Side) {
+        self.ratio = side.rawValue
+    }
 
     var animatableData: Double {
         set { ratio = newValue }
@@ -127,7 +136,11 @@ struct LeftMaskShape: Shape {
 }
 
 struct RightMaskShape: Shape {
-    var ratio: Double
+    private var ratio: Double
+
+    init(side: Side) {
+        self.ratio = side.rawValue
+    }
 
     var animatableData: Double {
         set { ratio = newValue }

@@ -148,7 +148,7 @@ struct LevelBoxView: View {
             if vm.solid {
                 LevelBoxes(count: vm.level, solid: true)
                     .mask {
-                        LeftMaskShape(ratio: vm.slide ? 0 : 1)
+                        LeftMaskShape(side: vm.slide ? .left : .right)
                     }
                     .animation(.easeInOut(duration: slideDuration), value: vm.slide)
                     .transition(.opacity.animation(.easeInOut(duration: 0.1).repeatCount(5)))
