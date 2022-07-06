@@ -10,10 +10,20 @@ import SwiftUI
 protocol PhaseEnum: RawRepresentable where RawValue == Int {
     static var start: Self { get }
     var r: Double { get }
+    static func phase(for r: Double) -> Self
+    static func fraction(for r: Double) -> Double
 }
 
 extension PhaseEnum {
     var r: Double { Double(rawValue) }
+
+    static func phase(for r: Double) -> Self {
+        .init(rawValue: Int(floor(r))) ?? .start
+    }
+
+    static func fraction(for r: Double) -> Double {
+        r - floor(r)
+    }
 }
 
 struct PhaseTiming<P: PhaseEnum>: ExpressibleByArrayLiteral {
@@ -33,7 +43,7 @@ struct SplashScreen: View {
 
     var body: some View {
         TStack { time in
-            UnfairLogo(phase: vm.phase(at: time))
+            UnfairLogoView(phase: vm.phase(at: time))
                 .simpleFade(time, timing: .inOnly(start: 1))
         }
         .finish(after: 15, perform: vm.finished)
@@ -47,11 +57,11 @@ struct SplashScreen: View {
     }
 }
 
-struct UnfairLogo: View {
+struct UnfairLogoView: View {
     let phase: LogoPhase
 
     var body: some View {
-        UnfairLogoShape(phase: phase)
+        PhasedShape(phase: phase, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
             .retro()
             .animation(.spring(), value: phase)
@@ -64,43 +74,28 @@ enum LogoPhase: Int, PhaseEnum {
     case offset
 }
 
-struct UnfairLogoShape: Shape {
-    private var r: Double
+struct UnfairLogo {
+    static func points(r: Double) -> [Path.Points] {
+        let phase = LogoPhase.phase(for: r)
+        let fraction = LogoPhase.fraction(for: r)
 
-    init(phase: LogoPhase) {
-        self.r = phase.r
-    }
-
-    var animatableData: Double {
-        set { r = newValue }
-        get { r }
-    }
-
-    func path(in rect: CGRect) -> Path {
-        let frame = rect.insetBy(dx: 0.1 * rect.width, dy: 0.1 * rect.height)
         let baseY = 0.9
-        let y = baseY - min(animatableData, 1) * 0.7
+        let left = UnitPoint(x: 0, y: baseY)
+        let right = UnitPoint(x: 1, y: baseY)
+        let mid = UnitPoint(x: 0.5, y: baseY)
+        let peak = mid - (phase == .start ? fraction : 1) * peakHeight
 
-        let left = frame[.init(x: 0, y: baseY)]
-        let leftControl = frame[.init(x: 0.4, y: baseY)]
+        let curve: [Path.Points] = [.start(left),
+                                    .curve(to: peak, control1: left + sideDelta, control2: peak - midDelta),
+                                    .curve(to: right, control1: peak + midDelta, control2: right - sideDelta)]
+        let line: [Path.Points] = [.start(mid + lineMargin),
+                                   .line(to: peak - lineMargin)]
 
-        let right = frame[.init(x: 1, y: baseY)]
-        let rightControl = frame[.init(x: 0.6, y: baseY)]
-
-        let midCurve = frame[.init(x: 0.5, y: y)]
-        let midCurveControlLeft = frame[.init(x: 0.3, y: y)]
-        let midCurveControlRight = frame[.init(x: 0.7, y: y)]
-
-        let midCurveAbove = frame[.init(x: 0.5, y: y - 0.1)]
-        let midBottomBelow = frame[.init(x: 0.5, y: baseY + 0.1)]
-
-        return Path { path in
-            path.move(to: left)
-            path.addCurve(to: midCurve, control1: leftControl , control2: midCurveControlLeft)
-            path.addCurve(to: right, control1: midCurveControlRight, control2: rightControl)
-
-            path.move(to: midBottomBelow)
-            path.addLine(to: midCurveAbove)
-        }
+        return curve + line
     }
+
+    private static let peakHeight: UnitPoint = .init(x: 0, y: 0.7)
+    private static let lineMargin: UnitPoint = .init(x: 0, y: 0.1)
+    private static let midDelta: UnitPoint = .init(x: 0.2, y: 0)
+    private static let sideDelta: UnitPoint = .init(x: 0.4, y: 0)
 }

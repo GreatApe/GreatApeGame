@@ -28,6 +28,7 @@
 		22A4BB7A2874EC9500FFFAE4 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */; };
 		22A4BB7C2874F02D00FFFAE4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */; };
 		22A4BB7E2874F68F00FFFAE4 /* TStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7D2874F68F00FFFAE4 /* TStack.swift */; };
+		22A4BB8028763BFE00FFFAE4 /* PhasedShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7F28763BFE00FFFAE4 /* PhasedShape.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		22A4BB7D2874F68F00FFFAE4 /* TStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TStack.swift; sourceTree = "<group>"; };
+		22A4BB7F28763BFE00FFFAE4 /* PhasedShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhasedShape.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 				223BEB49284D580D0053E5A8 /* ContentView.swift */,
 				223BEB6E284D5AB20053E5A8 /* MainView.swift */,
 				22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */,
+				22A4BB7F28763BFE00FFFAE4 /* PhasedShape.swift */,
 				227DF99B2861B7E1003EA6BC /* WelcomeScreen.swift */,
 				223BEB71284D5AB20053E5A8 /* PlayScreen.swift */,
 				223BEB6D284D5AB20053E5A8 /* ReadyScreen.swift */,
@@ -200,6 +203,7 @@
 				223BEB7C284D5AB20053E5A8 /* HelperViews.swift in Sources */,
 				223BEB74284D5AB20053E5A8 /* GeometryExtensions.swift in Sources */,
 				22A4BB7E2874F68F00FFFAE4 /* TStack.swift in Sources */,
+				22A4BB8028763BFE00FFFAE4 /* PhasedShape.swift in Sources */,
 				223BEB7E284D5AB20053E5A8 /* PlayScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

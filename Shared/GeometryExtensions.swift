@@ -81,3 +81,36 @@ extension CGRect {
         origin + unitPoint * size
     }
 }
+
+extension UnitPoint {
+    static func *(lhs: CGFloat, rhs: UnitPoint) -> UnitPoint {
+        .init(x: lhs * rhs.x, y: lhs * rhs.y)
+    }
+
+    static func +(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
+        .init(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+
+    static func -(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
+        .init(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+}
+
+//extension Path.Points {
+//    private static func apply(f: (UnitPoint) -> UnitPoint) -> Self {
+//        let ff: Self = .start(.top)
+//        
+//    }
+//
+//    static func *(lhs: CGFloat, rhs: Path.Points) -> UnitPoint {
+//        .init(x: lhs * rhs.x, y: lhs * rhs.y)
+//    }
+//
+//    static func +(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
+//        .init(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+//    }
+//
+//    static func -(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
+//        .init(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+//    }
+//}
