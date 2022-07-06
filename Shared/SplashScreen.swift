@@ -32,10 +32,11 @@ struct SplashScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TStack(after: 15, perform: vm.finished) { time in
+        TStack { time in
             UnfairLogo(phase: vm.phase(at: time))
                 .simpleFade(time, timing: .inOnly(start: 1))
         }
+        .finish(after: 15, perform: vm.finished)
         .border(.white)
     }
 

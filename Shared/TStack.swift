@@ -9,19 +9,11 @@ import SwiftUI
 
 struct TStack<Content: View>: View {
     @State private var start: Date = .now
-    private var finishTime: Double
-    private var finished: () -> Void
-    private var content: (Double) -> Content
+    private var finishTime: Double = .infinity
+    private var finished: () -> Void = { }
+    var content: (Double) -> Content
 
     init(@ViewBuilder content: @escaping (Double) -> Content) {
-        self.finishTime = .infinity
-        self.finished = { }
-        self.content = content
-    }
-
-    init(after finishTime: Double, perform finished: @escaping () -> Void, @ViewBuilder content: @escaping (Double) -> Content) {
-        self.finishTime = finishTime
-        self.finished = finished
         self.content = content
     }
 
@@ -37,6 +29,13 @@ struct TStack<Content: View>: View {
                     }
             }
         }
+    }
+
+    func finish(after finishTime: Double, perform finished: @escaping () -> Void) -> Self {
+        var result = self
+        result.finished = finished
+        result.finishTime = finishTime
+        return result
     }
 
     private let epsilon: Double = 0.01

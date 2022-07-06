@@ -15,7 +15,7 @@ struct WelcomeScreen: View {
     @State private var start: Date = .now
 
     var body: some View {
-        TStack(after: 22, perform: vm.finished) { time in
+        TStack { time in
             Rectangle()
                 .fill(.clear)
                 .contentShape(Rectangle())
@@ -32,6 +32,7 @@ struct WelcomeScreen: View {
                 .messageFade(time, timing: .init(start: 20, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
         }
+        .finish(after: 22, perform: vm.finished)
     }
 
     struct ViewModel {
