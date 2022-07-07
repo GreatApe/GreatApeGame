@@ -46,7 +46,7 @@ struct SplashScreen: View {
             UnfairLogoView(phase: vm.phase(at: time))
                 .simpleFade(time, timing: .inOnly(start: 1))
         }
-        .finish(after: 15, perform: vm.finished)
+        .finish(after: 25, perform: vm.finished)
         .border(.white)
     }
 
@@ -70,6 +70,7 @@ struct UnfairLogoView: View {
 
 enum LogoPhase: Int, PhaseEnum {
     case start
+//    case centered
     case bell
     case offset
 }
@@ -79,23 +80,25 @@ struct UnfairLogo {
         let phase = LogoPhase.phase(for: r)
         let fraction = LogoPhase.fraction(for: r)
 
-        let baseY = 0.9
-        let left = UnitPoint(x: 0, y: baseY)
-        let right = UnitPoint(x: 1, y: baseY)
-        let mid = UnitPoint(x: 0.5, y: baseY)
-        let peak = mid - (phase == .start ? fraction : 1) * peakHeight
+        let height = (phase == .start ? fraction : 1) * peakHeight
+
+        let left: UnitPoint = .leading + sideMargin + 0.3 * height
+        let right: UnitPoint = .trailing - sideMargin + 0.3 * height
+        let peak: UnitPoint = .center - 0.7 * height
+        let bottom = 0.5 * (left + right)
 
         let curve: [Path.Points] = [.start(left),
                                     .curve(to: peak, control1: left + sideDelta, control2: peak - midDelta),
                                     .curve(to: right, control1: peak + midDelta, control2: right - sideDelta)]
-        let line: [Path.Points] = [.start(mid + lineMargin),
+        let line: [Path.Points] = [.start(bottom + lineMargin),
                                    .line(to: peak - lineMargin)]
 
         return curve + line
     }
 
-    private static let peakHeight: UnitPoint = .init(x: 0, y: 0.7)
-    private static let lineMargin: UnitPoint = .init(x: 0, y: 0.1)
-    private static let midDelta: UnitPoint = .init(x: 0.2, y: 0)
-    private static let sideDelta: UnitPoint = .init(x: 0.4, y: 0)
+    private static let peakHeight: UnitPoint = .init(x: 0, y: 0.5)
+    private static let lineMargin: UnitPoint = .init(x: 0, y: 0.05)
+    private static let sideMargin: UnitPoint = .init(x: 0.2, y: 0)
+    private static let midDelta: UnitPoint = .init(x: 0.1, y: 0)
+    private static let sideDelta: UnitPoint = .init(x: 0.2, y: 0)
 }
