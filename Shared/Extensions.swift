@@ -23,3 +23,13 @@ struct UserDefault<Value> {
         }
     }
 }
+
+extension Double {
+    func clamped(between lower: Double, and upper: Double) -> Double {
+        min(max(lower, self), upper)
+    }
+
+    var unitClamped: Double {
+        clamped(between: 0, and: 1)
+    }
+}

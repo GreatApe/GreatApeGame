@@ -94,23 +94,20 @@ extension UnitPoint {
     static func -(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
         .init(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
     }
-}
 
-//extension Path.Points {
-//    private static func apply(f: (UnitPoint) -> UnitPoint) -> Self {
-//        let ff: Self = .start(.top)
-//        
-//    }
-//
-//    static func *(lhs: CGFloat, rhs: Path.Points) -> UnitPoint {
-//        .init(x: lhs * rhs.x, y: lhs * rhs.y)
-//    }
-//
-//    static func +(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
-//        .init(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
-//    }
-//
-//    static func -(lhs: UnitPoint, rhs: UnitPoint) -> UnitPoint {
-//        .init(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
-//    }
-//}
+    static var up: UnitPoint {
+        .init(x: 0, y: -1)
+    }
+
+    static var down: UnitPoint {
+        .init(x: 0, y: 1)
+    }
+
+    static var left: UnitPoint {
+        .init(x: -1, y: 0)
+    }
+
+    static var right: UnitPoint {
+        .init(x: 1, y: 0)
+    }
+}

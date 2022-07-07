@@ -50,3 +50,53 @@ extension Path {
         case line(to: UnitPoint)
     }
 }
+
+protocol PhaseEnum: RawRepresentable where RawValue == Int {
+    static var start: Self { get }
+}
+
+extension PhaseEnum {
+    var r: Double { Double(rawValue) }
+
+    static func phase(for r: Double) -> Self {
+        .init(rawValue: Int(floor(r))) ?? .start
+    }
+
+    static func fraction(r: Double) -> Double {
+        r - floor(r)
+    }
+
+    static func fraction(r: Double, in phase: Self) -> Double {
+        (r - Double(phase.rawValue - 1)).unitClamped
+    }
+}
+
+struct Fractions<P: PhaseEnum> {
+    private let r: Double
+    private let phaseEnum: P.Type
+
+    init(r: Double, phaseEnum: P.Type = P.self) {
+        self.r = r
+        self.phaseEnum = phaseEnum
+    }
+
+    subscript(phase: P) -> Double {
+        (r - Double(phase.rawValue - 1)).unitClamped
+    }
+
+    var local: Double {
+        r - floor(r)
+    }
+}
+
+struct PhaseTimings<P: PhaseEnum>: ExpressibleByArrayLiteral {
+    init(arrayLiteral elements: (start: Double, phase: P)...) {
+        stops = elements
+    }
+
+    func callAsFunction(at time: Double) -> P {
+        stops.last { $0.start <= time }?.phase ?? .start
+    }
+
+    private var stops: [(start: Double, phase: P)]
+}
