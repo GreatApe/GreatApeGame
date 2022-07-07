@@ -17,14 +17,14 @@ struct MessagesView: View {
             ZStack {
                 ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                     ApeText(verbatim: string)
-                        .messageFade(time, timing: timing(index: index))
+                        .messageFade(time, fading: fading(index: index))
                 }
             }
             .retro()
         }
     }
 
-    private func timing(index: Int) -> Timing {
+    private func fading(index: Int) -> Fading {
         .triangle(start: vm.timePerMessage * Double(index), duration: vm.timePerMessage, relativePeak: 0.3)
         .staying(vm.stay && index == vm.strings.endIndex - 1)
     }

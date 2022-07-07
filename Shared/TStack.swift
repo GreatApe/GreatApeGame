@@ -41,7 +41,38 @@ struct TStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
-struct Timing {
+//struct PhaseStack<Content: View, P: PhaseEnum>: View {
+//    @State private var start: Date = .now
+//    private var finished: () -> Void = { }
+//    var content: (Phases<P>) -> Content
+//
+//    init(_ phaseType: P.Type = P.self, @ViewBuilder content: @escaping (Phases<P>) -> Content) {
+//        self.content = content
+//    }
+//
+//    var body: some View {
+//        TimelineView(.periodic(from: .now, by: 0.1)) { context in
+//            let time = context.date.timeIntervalSince(start) - epsilon
+//            let phases = Phases<P>(time: time)
+//            content(phases)
+//                .onChange(of: phases[.finish]) { isFinished in
+//                    if isFinished {
+//                        finished()
+//                    }
+//                }
+//        }
+//    }
+//
+//    func onFinished(perform finished: @escaping () -> Void) -> Self {
+//        var result = self
+//        result.finished = finished
+//        return result
+//    }
+//
+//    private let epsilon: Double = 0.01
+//}
+
+struct Fading {
     let start: Double
     let duration: Double
     let fadeIn: Double
@@ -69,15 +100,27 @@ struct Timing {
     }
 }
 
+struct PhaseTimings<P: PhaseEnum>: ExpressibleByArrayLiteral {
+    init(arrayLiteral elements: (start: Double, phase: P)...) {
+        stops = elements
+    }
+
+    subscript(at time: Double) -> P {
+        stops.last { $0.start <= time }?.phase ?? .start
+    }
+
+    private var stops: [(start: Double, phase: P)]
+}
+
 enum FadePhase: Int, Equatable {
     case before = -1
     case showing = 0
     case after = 1
 
-    init(time: Double, timing: Timing) {
+    init(time: Double, fading: Fading) {
         switch time {
-            case ..<timing.startFadeIn: self = .before
-            case timing.startFadeOut...: self = .after
+            case ..<fading.startFadeIn: self = .before
+            case fading.startFadeOut...: self = .after
             default: self = .showing
         }
     }
@@ -87,28 +130,28 @@ enum FadePhase: Int, Equatable {
 
 extension View {
     @ViewBuilder
-    func transitionFade(_ time: Double, timing: Timing, transition: AnyTransition = .opacity) -> some View {
-        let phase: FadePhase = .init(time: time, timing: timing)
+    func transitionFade(_ time: Double, fading: Fading, transition: AnyTransition = .opacity) -> some View {
+        let phase: FadePhase = .init(time: time, fading: fading)
         if phase == .showing {
             self
-                .transition(.asymmetric(insertion: transition.animation(.easeIn(duration: timing.fadeIn)),
-                                        removal: transition.animation(.easeOut(duration: timing.fadeOut))))
+                .transition(.asymmetric(insertion: transition.animation(.easeIn(duration: fading.fadeIn)),
+                                        removal: transition.animation(.easeOut(duration: fading.fadeOut))))
         }
 
     }
 
-    func messageFade(_ time: Double, timing: Timing) -> some View {
-        fade(time, timing: timing, using: MessageFade.init)
+    func messageFade(_ time: Double, fading: Fading) -> some View {
+        fade(time, fading: fading, using: MessageFade.init)
     }
 
-    func simpleFade(_ time: Double, timing: Timing) -> some View {
-        fade(time, timing: timing, using: SimpleFade.init)
+    func simpleFade(_ time: Double, fading: Fading) -> some View {
+        fade(time, fading: fading, using: SimpleFade.init)
     }
 
-    func fade<Fader: ViewModifier & Animatable>(_ time: Double, timing: Timing, using fader: (Double) -> Fader) -> some View {
-        let phase: FadePhase = .init(time: time, timing: timing)
+    func fade<Fader: ViewModifier & Animatable>(_ time: Double, fading: Fading, using fader: (Double) -> Fader) -> some View {
+        let phase: FadePhase = .init(time: time, fading: fading)
         return modifier(fader(Double(phase.rawValue)))
-            .animation(.linear(duration: phase == .showing ? timing.fadeIn : timing.fadeOut), value: phase)
+            .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
     }
 }
 

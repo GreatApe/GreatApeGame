@@ -7,12 +7,30 @@
 
 import SwiftUI
 
-struct PhasedShape: Shape {
-    private var r: Double
-    private var points: (Double) -> [Path.Points]
+struct TimedShape: Shape {
+    var r: Double
+    var points: (Double) -> [Path.Points]
 
-    init<P: PhaseEnum>(phase: P, points: @escaping (Double) -> [Path.Points]) {
+    var animatableData: Double {
+        set { r = newValue }
+        get { r }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.add(points(r), in: rect)
+        }
+    }
+}
+
+struct PhasedShape<P: PhaseEnum>: Shape {
+    private var r: Double
+    private var phase: P
+    private var points: (Steps<P>) -> [Path.Points]
+
+    init(phase: P, points: @escaping (Steps<P>) -> [Path.Points]) {
         self.r = phase.r
+        self.phase = phase
         self.points = points
     }
 
@@ -23,7 +41,7 @@ struct PhasedShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         Path { path in
-            path.add(points(r), in: rect)
+            path.add(points(.init(r: r, phase: phase)), in: rect)
         }
     }
 }
@@ -51,52 +69,29 @@ extension Path {
     }
 }
 
-protocol PhaseEnum: RawRepresentable where RawValue == Int {
+protocol PhaseEnum: RawRepresentable, Comparable where RawValue == Int {
     static var start: Self { get }
 }
 
 extension PhaseEnum {
     var r: Double { Double(rawValue) }
 
-    static func phase(for r: Double) -> Self {
-        .init(rawValue: Int(floor(r))) ?? .start
-    }
-
-    static func fraction(r: Double) -> Double {
-        r - floor(r)
-    }
-
-    static func fraction(r: Double, in phase: Self) -> Double {
-        (r - Double(phase.rawValue - 1)).unitClamped
+    static func <(lhs: Self, rhs: Self) -> Bool {
+        lhs.rawValue < rhs.rawValue
     }
 }
 
-struct Fractions<P: PhaseEnum> {
-    private let r: Double
-    private let phaseEnum: P.Type
-
-    init(r: Double, phaseEnum: P.Type = P.self) {
-        self.r = r
-        self.phaseEnum = phaseEnum
-    }
+struct Steps<P: PhaseEnum> {
+    let r: Double
+    let phase: P
 
     subscript(phase: P) -> Double {
-        (r - Double(phase.rawValue - 1)).unitClamped
-    }
+        if phase < self.phase {
+            return 1
+        } else if phase > self.phase {
+            return 0
+        }
 
-    var local: Double {
-        r - floor(r)
+        return 1 + r - phase.r
     }
-}
-
-struct PhaseTimings<P: PhaseEnum>: ExpressibleByArrayLiteral {
-    init(arrayLiteral elements: (start: Double, phase: P)...) {
-        stops = elements
-    }
-
-    func callAsFunction(at time: Double) -> P {
-        stops.last { $0.start <= time }?.phase ?? .start
-    }
-
-    private var stops: [(start: Double, phase: P)]
 }

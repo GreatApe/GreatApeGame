@@ -12,13 +12,13 @@ struct SplashScreen: View {
 
     var body: some View {
         TStack { time in
-            let phase = vm.phase(at: time)
+            let phase = vm.phase[at: time]
             UnfairLogoView(phase: phase)
-                .simpleFade(time, timing: .inOnly(start: 1))
-            UnfairTextView(phase: phase)
-                .simpleFade(time, timing: .inOnly(start: 1.6))
+                .simpleFade(time, fading: .inOnly(start: 1))
+//            UnfairTextView(phase: phase)
+//                .simpleFade(time, timing: .inOnly(start: 1.6))
         }
-        .finish(after: 25, perform: vm.finished)
+        .finish(after: 10, perform: vm.finished)
         .border(.white)
 //        .onAppear {
 //            for i in 0..<40 {
@@ -66,10 +66,10 @@ enum LogoPhase: Int, PhaseEnum {
 }
 
 struct UnfairLogo {
-    static func points(r: Double) -> [Path.Points] {
-        let wide = LogoPhase.fraction(r: r, in: .wide)
-        let bell = LogoPhase.fraction(r: r, in: .bell)
-        let offset = LogoPhase.fraction(r: r, in: .offset)
+    static func points(steps: Steps<LogoPhase>) -> [Path.Points] {
+        let wide = steps[.wide]
+        let bell = steps[.bell]
+        let offset = steps[.offset]
 
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down
@@ -78,8 +78,6 @@ struct UnfairLogo {
         let right = trough + 0.5 * wide * bellWidth * .right
 
         let lineDelta: UnitPoint = offset * lineOffset * .right
-
-        print("\(r): \(offset) \(LogoPhase.phase(for: r))")
 
         let curve: [Path.Points] = [.start(left),
                                     .curve(to: peak, control1: left + bell * sideDelta, control2: peak - bell * midDelta),
@@ -90,7 +88,7 @@ struct UnfairLogo {
         return curve + line
     }
 
-    private static let peakShift: CGFloat = 0.7
+    static let peakShift: CGFloat = 0.7
 
     private static let peakHeight: CGFloat = 0.5
     private static let margin: CGFloat = 0.05
