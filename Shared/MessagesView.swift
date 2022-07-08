@@ -64,8 +64,8 @@ struct Messages: Equatable {
 
 extension String {
     static let welcome1 = "Are you smarter than a chimpanzee?"
-    static let welcome2 = "When the numbers are hidden, tap them in order"
-    static let welcome3 = "Ayumu can do 10, see how many you can handle"
+    static let welcome2 = "Tap the boxes in order, once the numbers disappear"
+    static let welcome3 = "Ayumu can do 10, how many can you handle?"
 
     static let successStrings = ["Awesome", "Fantastic", "Amazing", "Nice work", "Great!", "Not bad!", "Wonderful"]
 
