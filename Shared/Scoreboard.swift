@@ -58,11 +58,12 @@ struct ScoreboardLineView: View {
             LevelBoxes(count: line.level, solid: line.achieved)
                 .alignmentGuide(.menuAlignment) { d in d[.trailing] }
             if line.achieved {
-                ApeText(Text(line.time.timeString))
+                Text(line.time.timeString)
             } else {
-                ApeText(Text("Try it!"))
+                Text("Try it!")
             }
         }
+        .ape
     }
 }
 

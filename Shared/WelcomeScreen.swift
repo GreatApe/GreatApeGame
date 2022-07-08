@@ -20,19 +20,20 @@ struct WelcomeScreen: View {
                 .fill(.clear)
                 .contentShape(Rectangle())
                 .onTapGesture(perform: vm.tapBackground)
-            ApeText(verbatim: .welcome1)
+            Text(verbatim: .welcome1)
                 .messageFade(time, fading: .init(start: 1, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
-            ApeText(verbatim: .welcome2)
+            Text(verbatim: .welcome2)
                 .messageFade(time, fading: .init(start: 4, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
             VideoClipView()
                 .transitionFade(time, fading: .symmetric(start: 7, duration: 13, fade: 0.5))
-            ApeText(verbatim: .welcome3)
+            Text(verbatim: .welcome3)
                 .messageFade(time, fading: .init(start: 20, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
         }
         .finish(after: 22, perform: vm.finished)
+        .apeLarge
     }
 
     struct ViewModel {

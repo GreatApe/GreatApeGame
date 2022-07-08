@@ -18,7 +18,7 @@ struct SplashScreen: View {
                 UnfairTextView(phase: phase)
             }
         }
-        .finish(after: 10, perform: vm.finished)
+        .finish(after: 4, perform: vm.finished)
     }
 
     struct ViewModel {
@@ -34,7 +34,6 @@ struct UnfairLogoView: View {
         PhasedShape(phase: phase, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
             .retro()
-//            .animation(.linear(duration: 10), value: phase)
             .animation(.spring(), value: phase)
     }
 }
@@ -67,8 +66,8 @@ struct UnfairTextView: View {
 enum LogoPhase: Double, PhaseEnum {
     case start
     case wide = 1
-    case bell = 1.4
-    case offset = 1.8
+    case bell = 1.5
+    case offset = 2
 }
 
 struct UnfairLogo {

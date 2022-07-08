@@ -36,6 +36,7 @@ final class Store: ObservableObject {
 
 class AppEnvironment {
     @UserDefault(key: "hasSeenIntro", defaultValue: false) var hasSeenIntro: Bool
+//    var hasSeenIntro: Bool { get { false } set { _ = newValue } }
     let persistence: PersistenceController = .shared
 }
 

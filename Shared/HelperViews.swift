@@ -63,22 +63,6 @@ struct ApeLabel: View {
     }
 }
 
-struct ApeText: View {
-    let text: Text
-
-    init(verbatim string: String) {
-        self.init(Text(verbatim: string))
-    }
-
-    init(_ text: Text) {
-        self.text = text
-    }
-
-    var body: some View {
-        text.ape
-    }
-}
-
 extension View {
     var ape: some View {
         modifier(ApeModifier())
@@ -108,7 +92,8 @@ struct MenuText: View {
     let item: MenuItem
 
     var body: some View {
-        ApeText(ReadyScreen.ViewModel.text(for: item))
+        ReadyScreen.ViewModel.text(for: item)
+            .apeLarge
             .retro()
     }
 }

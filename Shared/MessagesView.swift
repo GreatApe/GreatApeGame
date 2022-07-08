@@ -16,7 +16,8 @@ struct MessagesView: View {
             let time = context.date.timeIntervalSince(start) - epsilon - vm.delay
             ZStack {
                 ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
-                    ApeText(verbatim: string)
+                    Text(string)
+                        .ape
                         .messageFade(time, fading: fading(index: index))
                 }
             }

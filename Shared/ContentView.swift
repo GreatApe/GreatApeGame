@@ -27,7 +27,7 @@ struct ContentView: View {
         }
         .scaleEffect(scale)
         .edgesIgnoringSafeArea(.all)
-        .animation(.spring(), value: scale)
+        .animation(.easeInOut, value: scale)
         .onAppear {
             store.send(.startup)
         }

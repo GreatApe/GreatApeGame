@@ -78,7 +78,8 @@ struct TimeView: View {
     let time: Double
 
     var body: some View {
-        ApeText(verbatim: "2345")
+        Text(verbatim: "2345")
+            .ape
             .opacity(0)
             .modifier(TimeModifier(time: time))
             .animation(.easeInOut(duration: slideDuration), value: time)
@@ -111,10 +112,11 @@ struct TimeModifier: ViewModifier, Animatable {
 
                         let height = proxy.size.height
                         CounterDigit(height: height, digit: seconds, excess: secondsExcess)
-                        ApeText(verbatim: ".")
+                        Text(verbatim: ".")
                         CounterDigit(height: height, digit: tenths, excess: tenthsExcess)
                         CounterDigit(height: height, digit: hundreths, excess: hundrethsExcess)
                     }
+                    .ape
                 }
             }
     }
@@ -129,10 +131,10 @@ struct CounterDigit: View {
 
     var body: some View {
         ZStack {
-            ApeText(verbatim: String(digit))
+            Text(verbatim: String(digit))
                 .rotation3DEffect(.degrees(excess * 36), axis: (1, 0, 0), anchorZ: anchorZ * height, perspective: 0)
                 .opacity(1 - pow(abs(excess), 0.5))
-            ApeText(verbatim: String((digit + 1) % 10))
+            Text(verbatim: String((digit + 1) % 10))
                 .rotation3DEffect(.degrees((excess - 1) * 36), axis: (1, 0, 0), anchorZ: anchorZ * height, perspective: 0)
                 .opacity(1 - pow(abs(1 - excess), 0.5))
         }
@@ -180,10 +182,11 @@ struct LevelBoxes: View {
     var body: some View {
         HStack(spacing: 1) {
             ForEach(boxes) { _ in
-                ApeText(verbatim: .boxLine(1, solid: solid))
+                Text(verbatim: .boxLine(1, solid: solid))
                     .transition(.scale)
             }
         }
+        .ape
     }
 
     private var boxes: [BoxModel] {
