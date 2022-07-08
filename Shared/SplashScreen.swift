@@ -19,6 +19,7 @@ struct SplashScreen: View {
             }
         }
         .finish(after: 4, perform: vm.finished)
+        .onTapGesture(perform: vm.tapBackground)
     }
 
     struct ViewModel {

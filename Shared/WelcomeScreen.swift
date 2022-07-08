@@ -16,10 +16,6 @@ struct WelcomeScreen: View {
 
     var body: some View {
         TStack { time in
-            Rectangle()
-                .fill(.clear)
-                .contentShape(Rectangle())
-                .onTapGesture(perform: vm.tapBackground)
             Text(verbatim: .welcome1)
                 .messageFade(time, fading: .init(start: 1, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
                 .retro()
@@ -33,6 +29,7 @@ struct WelcomeScreen: View {
                 .retro()
         }
         .finish(after: 22, perform: vm.finished)
+        .onTapGesture(perform: vm.tapBackground)
         .apeLarge
     }
 
