@@ -80,14 +80,14 @@ struct Fading {
     }
 }
 
-enum FadePhase: Int, Equatable {
+enum FadePhase: Double, Equatable {
     case before = -1
     case showing = 0
     case after = 1
 
     init(time: Double, fading: Fading) {
         switch time {
-            case ..<fading.startFadeIn: self = .before
+            case ..<fading.start: self = .before
             case fading.startFadeOut...: self = .after
             default: self = .showing
         }
@@ -115,15 +115,19 @@ extension View {
         fade(time, fading: fading, using: SimpleFade.init)
     }
 
-    func fade<Fader: ViewModifier & Animatable>(_ time: Double, fading: Fading, using fader: (Double) -> Fader) -> some View {
+    func fade<Fader: ViewModifier & Animatable>(_ time: Double, fading: Fading, using fader: (FadePhase) -> Fader) -> some View {
         let phase: FadePhase = .init(time: time, fading: fading)
-        return modifier(fader(Double(phase.rawValue)))
+        return modifier(fader(phase))
             .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
     }
 }
 
 struct MessageFade: ViewModifier, Animatable {
-    var x: Double
+    private var x: Double
+
+    init(phase: FadePhase) {
+        self.x = phase.rawValue
+    }
 
     var animatableData: Double {
         set { x = newValue }
@@ -152,7 +156,11 @@ struct MessageFade: ViewModifier, Animatable {
 // MARK: Simple fade
 
 struct SimpleFade: ViewModifier, Animatable {
-    var x: Double
+    private var x: Double
+
+    init(phase: FadePhase) {
+        self.x = phase.rawValue
+    }
 
     var animatableData: Double {
         set { x = newValue }
