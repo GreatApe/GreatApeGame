@@ -48,13 +48,36 @@ struct TStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
+
+struct Animated<Content: View>: View {
+    @Environment(\.tStackTime) private var time
+    let content: Content
+    let fading: Fading
+    //    let animator: M
+
+    var body: some View {
+        let phase = FadePhase(time: time, fading: fading)
+
+        content
+    }
+}
+
+private struct TStackTimeKey: EnvironmentKey {
+    static let defaultValue: Double = 0
+}
+
+extension EnvironmentValues {
+    var tStackTime: Double {
+        get { self[TStackTimeKey.self] }
+        set { self[TStackTimeKey.self] = newValue }
+    }
+}
+
 struct Fading {
     let start: Double
     let duration: Double
     let fadeIn: Double
     let fadeOut: Double
-
-    var startFadeIn: Double { start }
 
     var startFadeOut: Double { start + duration - fadeOut }
 
@@ -108,21 +131,25 @@ extension View {
     }
 
     func messageFade(_ time: Double, fading: Fading) -> some View {
-        fade(time, fading: fading, using: MessageFade.init)
+        fade(time, fading: fading, using: MessageFade.self)
     }
 
     func simpleFade(_ time: Double, fading: Fading) -> some View {
-        fade(time, fading: fading, using: SimpleFade.init)
+        fade(time, fading: fading, using: SimpleFade.self)
     }
 
-    func fade<Fader: ViewModifier & Animatable>(_ time: Double, fading: Fading, using fader: (FadePhase) -> Fader) -> some View {
+    func fade<A: Animator>(_ time: Double, fading: Fading, using animatorType: A.Type) -> some View {
         let phase: FadePhase = .init(time: time, fading: fading)
-        return modifier(fader(phase))
+        return modifier(animatorType.init(phase: phase))
             .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
     }
 }
 
-struct MessageFade: ViewModifier, Animatable {
+protocol Animator: ViewModifier {
+    init(phase: FadePhase)
+}
+
+struct MessageFade: Animator, Animatable {
     private var x: Double
 
     init(phase: FadePhase) {
@@ -155,7 +182,7 @@ struct MessageFade: ViewModifier, Animatable {
 
 // MARK: Simple fade
 
-struct SimpleFade: ViewModifier, Animatable {
+struct SimpleFade: Animator, Animatable {
     private var x: Double
 
     init(phase: FadePhase) {
