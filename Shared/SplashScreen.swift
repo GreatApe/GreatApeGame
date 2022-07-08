@@ -16,10 +16,10 @@ struct SplashScreen: View {
             ZStack {
                 UnfairLogoView(phase: phase)
                 UnfairTextView(phase: phase)
+                TapView(perform: vm.tapBackground)
             }
         }
         .finish(4, perform: vm.finished)
-        .onTapGesture(perform: vm.tapBackground)
     }
 
     struct ViewModel {

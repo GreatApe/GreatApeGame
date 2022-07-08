@@ -26,8 +26,10 @@ struct MainView: View {
         switch store.state.screen {
             case .splash:
                 SplashScreen(vm: splashVM)
+                    .transition(.retro)
             case .welcome:
                 WelcomeScreen(vm: welcomeVM)
+                    .transition(.retro)
             case .ready(let state):
                 ReadyScreen(vm: readyVM(state: state))
                     .transition(.retro)

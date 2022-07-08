@@ -147,6 +147,16 @@ extension CGRect {
     }
 }
 
+struct TapView: View {
+    let perform: () -> Void
+
+    var body: some View {
+        Color.clear
+            .contentShape(Rectangle())
+            .onTapGesture(perform: perform)
+    }
+}
+
 struct MyTestView: View {
     @State private var time: Double = 1.56
     @State private var level: Int = 5

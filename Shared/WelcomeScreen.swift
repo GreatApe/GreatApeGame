@@ -23,13 +23,13 @@ struct WelcomeScreen: View {
                 .messageFade(time, fading: fade.start(at: 4))
                 .retro()
             VideoClipView()
-                .transitionFade(time, fading: .symmetric(duration: 13, fade: 0.5).start(at: 7))
+                .transitionFade(time, fading: .symmetric(duration: 13, fade: 0.7).start(at: 7))
             Text(verbatim: .welcome3)
                 .messageFade(time, fading: fade.start(at: 20))
                 .retro()
+            TapView(perform: vm.tapBackground)
         }
         .finish(22, perform: vm.finished)
-        .onTapGesture(perform: vm.tapBackground)
         .apeLarge
     }
 
