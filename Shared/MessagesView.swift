@@ -26,7 +26,8 @@ struct MessagesView: View {
     }
 
     private func fading(index: Int) -> Fading {
-        .triangle(start: vm.timePerMessage * Double(index), duration: vm.timePerMessage, relativePeak: 0.3)
+        .triangle(duration: vm.timePerMessage, relativePeak: 0.3)
+        .start(at: vm.timePerMessage * Double(index))
         .staying(vm.stay && index == vm.strings.endIndex - 1)
     }
 
@@ -54,11 +55,11 @@ struct Messages: Equatable {
     static let easier: Self = .init(strings: [.easier])
     static let scoreboard: Self = .init(strings: [.scoreboard])
     static let levelChange: Self = .init(strings: [.levelChange])
-    static let copied: Self = .init(strings: [.copied], stay: true)
+    static let copied: Self = .init(strings: [.copied])
     static let didReset: Self = .init(strings: [.didReset])
 
     static func levelUp(_ level: Int) -> Self {
-        .init(strings: String.levelUp(boxes: level), delay: 1, stay: false)
+        .init(strings: String.levelUp(boxes: level), delay: 1)
     }
 }
 

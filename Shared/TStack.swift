@@ -51,21 +51,25 @@ struct Fading {
 
     var startFadeOut: Double { start + duration - fadeOut }
 
-    static func symmetric(start: Double, duration: Double, fade: Double = 0.1) -> Self {
-        .init(start: start, duration: duration, fadeIn: fade, fadeOut: fade)
+    static func symmetric(duration: Double, fade: Double = 0.1) -> Self {
+        .init(start: 0, duration: duration, fadeIn: fade, fadeOut: fade)
     }
 
-    static func inOnly(start: Double, fadeIn: Double = 0.1) -> Self {
-        return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
+    static func inOnly(fadeIn: Double = 0.1) -> Self {
+        return .init(start: 0, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
     }
 
-    static func triangle(start: Double, duration: Double, relativePeak: Double) -> Self  {
-        .init(start: start, duration: duration, fadeIn: relativePeak * duration, fadeOut: (1 - relativePeak) * duration)
+    static func triangle(duration: Double, relativePeak: Double) -> Self  {
+        .init(start: 0, duration: duration, fadeIn: relativePeak * duration, fadeOut: (1 - relativePeak) * duration)
     }
 
     func staying(_ active: Bool = true) -> Self {
         guard active else { return self }
         return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
+    }
+
+    func start(at time: Double) -> Self {
+        .init(start: time, duration: duration, fadeIn: fadeIn, fadeOut: fadeOut)
     }
 }
 

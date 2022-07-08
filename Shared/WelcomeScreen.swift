@@ -17,15 +17,15 @@ struct WelcomeScreen: View {
     var body: some View {
         TStack { time in
             Text(verbatim: .welcome1)
-                .messageFade(time, fading: .init(start: 1, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
+                .messageFade(time, fading: fade.start(at: 1))
                 .retro()
             Text(verbatim: .welcome2)
-                .messageFade(time, fading: .init(start: 4, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7))
+                .messageFade(time, fading: fade.start(at: 4))
                 .retro()
             VideoClipView()
-                .transitionFade(time, fading: .symmetric(start: 7, duration: 13, fade: 0.5))
+                .transitionFade(time, fading: .symmetric(duration: 13, fade: 0.5).start(at: 7))
             Text(verbatim: .welcome3)
-                .messageFade(time, fading: .init(start: 20, duration: 3, fadeIn: 0.6, fadeOut: 0.7))
+                .messageFade(time, fading: fade.start(at: 20))
                 .retro()
         }
         .finish(after: 22, perform: vm.finished)
@@ -37,6 +37,8 @@ struct WelcomeScreen: View {
         let tapBackground: () -> Void
         let finished: () -> Void
     }
+
+    private let fade: Fading = .init(start: 1, duration: 2.5, fadeIn: 0.6, fadeOut: 0.7)
 }
 
 struct VideoClipView: View {
