@@ -23,6 +23,7 @@ struct TStack<Content: View>: View {
             let time = context.date.timeIntervalSince(start) - epsilon - delay
             ZStack {
                 content(time)
+                    .environment(\.tStackTime, time)
                     .onChange(of: time) { t in
                         if t > finishTime {
                             finished()
@@ -48,17 +49,27 @@ struct TStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
+extension View {
+    func animated<AnimatorType: Animator>(with animator: AnimatorType.Type, fading: Fading) -> some View {
+        AnimatedView(fading: fading, animator: animator, content: self)
+    }
+}
 
-struct Animated<Content: View>: View {
+struct AnimatedView<Content: View, AnimatorType: Animator>: View {
     @Environment(\.tStackTime) private var time
     let content: Content
     let fading: Fading
-    //    let animator: M
+
+    init(fading: Fading, animator: AnimatorType.Type, content: Content) {
+        self.fading = fading
+        self.content = content
+    }
 
     var body: some View {
-        let phase = FadePhase(time: time, fading: fading)
-
+        let phase = fading.phase(at: time)
         content
+            .modifier(AnimatorType(phase: phase))
+            .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
     }
 }
 
@@ -101,20 +112,20 @@ struct Fading {
     func start(at time: Double) -> Self {
         .init(start: time, duration: duration, fadeIn: fadeIn, fadeOut: fadeOut)
     }
+
+    func phase(at time: Double) -> FadePhase {
+        switch time {
+            case ..<start: return .before
+            case startFadeOut...: return .after
+            default: return .showing
+        }
+    }
 }
 
 enum FadePhase: Double, Equatable {
     case before = -1
     case showing = 0
     case after = 1
-
-    init(time: Double, fading: Fading) {
-        switch time {
-            case ..<fading.start: self = .before
-            case fading.startFadeOut...: self = .after
-            default: self = .showing
-        }
-    }
 }
 
 // MARK: Message fade
@@ -122,7 +133,7 @@ enum FadePhase: Double, Equatable {
 extension View {
     @ViewBuilder
     func transitionFade(_ time: Double, fading: Fading, transition: AnyTransition = .opacity) -> some View {
-        let phase: FadePhase = .init(time: time, fading: fading)
+        let phase: FadePhase = fading.phase(at: time)
         if phase == .showing {
             self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: fading.fadeIn)),
                                     removal: transition.animation(.easeOut(duration: fading.fadeOut))))
@@ -139,7 +150,7 @@ extension View {
     }
 
     func fade<A: Animator>(_ time: Double, fading: Fading, using animatorType: A.Type) -> some View {
-        let phase: FadePhase = .init(time: time, fading: fading)
+        let phase: FadePhase = fading.phase(at: time)
         return modifier(animatorType.init(phase: phase))
             .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
     }
