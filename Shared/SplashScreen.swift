@@ -18,7 +18,7 @@ struct SplashScreen: View {
                 UnfairTextView(phase: phase)
             }
         }
-        .finish(after: 4, perform: vm.finished)
+        .finish(4, perform: vm.finished)
         .onTapGesture(perform: vm.tapBackground)
     }
 

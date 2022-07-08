@@ -28,7 +28,7 @@ struct WelcomeScreen: View {
                 .messageFade(time, fading: fade.start(at: 20))
                 .retro()
         }
-        .finish(after: 22, perform: vm.finished)
+        .finish(22, perform: vm.finished)
         .onTapGesture(perform: vm.tapBackground)
         .apeLarge
     }

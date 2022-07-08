@@ -45,7 +45,6 @@ struct Messages: Equatable {
     let strings: [String]
     var delay: Double = 0
     var timePerMessage: Double = 2
-    var large: Bool = false
     var stay: Bool = false
 
     static func success() -> Self {

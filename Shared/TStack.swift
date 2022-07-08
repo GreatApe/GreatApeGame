@@ -11,6 +11,7 @@ struct TStack<Content: View>: View {
     @State private var start: Date = .now
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
+    private var delay: Double = 0
     var content: (Double) -> Content
 
     init(@ViewBuilder content: @escaping (Double) -> Content) {
@@ -19,7 +20,7 @@ struct TStack<Content: View>: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.1)) { context in
-            let time = context.date.timeIntervalSince(start) - epsilon
+            let time = context.date.timeIntervalSince(start) - epsilon - delay
             ZStack {
                 content(time)
                     .onChange(of: time) { t in
@@ -31,10 +32,16 @@ struct TStack<Content: View>: View {
         }
     }
 
-    func finish(after finishTime: Double, perform finished: @escaping () -> Void) -> Self {
+    func finish(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
         var result = self
         result.finished = finished
         result.finishTime = finishTime
+        return result
+    }
+
+    func delay(_ delay: Double) -> Self {
+        var result = self
+        result.delay = delay
         return result
     }
 
@@ -94,9 +101,8 @@ extension View {
     func transitionFade(_ time: Double, fading: Fading, transition: AnyTransition = .opacity) -> some View {
         let phase: FadePhase = .init(time: time, fading: fading)
         if phase == .showing {
-            self
-                .transition(.asymmetric(insertion: transition.animation(.easeIn(duration: fading.fadeIn)),
-                                        removal: transition.animation(.easeOut(duration: fading.fadeOut))))
+            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: fading.fadeIn)),
+                                    removal: transition.animation(.easeOut(duration: fading.fadeOut))))
         }
 
     }

@@ -37,7 +37,8 @@ extension ScoreDictionary {
     }
 
     var shareString: String {
-        ordered.map(shareDescription).joined(separator: "\n") + "\ngreatapegame.com/\(score)bananas"
+//        ordered.map(shareDescription).joined(separator: "\n") + "\ngreatapegame.com/\(score)bananas"
+        ordered.map(shareDescription).joined(separator: "\n") + "\ngreatapegame.com"
     }
 }
 
