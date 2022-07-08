@@ -50,26 +50,40 @@ struct TStack<Content: View>: View {
 }
 
 extension View {
-    func animated<AnimatorType: Animator>(with animator: AnimatorType.Type, fading: Fading) -> some View {
-        AnimatedView(fading: fading, animator: animator, content: self)
+    func animated<AnimatorType: Animator>(using animator: AnimatorType.Type, timing: Timing) -> some View {
+        AnimatedView(timing: timing, animator: animator, content: self)
+    }
+
+    @ViewBuilder
+    func transitionFade(_ time: Double, timing: Timing, transition: AnyTransition = .opacity) -> some View {
+        let phase: Timing.Phase = timing.phase(at: time)
+        if phase == .showing {
+            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: timing.rampIn)),
+                                        removal: transition.animation(.easeOut(duration: timing.rampOut))))
+        }
+
     }
 }
 
-struct AnimatedView<Content: View, AnimatorType: Animator>: View {
+protocol Animator: ViewModifier {
+    init(phase: Timing.Phase)
+}
+
+private struct AnimatedView<Content: View, AnimatorType: Animator>: View {
     @Environment(\.tStackTime) private var time
     let content: Content
-    let fading: Fading
+    let timing: Timing
 
-    init(fading: Fading, animator: AnimatorType.Type, content: Content) {
-        self.fading = fading
+    init(timing: Timing, animator: AnimatorType.Type, content: Content) {
+        self.timing = timing
         self.content = content
     }
 
     var body: some View {
-        let phase = fading.phase(at: time)
+        let phase = timing.phase(at: time)
         content
             .modifier(AnimatorType(phase: phase))
-            .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
+            .animation(.linear(duration: phase == .showing ? timing.rampIn : timing.rampOut), value: phase)
     }
 }
 
@@ -84,86 +98,61 @@ extension EnvironmentValues {
     }
 }
 
-struct Fading {
+struct Timing {
     let start: Double
     let duration: Double
-    let fadeIn: Double
-    let fadeOut: Double
+    let rampIn: Double
+    let rampOut: Double
 
-    var startFadeOut: Double { start + duration - fadeOut }
-
-    static func symmetric(duration: Double, fade: Double = 0.1) -> Self {
-        .init(start: 0, duration: duration, fadeIn: fade, fadeOut: fade)
+    static func simple(duration: Double, ramp: Double = 0.1) -> Self {
+        .init(start: 0, duration: duration, rampIn: ramp, rampOut: ramp)
     }
 
     static func inOnly(fadeIn: Double = 0.1) -> Self {
-        return .init(start: 0, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
+        return .init(start: 0, duration: .infinity, rampIn: fadeIn, rampOut: 0)
     }
 
     static func triangle(duration: Double, relativePeak: Double) -> Self  {
-        .init(start: 0, duration: duration, fadeIn: relativePeak * duration, fadeOut: (1 - relativePeak) * duration)
+        .init(start: 0, duration: duration, rampIn: relativePeak * duration, rampOut: (1 - relativePeak) * duration)
     }
 
-    func staying(_ active: Bool = true) -> Self {
+    func stay(_ active: Bool = true) -> Self {
         guard active else { return self }
-        return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
+        return .init(start: start, duration: .infinity, rampIn: rampIn, rampOut: 0)
     }
 
     func start(at time: Double) -> Self {
-        .init(start: time, duration: duration, fadeIn: fadeIn, fadeOut: fadeOut)
+        .init(start: time, duration: duration, rampIn: rampIn, rampOut: rampOut)
     }
 
-    func phase(at time: Double) -> FadePhase {
+    fileprivate func phase(at time: Double) -> Phase {
+        let startFadeOut = start + duration - rampOut
         switch time {
             case ..<start: return .before
             case startFadeOut...: return .after
             default: return .showing
         }
     }
-}
 
-enum FadePhase: Double, Equatable {
-    case before = -1
-    case showing = 0
-    case after = 1
+    enum Phase: Double, Equatable {
+        case before = -1
+        case showing = 0
+        case after = 1
+    }
 }
 
 // MARK: Message fade
 
 extension View {
-    @ViewBuilder
-    func transitionFade(_ time: Double, fading: Fading, transition: AnyTransition = .opacity) -> some View {
-        let phase: FadePhase = fading.phase(at: time)
-        if phase == .showing {
-            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: fading.fadeIn)),
-                                    removal: transition.animation(.easeOut(duration: fading.fadeOut))))
-        }
-
+    func messageFade(_ timing: Timing) -> some View {
+        animated(using: MessageFade.self, timing: timing)
     }
-
-    func messageFade(_ time: Double, fading: Fading) -> some View {
-        fade(time, fading: fading, using: MessageFade.self)
-    }
-
-    func simpleFade(_ time: Double, fading: Fading) -> some View {
-        fade(time, fading: fading, using: SimpleFade.self)
-    }
-
-    func fade<A: Animator>(_ time: Double, fading: Fading, using animatorType: A.Type) -> some View {
-        let phase: FadePhase = fading.phase(at: time)
-        return modifier(animatorType.init(phase: phase))
-            .animation(.linear(duration: phase == .showing ? fading.fadeIn : fading.fadeOut), value: phase)
-    }
-}
-
-protocol Animator: ViewModifier {
-    init(phase: FadePhase)
 }
 
 struct MessageFade: Animator, Animatable {
     private var x: Double
 
-    init(phase: FadePhase) {
+    init(phase: Timing.Phase) {
         self.x = phase.rawValue
     }
 
@@ -193,10 +182,16 @@ struct MessageFade: Animator, Animatable {
 
 // MARK: Simple fade
 
+extension View {
+    func simpleFade(_ timing: Timing) -> some View {
+        animated(using: SimpleFade.self, timing: timing)
+    }
+}
+
 struct SimpleFade: Animator, Animatable {
     private var x: Double
 
-    init(phase: FadePhase) {
+    init(phase: Timing.Phase) {
         self.x = phase.rawValue
     }
 

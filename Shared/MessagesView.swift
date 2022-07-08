@@ -15,17 +15,17 @@ struct MessagesView: View {
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
                     .apeLarge
-                    .messageFade(time, fading: fading(index: index))
+                    .messageFade(timing(index: index))
                     .retro()
             }
         }
         .delay(vm.delay)
     }
 
-    private func fading(index: Int) -> Fading {
+    private func timing(index: Int) -> Timing {
         .triangle(duration: vm.timePerMessage, relativePeak: 0.3)
         .start(at: vm.timePerMessage * Double(index))
-        .staying(vm.stay && index == vm.strings.endIndex - 1)
+        .stay(vm.stay && index == vm.strings.endIndex - 1)
     }
 
     typealias ViewModel = Messages
@@ -80,7 +80,6 @@ extension String {
     static let didReset = "All scores have been cleared"
 
     static let about = "Designed and developed by Unfair Advantage. sales@unfair.me"
-
 
     static func levelUp(boxes: Int) -> [String] {
         if boxes == 3 {
