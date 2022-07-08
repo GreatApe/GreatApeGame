@@ -9,20 +9,17 @@ import SwiftUI
 
 struct MessagesView: View {
     let vm: ViewModel
-    @State private var start: Date = .now
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.25)) { context in
-            let time = context.date.timeIntervalSince(start) - epsilon - vm.delay
-            ZStack {
-                ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
-                    Text(string)
-                        .apeLarge
-                        .messageFade(time, fading: fading(index: index))
-                }
+        TStack { time in
+            ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
+                Text(string)
+                    .apeLarge
+                    .messageFade(time, fading: fading(index: index))
+                    .retro()
             }
-            .retro()
         }
+        .delay(vm.delay)
     }
 
     private func fading(index: Int) -> Fading {
@@ -32,8 +29,8 @@ struct MessagesView: View {
     }
 
     typealias ViewModel = Messages
-    private let epsilon = 0.01
 }
+
 
 extension Optional {
     var asArray: [Wrapped] {
