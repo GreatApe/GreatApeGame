@@ -12,27 +12,18 @@ struct SplashScreen: View {
 
     var body: some View {
         TStack { time in
-            let phase = vm.phase[at: time]
-            UnfairLogoView(phase: phase)
-                .simpleFade(time, fading: .inOnly(start: 1))
-//            UnfairTextView(phase: phase)
-//                .simpleFade(time, timing: .inOnly(start: 1.6))
+            let phase = LogoPhase(at: time)
+            ZStack {
+                UnfairLogoView(phase: phase)
+                UnfairTextView(phase: phase)
+            }
         }
         .finish(after: 10, perform: vm.finished)
-        .border(.white)
-//        .onAppear {
-//            for i in 0..<40 {
-//                let r = 0.1 * Double(i)
-//                let fractions = LogoPhase.fractions(r: r)
-//                print("\(r.timeString): \(fractions[.start].timeString) \(fractions[.bell].timeString) \(fractions[.offset].timeString)")
-//            }
-//        }
     }
 
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
-        let phase: PhaseTimings<LogoPhase> = [(1, .wide), (3, .bell), (5, .offset)]
     }
 }
 
@@ -43,26 +34,41 @@ struct UnfairLogoView: View {
         PhasedShape(phase: phase, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
             .retro()
+//            .animation(.linear(duration: 10), value: phase)
             .animation(.spring(), value: phase)
     }
 }
 
 struct UnfairTextView: View {
-    let phase: LogoPhase
+    private let show: Bool
+
+    init(phase: LogoPhase) {
+        self.show = phase.time >= LogoPhase.offset.time
+    }
 
     var body: some View {
-        ApeText(verbatim: "Unfair Advantage")
-            .retro()
-//            .offset(x: phase == .offset ? 25 : 0)
-//            .animation(.spring().repeatCount(1, autoreverses: true), value: phase)
+        GeometryReader { proxy in
+            HStack {
+                Spacer()
+                Text(verbatim: "Unfair Advantage")
+                    .apeLarge
+                    .retro()
+                    .offset(x: show ? 0 : -0.1 * proxy.size.width, y: proxy.size.height * offset)
+                    .opacity(show ? 1 : 0)
+                    .animation(.spring(), value: show)
+                Spacer()
+            }
+        }
     }
+
+    private let offset: CGFloat = 0.5 + 0.5 * (1 - UnfairLogo.peakShift) + UnfairLogo.margin
 }
 
-enum LogoPhase: Int, PhaseEnum {
+enum LogoPhase: Double, PhaseEnum {
     case start
-    case wide
-    case bell
-    case offset
+    case wide = 1
+    case bell = 1.4
+    case offset = 1.8
 }
 
 struct UnfairLogo {
@@ -71,27 +77,35 @@ struct UnfairLogo {
         let bell = steps[.bell]
         let offset = steps[.offset]
 
+//        print("\(steps.r) \(steps.phase) ** wide: \(wide.timeString), bell: \(bell.timeString), offset: \(offset.timeString)")
+
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down
 
         let left = trough + 0.5 * wide * bellWidth * .left
         let right = trough + 0.5 * wide * bellWidth * .right
 
-        let lineDelta: UnitPoint = offset * lineOffset * .right
+        let lineOffsetX: UnitPoint = lineOffset * .right
+        let lineOffsetY: UnitPoint = (peakHeight + 2 * margin - sigmaHeight) * .down
+        let lineTop = peak + wide * margin * .up + offset * lineOffsetX + offset * lineOffsetY
+        let lineBottom = trough + wide * margin * .down + offset * lineOffsetX
+
+        let control = 0.7 * (wide - bell) + bell
 
         let curve: [Path.Points] = [.start(left),
-                                    .curve(to: peak, control1: left + bell * sideDelta, control2: peak - bell * midDelta),
-                                    .curve(to: right, control1: peak + bell * midDelta, control2: right - bell * sideDelta)]
-        let line: [Path.Points] = [.start(peak + wide * margin * .up + lineDelta),
-                                   .line(to: trough + wide * margin * .down + lineDelta)]
+                                    .curve(to: peak, control1: left + control * sideDelta, control2: peak - control * midDelta),
+                                    .curve(to: right, control1: peak + control * midDelta, control2: right - control * sideDelta)]
+        let line: [Path.Points] = [.start(lineTop),
+                                   .line(to: lineBottom)]
 
         return curve + line
     }
 
     static let peakShift: CGFloat = 0.7
+    static let margin: CGFloat = 0.07
 
     private static let peakHeight: CGFloat = 0.5
-    private static let margin: CGFloat = 0.05
+    private static let sigmaHeight: CGFloat = 0.23
     private static let bellWidth: CGFloat = 0.8
     private static let lineOffset: CGFloat = 0.25
 

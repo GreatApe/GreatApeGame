@@ -69,15 +69,21 @@ extension Path {
     }
 }
 
-protocol PhaseEnum: RawRepresentable, Comparable where RawValue == Int {
+protocol PhaseEnum: CaseIterable, RawRepresentable where RawValue == Double {
     static var start: Self { get }
 }
 
 extension PhaseEnum {
-    var r: Double { Double(rawValue) }
+    var time: Double {
+        rawValue
+    }
 
-    static func <(lhs: Self, rhs: Self) -> Bool {
-        lhs.rawValue < rhs.rawValue
+    var r: Double {
+        Double(Self.allCases.enumerated().first { $0.element == self }?.offset ?? 0)
+    }
+
+    init(at time: Double) {
+        self = Self.allCases.reversed().first { $0.rawValue <= time } ?? .start
     }
 }
 
@@ -86,12 +92,10 @@ struct Steps<P: PhaseEnum> {
     let phase: P
 
     subscript(phase: P) -> Double {
-        if phase < self.phase {
-            return 1
-        } else if phase > self.phase {
-            return 0
+        if phase == self.phase {
+            return 1 + r - phase.r
         }
 
-        return 1 + r - phase.r
+        return self.phase.rawValue < phase.rawValue ? 0 : 1
     }
 }

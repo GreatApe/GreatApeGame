@@ -36,13 +36,13 @@ struct MainView: View {
                     .transition(.retro)
         }
     }
-    
+
     private var splashVM: SplashScreen.ViewModel {
         .init(tapBackground: store[.tapBackground],
               finished: store[.finishedSplash]
         )
     }
-    
+
     private var welcomeVM: WelcomeScreen.ViewModel {
         .init(tapBackground: store[.tapBackground],
               finished: store[.finishedIntro]

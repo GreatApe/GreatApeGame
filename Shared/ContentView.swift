@@ -26,7 +26,6 @@ struct ContentView: View {
             }
         }
         .scaleEffect(scale)
-        //        .edgesIgnoringSafeArea(.bottom)
         .edgesIgnoringSafeArea(.all)
         .animation(.spring(), value: scale)
         .onAppear {
@@ -35,10 +34,11 @@ struct ContentView: View {
     }
 
     private var scale: CGFloat {
-        if case .welcome = store.state.screen {
-            return 1
-        } else {
-            return scaleFactor
+        switch store.state.screen {
+            case .splash, .welcome:
+                return 1
+            default:
+                return scaleFactor
         }
     }
 

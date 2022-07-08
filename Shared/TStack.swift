@@ -41,37 +41,6 @@ struct TStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
-//struct PhaseStack<Content: View, P: PhaseEnum>: View {
-//    @State private var start: Date = .now
-//    private var finished: () -> Void = { }
-//    var content: (Phases<P>) -> Content
-//
-//    init(_ phaseType: P.Type = P.self, @ViewBuilder content: @escaping (Phases<P>) -> Content) {
-//        self.content = content
-//    }
-//
-//    var body: some View {
-//        TimelineView(.periodic(from: .now, by: 0.1)) { context in
-//            let time = context.date.timeIntervalSince(start) - epsilon
-//            let phases = Phases<P>(time: time)
-//            content(phases)
-//                .onChange(of: phases[.finish]) { isFinished in
-//                    if isFinished {
-//                        finished()
-//                    }
-//                }
-//        }
-//    }
-//
-//    func onFinished(perform finished: @escaping () -> Void) -> Self {
-//        var result = self
-//        result.finished = finished
-//        return result
-//    }
-//
-//    private let epsilon: Double = 0.01
-//}
-
 struct Fading {
     let start: Double
     let duration: Double
@@ -98,18 +67,6 @@ struct Fading {
         guard active else { return self }
         return .init(start: start, duration: .infinity, fadeIn: fadeIn, fadeOut: 0)
     }
-}
-
-struct PhaseTimings<P: PhaseEnum>: ExpressibleByArrayLiteral {
-    init(arrayLiteral elements: (start: Double, phase: P)...) {
-        stops = elements
-    }
-
-    subscript(at time: Double) -> P {
-        stops.last { $0.start <= time }?.phase ?? .start
-    }
-
-    private var stops: [(start: Double, phase: P)]
 }
 
 enum FadePhase: Int, Equatable {

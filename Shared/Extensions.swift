@@ -33,3 +33,14 @@ extension Double {
         clamped(between: 0, and: 1)
     }
 }
+
+extension Double {
+    var sigmoid: Double {
+        0.5 - 0.5 * cos(.pi * self)
+    }
+
+    var sigmoid2: Double {
+        let s = sigmoid
+        return s * s
+    }
+}
