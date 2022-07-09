@@ -23,14 +23,14 @@ struct WelcomeScreen: View {
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
             VideoClipView()
-                .transitionFade(time, timing: .init(start: 7, duration: 13), ramping: .simple(0.7))
+                .transitionFade(tag: 3)
             Text(verbatim: .welcome3)
-                .animated(using: MessageFade.self, tag: 3)
+                .animated(using: MessageFade.self, tag: 4)
                 .retro()
             TapView(perform: vm.tapBackground)
         }
         .finish(22, perform: vm.finished)
-        .animationRamping(.triangle(peak: 0.3))
+        .animationRamping(.simple(0.7))
         .apeLarge
     }
     
@@ -40,7 +40,8 @@ struct WelcomeScreen: View {
 
         let timings: [Int: Anim.Timing] = [1: .init(start: 1, duration: 2.5),
                                            2: .init(start: 4, duration: 2.5),
-                                           3: .init(start: 20, duration: 2.5)]
+                                           3: .init(start: 7, duration: 13),
+                                           4: .init(start: 20, duration: 2.5)]
     }
 }
 

@@ -20,7 +20,7 @@ struct MessagesView: View {
             }
         }
         .delay(vm.delay)
-        .animationRamping(.triangle(peak: 0.3))
+        .animationRamping(.simple(0.6))
     }
 
     private var timings: [Anim.Timing] {

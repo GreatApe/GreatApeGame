@@ -64,20 +64,49 @@ extension View {
     }
 
     @ViewBuilder
-    func transitionFade(_ time: Double, timing: Anim.Timing, ramping: Anim.Ramping, transition: AnyTransition = .opacity) -> some View {
-        let anim = Anim(timing: timing, ramping: ramping)
-        let phase = anim.phase(at: time)
-
-        if phase == .showing {
-            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: anim.durations.rampIn)),
-                                        removal: transition.animation(.easeOut(duration: anim.durations.rampOut))))
-        }
+    func transitionFade(tag: AnyHashable) -> some View {
+//        if Anim.Phase(time: time, timing: timing, ramping: ramping) == .showing {
+//            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramping.rampIn)),
+//                                        removal: transition.animation(.easeOut(duration: ramping.rampOut))))
+//        }
+        TransitioningView(tag: tag, content: self)
     }
 
     func animationRamping(_ ramping: Anim.Ramping) -> some View {
         environment(\.tStackRamping, ramping)
     }
 }
+
+struct TransitioningView<Content: View>: View {
+    @Environment(\.tStackTime) private var time
+    @Environment(\.tStackTimings) private var timings
+    @Environment(\.tStackRamping) private var ramping
+    let tag: AnyHashable
+    let content: Content
+
+    init(tag: AnyHashable, content: Content) {
+        self.tag = tag
+        self.content = content
+    }
+
+    var body: some View {
+        let timing = timings[tag, default: .init(start: 1)]
+        let phase: Anim.Phase = .init(time: time, timing: timing, ramping: ramping)
+//        let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
+
+        if phase == .showing {
+            content
+                .transition(.asymmetric(insertion: .scale.animation(.easeIn(duration: ramping.rampIn)),
+                                        removal: .scale.animation(.easeOut(duration: ramping.rampOut))))
+        }
+//        content
+//            .modifier(AnimatorType(phase: phase))
+//            .animation(.linear(duration: duration), value: phase)
+    }
+}
+
+
+
 
 protocol Animator: ViewModifier {
     init(phase: Anim.Phase)
@@ -97,10 +126,8 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
 
     var body: some View {
         let timing = timings[tag, default: .init(start: 1)]
-
-        let anim = Anim(timing: timing, ramping: ramping)
-        let phase = anim.phase(at: time)
-        let duration = phase == .showing ? anim.durations.rampIn : anim.durations.rampOut
+        let phase: Anim.Phase = .init(time: time, timing: timing, ramping: ramping)
+        let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
         content
             .modifier(AnimatorType(phase: phase))
             .animation(.linear(duration: duration), value: phase)
@@ -140,40 +167,7 @@ extension EnvironmentValues {
     }
 }
 
-struct Anim {
-    let timing: Timing
-    let ramping: Ramping
-    let durations: Durations
-
-    init(timing: Timing, ramping: Ramping) {
-        self.timing = timing
-        self.ramping = ramping
-        switch ramping {
-            case .absolute(let rampIn, let rampOut):
-                self.durations = .init(rampIn: rampIn, showing: timing.duration - rampIn - rampOut, rampOut: rampOut)
-            case .relative(let rampIn, let rampOut):
-                let total = timing.duration
-                self.durations = .init(rampIn: rampIn * total, showing: total * (1 - rampIn - rampOut), rampOut: total * rampOut)
-        }
-    }
-
-    func phase(at time: Double) -> Anim.Phase {
-        let startFadeOut = timing.start + durations.showing
-        switch time {
-            case ..<timing.start: return .before
-            case startFadeOut...: return .after
-            default: return .showing
-        }
-    }
-
-    struct Durations {
-        let rampIn: Double
-        let showing: Double
-        let rampOut: Double
-
-        var total: Double { rampIn + showing + rampOut }
-    }
-
+enum Anim {
     enum Phase: Equatable {
         case before
         case showing
@@ -184,6 +178,15 @@ struct Anim {
                 case .before: return -1
                 case .showing: return 0
                 case .after: return 1
+            }
+        }
+
+        init(time: Double, timing: Timing, ramping: Ramping) {
+            let startFadeOut = timing.start + timing.duration - ramping.rampOut
+            switch time {
+                case ..<timing.start: self = .before
+                case startFadeOut...: self = .after
+                default: self = .showing
             }
         }
     }
@@ -203,17 +206,13 @@ struct Anim {
         }
     }
 
-    enum Ramping {
-        case absolute(in: Double, out: Double)
-        case relative(in: Double, out: Double)
+    struct Ramping {
+        let rampIn: Double
+        let rampOut: Double
 
         static var standard: Ramping { .simple(0.1) }
-
-        static func simple(_ ramp: Double) -> Ramping { .absolute(in: ramp, out: ramp) }
-        static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .absolute(in: rampIn, out: rampOut) }
-
-        static func triangle(peak: Double = 0.5) -> Ramping { .relative(in: peak, out: 1 - peak) }
-        static func relative(rampIn: Double, rampOut: Double) -> Ramping { .relative(in: rampIn, out: rampOut) }
+        static func simple(_ ramp: Double) -> Ramping { .init(rampIn: ramp, rampOut: ramp) }
+        static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .init(rampIn: rampIn, rampOut: rampOut) }
     }
 }
 
