@@ -166,7 +166,7 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
         let overridingPhase: Anim.Phase? = nil
 
         let timing = timings[tag, default: .init(start: 1)]
-        let phase = overridingPhase ?? .init(time: time, timing: timing, ramping: ramping)
+        let phase = overridingPhase ?? .init(time: time, timing: timing)
 
         let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
         content
@@ -189,8 +189,8 @@ enum Anim {
             }
         }
 
-        init(time: Double, timing: Timing, ramping: Ramping) {
-            let startFadeOut = timing.start + timing.duration - ramping.rampOut
+        init(time: Double, timing: Timing) {
+            let startFadeOut = timing.start + timing.duration
             switch time {
                 case ..<timing.start: self = .before
                 case startFadeOut...: self = .after
@@ -231,12 +231,51 @@ enum Anim {
         static let defaultValue: [AnyHashable: Timing] = [:]
     }
 
+    fileprivate struct PhasesKey: EnvironmentKey {
+        static let defaultValue: [AnyHashable: Anim.Phase] = [:]
+    }
+
     fileprivate struct RampingKey: EnvironmentKey {
         static let defaultValue: Ramping = .standard
     }
 
     fileprivate struct TransitionKey: EnvironmentKey {
         static let defaultValue: AnyTransition = .opacity
+    }
+}
+
+extension EnvironmentValues {
+    var animTime: Double {
+        get { self[Anim.TimeKey.self] }
+        set { self[Anim.TimeKey.self] = newValue }
+    }
+}
+
+extension EnvironmentValues {
+    var animTimings: [AnyHashable: Anim.Timing] {
+        get { self[Anim.TimingsKey.self] }
+        set { self[Anim.TimingsKey.self] = newValue }
+    }
+}
+
+extension EnvironmentValues {
+    var animRamping: Anim.Ramping {
+        get { self[Anim.RampingKey.self] }
+        set { self[Anim.RampingKey.self] = newValue }
+    }
+}
+
+extension EnvironmentValues {
+    var animTransition: AnyTransition {
+        get { self[Anim.TransitionKey.self] }
+        set { self[Anim.TransitionKey.self] = newValue }
+    }
+}
+
+extension EnvironmentValues {
+    var animPhases: [AnyHashable: Anim.Phase] {
+        get { self[Anim.PhasesKey.self] }
+        set { self[Anim.PhasesKey.self] = newValue }
     }
 }
 
@@ -247,31 +286,6 @@ extension Anim.Phase: CustomStringConvertible {
             case .showing: return "Showing"
             case .after: return "After"
         }
-    }
-}
-
-extension EnvironmentValues {
-    var animTime: Double {
-        get { self[Anim.TimeKey.self] }
-        set { self[Anim.TimeKey.self] = newValue }
-    }
-}
-extension EnvironmentValues {
-    var animTimings: [AnyHashable: Anim.Timing] {
-        get { self[Anim.TimingsKey.self] }
-        set { self[Anim.TimingsKey.self] = newValue }
-    }
-}
-extension EnvironmentValues {
-    var animRamping: Anim.Ramping {
-        get { self[Anim.RampingKey.self] }
-        set { self[Anim.RampingKey.self] = newValue }
-    }
-}
-extension EnvironmentValues {
-    var animTransition: AnyTransition {
-        get { self[Anim.TransitionKey.self] }
-        set { self[Anim.TransitionKey.self] = newValue }
     }
 }
 
