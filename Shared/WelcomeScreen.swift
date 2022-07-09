@@ -24,6 +24,7 @@ struct WelcomeScreen: View {
                 .retro()
             VideoClipView()
                 .transitionFade(tag: 3)
+                .animationRamping(.simple(0.3))
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
