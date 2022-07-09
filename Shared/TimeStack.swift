@@ -168,9 +168,10 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     var body: some View {
         let phase = phases[tag] ?? .before
         let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
+        let delay = phase == .showing ? ramping.rampInDelay : 0
         content
             .modifier(AnimatorType(phase: phase))
-            .animation(.linear(duration: duration), value: phase)
+            .animation(.linear(duration: duration).delay(delay), value: phase)
     }
 }
 
@@ -216,10 +217,15 @@ enum Anim {
     struct Ramping {
         let rampIn: Double
         let rampOut: Double
+        let rampInDelay: Double
 
         static var standard: Ramping { .simple(0.1) }
-        static func simple(_ ramp: Double) -> Ramping { .init(rampIn: ramp, rampOut: ramp) }
-        static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .init(rampIn: rampIn, rampOut: rampOut) }
+        static func simple(_ ramp: Double) -> Ramping { .init(rampIn: ramp, rampOut: ramp, rampInDelay: 0) }
+        static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .init(rampIn: rampIn, rampOut: rampOut, rampInDelay: 0) }
+
+        func delayed(by delay: Double) -> Ramping {
+            .init(rampIn: rampIn, rampOut: rampOut, rampInDelay: rampInDelay + delay)
+        }
     }
 
     fileprivate struct PhasesKey: EnvironmentKey {
