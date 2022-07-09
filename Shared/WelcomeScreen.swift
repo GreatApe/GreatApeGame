@@ -15,7 +15,7 @@ struct WelcomeScreen: View {
     @State private var start: Date = .now
 
     var body: some View {
-        TStack(vm.timings) { time in
+        TimeStack(vm.timings) { time in
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()

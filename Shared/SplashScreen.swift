@@ -11,7 +11,7 @@ struct SplashScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TStack { time in
+        TimeStack { time in
             let phase = LogoPhase(at: time)
             ZStack {
                 UnfairLogoView(phase: phase)

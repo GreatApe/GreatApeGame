@@ -11,7 +11,7 @@ struct MessagesView: View {
     let vm: ViewModel
 
     var body: some View {
-        TStack(timings) { time in
+        TimeStack(timings) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
                     .apeLarge

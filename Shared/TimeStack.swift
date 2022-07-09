@@ -1,5 +1,5 @@
 //
-//  TStack.swift
+//  TimeStack.swift
 //  GreatApeGame (iOS)
 //
 //  Created by Gustaf Kugelberg on 06/07/2022.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TStack<Content: View>: View {
+struct TimeStack<Content: View>: View {
     @State private var start: Date = .now
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
