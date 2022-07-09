@@ -15,7 +15,7 @@ struct WelcomeScreen: View {
     @State private var start: Date = .now
 
     var body: some View {
-        TapStack(timings: vm.timings) { time in
+        TStack(vm.timings) { time in
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
@@ -23,25 +23,24 @@ struct WelcomeScreen: View {
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
             VideoClipView()
-                .transitionFade(time, timing: .simple(duration: 13, ramp: 0.7).start(at: 7))
+                .transitionFade(time, timing: .init(start: 7, duration: 13), ramping: .simple(0.7))
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 3)
                 .retro()
             TapView(perform: vm.tapBackground)
         }
         .finish(22, perform: vm.finished)
+        .animationRamping(.triangle(peak: 0.3))
         .apeLarge
     }
-
+    
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
 
-        let timing: Timing = .simple(duration: 2.5, ramp: 0.6)
-        let startTimes: [Int: Double] = [1: 1,
-                                         2: 4,
-                                         3: 20]
-        var timings: [Int: Timing] { startTimes.mapValues(timing.start) }
+        let timings: [Int: Anim.Timing] = [1: .init(start: 1, duration: 2.5),
+                                           2: .init(start: 4, duration: 2.5),
+                                           3: .init(start: 20, duration: 2.5)]
     }
 }
 

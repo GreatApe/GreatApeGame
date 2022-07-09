@@ -12,63 +12,27 @@ struct TStack<Content: View>: View {
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
     private var delay: Double = 0
+    var timings: [AnyHashable: Anim.Timing]
     var content: (Double) -> Content
 
-    init(@ViewBuilder content: @escaping (Double) -> Content) {
-        self.content = content
-    }
-
-    var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.1)) { context in
-            let time = context.date.timeIntervalSince(start) - epsilon - delay
-            ZStack {
-                content(time)
-                    .environment(\.tStackTime, time)
-                    .onChange(of: time) { t in
-                        if t > finishTime {
-                            finished()
-                        }
-                    }
-            }
-        }
-    }
-
-    func finish(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
-        var result = self
-        result.finished = finished
-        result.finishTime = finishTime
-        return result
-    }
-
-    func delay(_ delay: Double) -> Self {
-        var result = self
-        result.delay = delay
-        return result
-    }
-
-    private let epsilon: Double = 0.01
-}
-
-struct TapStack<Content: View>: View {
-    @State private var start: Date = .now
-    private var finishTime: Double = .infinity
-    private var finished: () -> Void = { }
-    private var delay: Double = 0
-    var timings: [AnyHashable: Timing]
-    var content: (Double) -> Content
-
-    init<TagType: Hashable>(timings: [TagType: Timing] = [:], @ViewBuilder content: @escaping (Double) -> Content) {
+    init<TagType: Hashable>(_ timings: [TagType: Anim.Timing], @ViewBuilder content: @escaping (Double) -> Content) {
         self.timings = timings
         self.content = content
     }
 
+    init(_ timings: [Anim.Timing] = [], @ViewBuilder content: @escaping (Double) -> Content) {
+        let keysAndValues = timings.enumerated().map { ($0.offset, $0.element) }
+        self.timings = .init(uniqueKeysWithValues: keysAndValues)
+        self.content = content
+    }
+
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.1)) { context in
             let time = context.date.timeIntervalSince(start) - epsilon - delay
             ZStack {
                 content(time)
                     .environment(\.tStackTime, time)
-                    .environment(\.animationTimings, timings)
+                    .environment(\.tStackTimings, timings)
                     .onChange(of: time) { t in
                         if t > finishTime {
                             finished()
@@ -94,44 +58,52 @@ struct TapStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
-
 extension View {
-    func animated<AnimatorType: Animator, TagType: Hashable>(using animator: AnimatorType.Type, tag: TagType) -> some View {
+    func animated<AnimatorType: Animator>(using animator: AnimatorType.Type, tag: AnyHashable) -> AnimatedView<AnimatorType, Self> {
         AnimatedView(animator: animator, tag: tag, content: self)
     }
 
     @ViewBuilder
-    func transitionFade(_ time: Double, timing: Timing, transition: AnyTransition = .opacity) -> some View {
-        let phase: Timing.Phase = timing.phase(at: time)
-        if phase == .showing {
-            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: timing.rampIn)),
-                                        removal: transition.animation(.easeOut(duration: timing.rampOut))))
-        }
+    func transitionFade(_ time: Double, timing: Anim.Timing, ramping: Anim.Ramping, transition: AnyTransition = .opacity) -> some View {
+        let anim = Anim(timing: timing, ramping: ramping)
+        let phase = anim.phase(at: time)
 
+        if phase == .showing {
+            self.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: anim.durations.rampIn)),
+                                        removal: transition.animation(.easeOut(duration: anim.durations.rampOut))))
+        }
+    }
+
+    func animationRamping(_ ramping: Anim.Ramping) -> some View {
+        environment(\.tStackRamping, ramping)
     }
 }
 
 protocol Animator: ViewModifier {
-    init(phase: Timing.Phase)
+    init(phase: Anim.Phase)
 }
 
-private struct AnimatedView<Content: View, AnimatorType: Animator, TagType: Hashable>: View {
+struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     @Environment(\.tStackTime) private var time
-    @Environment(\.animationTimings) private var timings
-    let tag: TagType
+    @Environment(\.tStackTimings) private var timings
+    @Environment(\.tStackRamping) private var ramping
+    let tag: AnyHashable
     let content: Content
 
-    init(animator: AnimatorType.Type, tag: TagType, content: Content) {
+    init(animator: AnimatorType.Type, tag: AnyHashable, content: Content) {
         self.tag = tag
         self.content = content
     }
 
     var body: some View {
-        let timing = timings[.init(tag), default: .simple(duration: 1)]
-        let phase = timing.phase(at: time)
+        let timing = timings[tag, default: .init(start: 1)]
+
+        let anim = Anim(timing: timing, ramping: ramping)
+        let phase = anim.phase(at: time)
+        let duration = phase == .showing ? anim.durations.rampIn : anim.durations.rampOut
         content
             .modifier(AnimatorType(phase: phase))
-            .animation(.linear(duration: phase == .showing ? timing.rampIn : timing.rampOut), value: phase)
+            .animation(.linear(duration: duration), value: phase)
     }
 }
 
@@ -146,73 +118,112 @@ extension EnvironmentValues {
     }
 }
 
-private struct AnimationTimingsKey: EnvironmentKey {
-    static let defaultValue: [AnyHashable: Timing] = [:]
+private struct TStackTimingsKey: EnvironmentKey {
+    static let defaultValue: [AnyHashable: Anim.Timing] = [:]
 }
 
 extension EnvironmentValues {
-    var animationTimings: [AnyHashable: Timing] {
-        get { self[AnimationTimingsKey.self] }
-        set { self[AnimationTimingsKey.self] = newValue }
+    var tStackTimings: [AnyHashable: Anim.Timing] {
+        get { self[TStackTimingsKey.self] }
+        set { self[TStackTimingsKey.self] = newValue }
     }
 }
 
-struct Timing {
-    let start: Double
-    let duration: Double
-    let rampIn: Double
-    let rampOut: Double
+private struct TStackRampingKey: EnvironmentKey {
+    static let defaultValue: Anim.Ramping = .standard
+}
 
-    static func simple(duration: Double, ramp: Double = 0.1) -> Self {
-        .init(start: 0, duration: duration, rampIn: ramp, rampOut: ramp)
+extension EnvironmentValues {
+    var tStackRamping: Anim.Ramping {
+        get { self[TStackRampingKey.self] }
+        set { self[TStackRampingKey.self] = newValue }
+    }
+}
+
+struct Anim {
+    let timing: Timing
+    let ramping: Ramping
+    let durations: Durations
+
+    init(timing: Timing, ramping: Ramping) {
+        self.timing = timing
+        self.ramping = ramping
+        switch ramping {
+            case .absolute(let rampIn, let rampOut):
+                self.durations = .init(rampIn: rampIn, showing: timing.duration - rampIn - rampOut, rampOut: rampOut)
+            case .relative(let rampIn, let rampOut):
+                let total = timing.duration
+                self.durations = .init(rampIn: rampIn * total, showing: total * (1 - rampIn - rampOut), rampOut: total * rampOut)
+        }
     }
 
-    static func inOnly(fadeIn: Double = 0.1) -> Self {
-        return .init(start: 0, duration: .infinity, rampIn: fadeIn, rampOut: 0)
-    }
-
-    static func triangle(duration: Double, relativePeak: Double) -> Self  {
-        .init(start: 0, duration: duration, rampIn: relativePeak * duration, rampOut: (1 - relativePeak) * duration)
-    }
-
-    func stay(_ active: Bool = true) -> Self {
-        guard active else { return self }
-        return .init(start: start, duration: .infinity, rampIn: rampIn, rampOut: 0)
-    }
-
-    func start(at time: Double) -> Self {
-        .init(start: time, duration: duration, rampIn: rampIn, rampOut: rampOut)
-    }
-
-    fileprivate func phase(at time: Double) -> Phase {
-        let startFadeOut = start + duration - rampOut
+    func phase(at time: Double) -> Anim.Phase {
+        let startFadeOut = timing.start + durations.showing
         switch time {
-            case ..<start: return .before
+            case ..<timing.start: return .before
             case startFadeOut...: return .after
             default: return .showing
         }
     }
 
-    enum Phase: Double, Equatable {
-        case before = -1
-        case showing = 0
-        case after = 1
+    struct Durations {
+        let rampIn: Double
+        let showing: Double
+        let rampOut: Double
+
+        var total: Double { rampIn + showing + rampOut }
+    }
+
+    enum Phase: Equatable {
+        case before
+        case showing
+        case after
+
+        var x: Double {
+            switch self {
+                case .before: return -1
+                case .showing: return 0
+                case .after: return 1
+            }
+        }
+    }
+
+    struct Timing {
+        let start: Double
+        let duration: Double
+
+        init(start: Double, duration: Double = .infinity) {
+            self.start = start
+            self.duration = duration
+        }
+
+        init(start: Double, end: Double) {
+            self.start = start
+            self.duration = end - start
+        }
+    }
+
+    enum Ramping {
+        case absolute(in: Double, out: Double)
+        case relative(in: Double, out: Double)
+
+        static var standard: Ramping { .simple(0.1) }
+
+        static func simple(_ ramp: Double) -> Ramping { .absolute(in: ramp, out: ramp) }
+        static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .absolute(in: rampIn, out: rampOut) }
+
+        static func triangle(peak: Double = 0.5) -> Ramping { .relative(in: peak, out: 1 - peak) }
+        static func relative(rampIn: Double, rampOut: Double) -> Ramping { .relative(in: rampIn, out: rampOut) }
     }
 }
 
 // MARK: Message fade
 
-extension View {
-    func messageFade<TagType: Hashable>(_ tag: TagType) -> some View {
-        animated(using: MessageFade.self, tag: tag)
-    }
-}
-
 struct MessageFade: Animator, Animatable {
     private var x: Double
 
-    init(phase: Timing.Phase) {
-        self.x = phase.rawValue
+    init(phase: Anim.Phase) {
+        self.x = phase.x
     }
 
     var animatableData: Double {
@@ -241,17 +252,11 @@ struct MessageFade: Animator, Animatable {
 
 // MARK: Simple fade
 
-extension View {
-    func simpleFade<TagType: Hashable>(_ tag: TagType) -> some View {
-        animated(using: SimpleFade.self, tag: tag)
-    }
-}
-
 struct SimpleFade: Animator, Animatable {
     private var x: Double
 
-    init(phase: Timing.Phase) {
-        self.x = phase.rawValue
+    init(phase: Anim.Phase) {
+        self.x = phase.x
     }
 
     var animatableData: Double {

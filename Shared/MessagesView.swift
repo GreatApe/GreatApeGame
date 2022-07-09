@@ -11,7 +11,7 @@ struct MessagesView: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(timings: timings) { time in
+        TStack(timings) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
                     .apeLarge
@@ -20,23 +20,18 @@ struct MessagesView: View {
             }
         }
         .delay(vm.delay)
+        .animationRamping(.triangle(peak: 0.3))
     }
 
-    private var timings: [Int: Timing] {
-        var result: [Int: Timing] = [:]
-
-        for index in vm.strings.indices {
-            result[index] = .triangle(duration: vm.timePerMessage, relativePeak: 0.3)
-                .start(at: vm.timePerMessage * Double(index))
-                .stay(vm.stay && index == vm.strings.endIndex - 1)
+    private var timings: [Anim.Timing] {
+        vm.strings.indices.map { index in
+            let stay = vm.stay && index == vm.strings.endIndex - 1
+            return .init(start: vm.timePerMessage * Double(index), duration: stay ? .infinity : vm.timePerMessage)
         }
-        
-        return result
     }
 
     typealias ViewModel = Messages
 }
-
 
 extension Optional {
     var asArray: [Wrapped] {
@@ -47,11 +42,12 @@ extension Optional {
 struct Messages: Equatable {
     let strings: [String]
     var delay: Double = 0
-    var timePerMessage: Double = 2
+    var timePerMessage: Double = 2.5
     var stay: Bool = false
 
     static func success() -> Self {
-        .init(strings: String.successStrings.randomElement().asArray)
+        .init(strings: String.successStrings)
+//        .init(strings: String.successStrings.randomElement().asArray)
     }
 
     static let tryAgain: Self = .init(strings: [.tryAgain])
