@@ -9,7 +9,6 @@ import SwiftUI
 
 struct TimeStack<Content: View>: View {
     @State private var start: Date = .now
-    @State private var phases: [AnyHashable: Anim.Phase] = [:]
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
     private var delay: Double = 0
@@ -32,12 +31,8 @@ struct TimeStack<Content: View>: View {
             let time = context.date.timeIntervalSince(start) - epsilon - delay
             ZStack {
                 content(time)
-                    .environment(\.animPhases, phases)
-                    .onAppear {
-                        phases = timings.mapValues { _ in .before }
-                    }
+                    .environment(\.animPhases, timings.mapValues { .init(time: time, timing: $0) })
                     .onChange(of: time) { t in
-                        phases = timings.mapValues { timing in .init(time: t, timing: timing) }
                         if t > finishTime {
                             finished()
                         }

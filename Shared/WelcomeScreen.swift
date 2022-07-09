@@ -10,7 +10,7 @@ import AVKit
 
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
-struct WelcomeScreen__: View {
+struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
@@ -45,7 +45,7 @@ struct WelcomeScreen__: View {
     }
 }
 
-struct WelcomeScreen: View {
+struct WelcomeScreen__: View {
     let vm: ViewModel
 
     var body: some View {
