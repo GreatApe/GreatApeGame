@@ -14,7 +14,7 @@ struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(vm.timings) { time in
+        TimeStack(timings: vm.timings) { time in
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
@@ -56,6 +56,9 @@ struct WelcomeScreen__: View {
             Text(verbatim: .welcome2)
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
+            VideoClipView()
+                .transitionFade(tag: 3)
+                .animationRamping(.simple(0.3).delayed(by: 0.6))
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()

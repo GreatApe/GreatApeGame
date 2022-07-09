@@ -15,12 +15,12 @@ struct TimeStack<Content: View>: View {
     var timings: [AnyHashable: Anim.Timing]
     var content: (Double) -> Content
 
-    init<TagType: Hashable>(_ timings: [TagType: Anim.Timing], @ViewBuilder content: @escaping (Double) -> Content) {
+    init<TagType: Hashable>(timings: [TagType: Anim.Timing], @ViewBuilder content: @escaping (Double) -> Content) {
         self.timings = timings
         self.content = content
     }
 
-    init(_ timings: [Anim.Timing] = [], @ViewBuilder content: @escaping (Double) -> Content) {
+    init(timings: [Anim.Timing] = [], @ViewBuilder content: @escaping (Double) -> Content) {
         let keysAndValues = timings.enumerated().map { ($0.offset, $0.element) }
         self.timings = .init(uniqueKeysWithValues: keysAndValues)
         self.content = content
@@ -337,7 +337,7 @@ struct TransitionAnimator: Animator {
 
     func body(content: Content) -> some View {
         if showing {
-            content.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramping.rampIn)),
+            content.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramping.rampIn).delay(ramping.rampInDelay)),
                                            removal: transition.animation(.easeOut(duration: ramping.rampOut))))
         }
     }
