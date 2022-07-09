@@ -58,6 +58,75 @@ struct TimeStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
+struct TapStack<Content: View>: View {
+    @State private var currentTag: AnyHashable = nil as Int?
+    @State private var tagPhases: [AnyHashable: Anim.Phase] = [:]
+
+    private var finished: () -> Void = { }
+    private let order: [AnyHashable]
+    private let content: Content
+
+    init<TagType: Hashable>(_ order: [TagType], @ViewBuilder content: () -> Content) {
+        self.order = order
+        self.content = content()
+    }
+
+    init(@ViewBuilder content: () -> Content) {
+        self.order = Array(0..<4)
+        self.content = content()
+    }
+
+    var body: some View {
+        ZStack {
+            content
+            TapView(perform: nextTag)
+        }
+        .onAppear(perform: setupTags)
+    }
+
+    func finish(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
+        var result = self
+        result.finished = finished
+        return result
+    }
+
+    private func setupTags() {
+        guard let first = order.first else { return }
+        currentTag = first
+        tagPhases = .init(uniqueKeysWithValues: order.map { ($0, $0 == first ? .showing : .before) })
+
+        logTags()
+    }
+
+    private func nextTag() {
+        tagPhases[currentTag] = .after
+        guard let current = order.firstIndex(of: currentTag) else { return }
+        guard order.indices.contains(current + 1) else {
+            logTags()
+
+            finished()
+            currentTag = nil as Int?
+            print("DONE at #\(current + 1)")
+            return
+        }
+
+        currentTag = order[current + 1]
+        tagPhases[currentTag] = .showing
+
+        logTags()
+    }
+
+    private func logTags() {
+        print("-- \(currentTag) --")
+        tagPhases.compactMap { tag, phase -> (tag: Int, phase: Anim.Phase)? in
+            guard let intTag = tag.base as? Int else { return nil }
+            return (intTag, phase)
+        }
+        .sorted { $0.tag < $1.tag }
+        .forEach { print("\($0.tag): \($0.phase)") }
+    }
+}
+
 extension View {
     func faded(tag: AnyHashable) -> some View {
         AnimatedView(animator: SimpleFade.self, tag: tag, content: self)
@@ -85,8 +154,8 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     @Environment(\.animTime) private var time
     @Environment(\.animTimings) private var timings
     @Environment(\.animRamping) private var ramping
-    let tag: AnyHashable
-    let content: Content
+    private let tag: AnyHashable
+    private let content: Content
 
     init(animator: AnimatorType.Type, tag: AnyHashable, content: Content) {
         self.tag = tag
@@ -94,8 +163,11 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     }
 
     var body: some View {
+        let overridingPhase: Anim.Phase? = nil
+
         let timing = timings[tag, default: .init(start: 1)]
-        let phase: Anim.Phase = .init(time: time, timing: timing, ramping: ramping)
+        let phase = overridingPhase ?? .init(time: time, timing: timing, ramping: ramping)
+
         let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
         content
             .modifier(AnimatorType(phase: phase))
@@ -165,6 +237,16 @@ enum Anim {
 
     fileprivate struct TransitionKey: EnvironmentKey {
         static let defaultValue: AnyTransition = .opacity
+    }
+}
+
+extension Anim.Phase: CustomStringConvertible {
+    var description: String {
+        switch self {
+            case .before: return "Before"
+            case .showing: return "Showing"
+            case .after: return "After"
+        }
     }
 }
 

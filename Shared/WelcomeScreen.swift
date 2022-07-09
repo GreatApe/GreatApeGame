@@ -10,9 +10,8 @@ import AVKit
 
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
-struct WelcomeScreen: View {
+struct WelcomeScreen__: View {
     let vm: ViewModel
-    @State private var start: Date = .now
 
     var body: some View {
         TimeStack(vm.timings) { time in
@@ -43,6 +42,37 @@ struct WelcomeScreen: View {
                                            2: .init(start: 4, duration: 2.5),
                                            3: .init(start: 7, duration: 13),
                                            4: .init(start: 20, duration: 2.5)]
+    }
+}
+
+struct WelcomeScreen: View {
+    let vm: ViewModel
+
+    var body: some View {
+        TapStack {
+            Text(verbatim: .welcome1)
+                .animated(using: MessageFade.self, tag: 1)
+                .retro()
+            Text(verbatim: .welcome2)
+                .animated(using: MessageFade.self, tag: 2)
+                .retro()
+            VideoClipView()
+                .transitionFade(tag: 3)
+                .animationRamping(.simple(0.3))
+            Text(verbatim: .welcome3)
+                .animated(using: MessageFade.self, tag: 4)
+                .retro()
+        }
+        .finish(22, perform: vm.finished)
+        .animationRamping(.simple(0.7))
+        .apeLarge
+    }
+
+    struct ViewModel {
+        let tapBackground: () -> Void
+        let finished: () -> Void
+
+        let order: [Int] = [1, 2, 3, 4]
     }
 }
 
