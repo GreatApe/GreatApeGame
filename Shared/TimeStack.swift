@@ -55,24 +55,28 @@ struct TapStack<Content: View>: View {
     @State private var currentTag: AnyHashable = nil as Int?
 
     private var finished: () -> Void = { }
+    private let tappable: Bool
     private let order: [AnyHashable]
     private let content: Content
 
-    init<TagType: Hashable>(order: [TagType], startEmpty: Bool = false, @ViewBuilder content: () -> Content) {
+    init<TagType: Hashable>(order: [TagType], startEmpty: Bool = false, tappable: Bool = false, @ViewBuilder content: () -> Content) {
+        self.tappable = tappable
         self.order = startEmpty ? [nil as TagType?] + order : order
         self.content = content()
     }
 
-    init(@ViewBuilder content: () -> Content) {
-        self.order = Array(0..<4)
+    init(tappable: Bool = false, @ViewBuilder content: () -> Content) {
+        self.tappable = tappable
+        self.order = Array(0..<1000)
         self.content = content()
     }
 
     var body: some View {
         ZStack {
-            content
-                .environment(\.animPhases, phases)
             TapView(perform: nextTag)
+            content
+                .allowsHitTesting(tappable)
+                .environment(\.animPhases, phases)
         }
         .onAppear(perform: setupTags)
     }
