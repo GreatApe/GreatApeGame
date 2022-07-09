@@ -11,7 +11,6 @@ struct TimeStack<Content: View>: View {
     @State private var start: Date = .now
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
-    private var delay: Double = 0
     var timings: [AnyHashable: Anim.Timing]
     var content: (Double) -> Content
 
@@ -28,7 +27,7 @@ struct TimeStack<Content: View>: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.1)) { context in
-            let time = context.date.timeIntervalSince(start) - epsilon - delay
+            let time = context.date.timeIntervalSince(start) - epsilon
             ZStack {
                 content(time)
                     .environment(\.animPhases, timings.mapValues { .init(time: time, timing: $0) })
@@ -45,12 +44,6 @@ struct TimeStack<Content: View>: View {
         var result = self
         result.finished = finished
         result.finishTime = finishTime
-        return result
-    }
-
-    func delay(_ delay: Double) -> Self {
-        var result = self
-        result.delay = delay
         return result
     }
 

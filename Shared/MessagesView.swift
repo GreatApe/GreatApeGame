@@ -19,14 +19,13 @@ struct MessagesView: View {
                     .retro()
             }
         }
-        .delay(vm.delay)
         .animationRamping(.simple(0.6))
     }
 
     private var timings: [Anim.Timing] {
         vm.strings.indices.map { index in
             let stay = vm.stay && index == vm.strings.endIndex - 1
-            return .init(start: vm.timePerMessage * Double(index), duration: stay ? .infinity : vm.timePerMessage)
+            return .init(start: vm.timePerMessage * Double(index) + vm.delay, duration: stay ? .infinity : vm.timePerMessage)
         }
     }
 
