@@ -92,20 +92,17 @@ struct TapStack<Content: View>: View {
     }
 
     private func nextTag() {
+        defer { logTags() }
         phases[currentTag] = .after
         guard let current = order.firstIndex(of: currentTag) else { return }
         guard order.indices.contains(current + 1) else {
-            logTags()
-
             finished()
             currentTag = nil as Int?
-            print("DONE at #\(current + 1)")
             return
         }
 
         currentTag = order[current + 1]
         phases[currentTag] = .showing
-        logTags()
     }
 
     private func logTags() {
