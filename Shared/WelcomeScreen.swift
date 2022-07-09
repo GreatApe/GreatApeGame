@@ -10,7 +10,7 @@ import AVKit
 
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
-struct WelcomeScreen__: View {
+struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
@@ -29,7 +29,7 @@ struct WelcomeScreen__: View {
                 .retro()
             TapView(perform: vm.tapBackground)
         }
-        .finish(22, perform: vm.finished)
+        .finish(23, perform: vm.finished)
         .animationRamping(.simple(0.7))
         .apeLarge
     }
@@ -38,32 +38,29 @@ struct WelcomeScreen__: View {
         let tapBackground: () -> Void
         let finished: () -> Void
 
-        let timings: [Int: Anim.Timing] = [1: .init(start: 1, duration: 2.5),
-                                           2: .init(start: 4, duration: 2.5),
+        let timings: [Int: Anim.Timing] = [1: .init(start: 1, duration: 2),
+                                           2: .init(start: 4, duration: 2),
                                            3: .init(start: 7, duration: 13),
-                                           4: .init(start: 20, duration: 2.5)]
+                                           4: .init(start: 20, duration: 2)]
     }
 }
 
-struct WelcomeScreen: View {
+struct WelcomeScreen__: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack {
+        TapStack(order: vm.order, startEmpty: true) {
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
             Text(verbatim: .welcome2)
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
-            VideoClipView()
-                .transitionFade(tag: 3)
-                .animationRamping(.simple(0.3))
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
         }
-        .finish(22, perform: vm.finished)
+        .finish(perform: vm.finished)
         .animationRamping(.simple(0.7))
         .apeLarge
     }
@@ -72,7 +69,7 @@ struct WelcomeScreen: View {
         let tapBackground: () -> Void
         let finished: () -> Void
 
-        let order: [Int] = [1, 2, 3, 4]
+        let order: [Int] = [1, 2, 4]
     }
 }
 

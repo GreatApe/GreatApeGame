@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TimeStack<Content: View>: View {
     @State private var start: Date = .now
+    @State private var phases: [AnyHashable: Anim.Phase] = [:]
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
     private var delay: Double = 0
@@ -31,9 +32,12 @@ struct TimeStack<Content: View>: View {
             let time = context.date.timeIntervalSince(start) - epsilon - delay
             ZStack {
                 content(time)
-                    .environment(\.animTime, time)
-                    .environment(\.animTimings, timings)
+                    .environment(\.animPhases, phases)
+                    .onAppear {
+                        phases = timings.mapValues { _ in .before }
+                    }
                     .onChange(of: time) { t in
+                        phases = timings.mapValues { timing in .init(time: t, timing: timing) }
                         if t > finishTime {
                             finished()
                         }
@@ -59,15 +63,15 @@ struct TimeStack<Content: View>: View {
 }
 
 struct TapStack<Content: View>: View {
+    @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: AnyHashable = nil as Int?
-    @State private var tagPhases: [AnyHashable: Anim.Phase] = [:]
 
     private var finished: () -> Void = { }
     private let order: [AnyHashable]
     private let content: Content
 
-    init<TagType: Hashable>(_ order: [TagType], @ViewBuilder content: () -> Content) {
-        self.order = order
+    init<TagType: Hashable>(order: [TagType], startEmpty: Bool = false, @ViewBuilder content: () -> Content) {
+        self.order = startEmpty ? [nil as TagType?] + order : order
         self.content = content()
     }
 
@@ -79,12 +83,13 @@ struct TapStack<Content: View>: View {
     var body: some View {
         ZStack {
             content
+                .environment(\.animPhases, phases)
             TapView(perform: nextTag)
         }
         .onAppear(perform: setupTags)
     }
 
-    func finish(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
+    func finish(perform finished: @escaping () -> Void) -> Self {
         var result = self
         result.finished = finished
         return result
@@ -93,13 +98,13 @@ struct TapStack<Content: View>: View {
     private func setupTags() {
         guard let first = order.first else { return }
         currentTag = first
-        tagPhases = .init(uniqueKeysWithValues: order.map { ($0, $0 == first ? .showing : .before) })
+        phases = .init(uniqueKeysWithValues: order.map { ($0, $0 == first ? .showing : .before) })
 
         logTags()
     }
 
     private func nextTag() {
-        tagPhases[currentTag] = .after
+        phases[currentTag] = .after
         guard let current = order.firstIndex(of: currentTag) else { return }
         guard order.indices.contains(current + 1) else {
             logTags()
@@ -111,14 +116,13 @@ struct TapStack<Content: View>: View {
         }
 
         currentTag = order[current + 1]
-        tagPhases[currentTag] = .showing
-
+        phases[currentTag] = .showing
         logTags()
     }
 
     private func logTags() {
         print("-- \(currentTag) --")
-        tagPhases.compactMap { tag, phase -> (tag: Int, phase: Anim.Phase)? in
+        phases.compactMap { tag, phase -> (tag: Int, phase: Anim.Phase)? in
             guard let intTag = tag.base as? Int else { return nil }
             return (intTag, phase)
         }
@@ -151,8 +155,7 @@ protocol Animator: ViewModifier {
 }
 
 struct AnimatedView<AnimatorType: Animator, Content: View>: View {
-    @Environment(\.animTime) private var time
-    @Environment(\.animTimings) private var timings
+    @Environment(\.animPhases) private var phases
     @Environment(\.animRamping) private var ramping
     private let tag: AnyHashable
     private let content: Content
@@ -163,11 +166,7 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     }
 
     var body: some View {
-        let overridingPhase: Anim.Phase? = nil
-
-        let timing = timings[tag, default: .init(start: 1)]
-        let phase = overridingPhase ?? .init(time: time, timing: timing)
-
+        let phase = phases[tag] ?? .before
         let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
         content
             .modifier(AnimatorType(phase: phase))
@@ -223,14 +222,6 @@ enum Anim {
         static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .init(rampIn: rampIn, rampOut: rampOut) }
     }
 
-    fileprivate struct TimeKey: EnvironmentKey {
-        static let defaultValue: Double = 0
-    }
-
-    fileprivate struct TimingsKey: EnvironmentKey {
-        static let defaultValue: [AnyHashable: Timing] = [:]
-    }
-
     fileprivate struct PhasesKey: EnvironmentKey {
         static let defaultValue: [AnyHashable: Anim.Phase] = [:]
     }
@@ -245,16 +236,9 @@ enum Anim {
 }
 
 extension EnvironmentValues {
-    var animTime: Double {
-        get { self[Anim.TimeKey.self] }
-        set { self[Anim.TimeKey.self] = newValue }
-    }
-}
-
-extension EnvironmentValues {
-    var animTimings: [AnyHashable: Anim.Timing] {
-        get { self[Anim.TimingsKey.self] }
-        set { self[Anim.TimingsKey.self] = newValue }
+    var animPhases: [AnyHashable: Anim.Phase] {
+        get { self[Anim.PhasesKey.self] }
+        set { self[Anim.PhasesKey.self] = newValue }
     }
 }
 
@@ -269,13 +253,6 @@ extension EnvironmentValues {
     var animTransition: AnyTransition {
         get { self[Anim.TransitionKey.self] }
         set { self[Anim.TransitionKey.self] = newValue }
-    }
-}
-
-extension EnvironmentValues {
-    var animPhases: [AnyHashable: Anim.Phase] {
-        get { self[Anim.PhasesKey.self] }
-        set { self[Anim.PhasesKey.self] = newValue }
     }
 }
 
