@@ -49,9 +49,55 @@ struct TStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
+struct TapStack<Content: View>: View {
+    @State private var start: Date = .now
+    private var finishTime: Double = .infinity
+    private var finished: () -> Void = { }
+    private var delay: Double = 0
+    var timings: [AnyHashable: Timing]
+    var content: (Double) -> Content
+
+    init<TagType: Hashable>(timings: [TagType: Timing] = [:], @ViewBuilder content: @escaping (Double) -> Content) {
+        self.timings = timings
+        self.content = content
+    }
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 0.1)) { context in
+            let time = context.date.timeIntervalSince(start) - epsilon - delay
+            ZStack {
+                content(time)
+                    .environment(\.tStackTime, time)
+                    .environment(\.animationTimings, timings)
+                    .onChange(of: time) { t in
+                        if t > finishTime {
+                            finished()
+                        }
+                    }
+            }
+        }
+    }
+
+    func finish(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
+        var result = self
+        result.finished = finished
+        result.finishTime = finishTime
+        return result
+    }
+
+    func delay(_ delay: Double) -> Self {
+        var result = self
+        result.delay = delay
+        return result
+    }
+
+    private let epsilon: Double = 0.01
+}
+
+
 extension View {
-    func animated<AnimatorType: Animator>(using animator: AnimatorType.Type, timing: Timing) -> some View {
-        AnimatedView(timing: timing, animator: animator, content: self)
+    func animated<AnimatorType: Animator, TagType: Hashable>(using animator: AnimatorType.Type, tag: TagType) -> some View {
+        AnimatedView(animator: animator, tag: tag, content: self)
     }
 
     @ViewBuilder
@@ -69,17 +115,19 @@ protocol Animator: ViewModifier {
     init(phase: Timing.Phase)
 }
 
-private struct AnimatedView<Content: View, AnimatorType: Animator>: View {
+private struct AnimatedView<Content: View, AnimatorType: Animator, TagType: Hashable>: View {
     @Environment(\.tStackTime) private var time
+    @Environment(\.animationTimings) private var timings
+    let tag: TagType
     let content: Content
-    let timing: Timing
 
-    init(timing: Timing, animator: AnimatorType.Type, content: Content) {
-        self.timing = timing
+    init(animator: AnimatorType.Type, tag: TagType, content: Content) {
+        self.tag = tag
         self.content = content
     }
 
     var body: some View {
+        let timing = timings[.init(tag), default: .simple(duration: 1)]
         let phase = timing.phase(at: time)
         content
             .modifier(AnimatorType(phase: phase))
@@ -95,6 +143,17 @@ extension EnvironmentValues {
     var tStackTime: Double {
         get { self[TStackTimeKey.self] }
         set { self[TStackTimeKey.self] = newValue }
+    }
+}
+
+private struct AnimationTimingsKey: EnvironmentKey {
+    static let defaultValue: [AnyHashable: Timing] = [:]
+}
+
+extension EnvironmentValues {
+    var animationTimings: [AnyHashable: Timing] {
+        get { self[AnimationTimingsKey.self] }
+        set { self[AnimationTimingsKey.self] = newValue }
     }
 }
 
@@ -144,8 +203,8 @@ struct Timing {
 // MARK: Message fade
 
 extension View {
-    func messageFade(_ timing: Timing) -> some View {
-        animated(using: MessageFade.self, timing: timing)
+    func messageFade<TagType: Hashable>(_ tag: TagType) -> some View {
+        animated(using: MessageFade.self, tag: tag)
     }
 }
 
@@ -183,8 +242,8 @@ struct MessageFade: Animator, Animatable {
 // MARK: Simple fade
 
 extension View {
-    func simpleFade(_ timing: Timing) -> some View {
-        animated(using: SimpleFade.self, timing: timing)
+    func simpleFade<TagType: Hashable>(_ tag: TagType) -> some View {
+        animated(using: SimpleFade.self, tag: tag)
     }
 }
 

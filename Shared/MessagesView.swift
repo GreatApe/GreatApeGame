@@ -11,21 +11,27 @@ struct MessagesView: View {
     let vm: ViewModel
 
     var body: some View {
-        TStack { time in
+        TapStack(timings: timings) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
                     .apeLarge
-                    .messageFade(timing(index: index))
+                    .animated(using: MessageFade.self, tag: index)
                     .retro()
             }
         }
         .delay(vm.delay)
     }
 
-    private func timing(index: Int) -> Timing {
-        .triangle(duration: vm.timePerMessage, relativePeak: 0.3)
-        .start(at: vm.timePerMessage * Double(index))
-        .stay(vm.stay && index == vm.strings.endIndex - 1)
+    private var timings: [Int: Timing] {
+        var result: [Int: Timing] = [:]
+
+        for index in vm.strings.indices {
+            result[index] = .triangle(duration: vm.timePerMessage, relativePeak: 0.3)
+                .start(at: vm.timePerMessage * Double(index))
+                .stay(vm.stay && index == vm.strings.endIndex - 1)
+        }
+        
+        return result
     }
 
     typealias ViewModel = Messages
