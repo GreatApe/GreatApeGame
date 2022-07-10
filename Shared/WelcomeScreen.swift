@@ -49,7 +49,7 @@ struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(order: vm.order, startEmpty: true) {
+        TapStack(order: vm.order) {
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
@@ -63,7 +63,7 @@ struct WelcomeScreen: View {
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
         }
-        .finish(perform: vm.finished)
+        .onFinish(perform: vm.finished)
         .animationRamping(.simple(0.7).delayed(by: 0.7))
         .apeLarge
     }

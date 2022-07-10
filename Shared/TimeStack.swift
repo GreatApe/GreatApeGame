@@ -11,8 +11,8 @@ struct TimeStack<Content: View>: View {
     @State private var start: Date = .now
     private var finishTime: Double = .infinity
     private var finished: () -> Void = { }
-    var timings: [AnyHashable: Anim.Timing]
-    var content: (Double) -> Content
+    private let timings: [AnyHashable: Anim.Timing]
+    private let content: (Double) -> Content
 
     init<TagType: Hashable>(timings: [TagType: Anim.Timing], @ViewBuilder content: @escaping (Double) -> Content) {
         self.timings = timings
@@ -53,7 +53,6 @@ struct TimeStack<Content: View>: View {
 struct TapStack<Content: View>: View {
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: AnyHashable = nil as Int?
-
     private var finished: () -> Void = { }
     private let tappable: Bool
     private let order: [AnyHashable]
@@ -81,7 +80,7 @@ struct TapStack<Content: View>: View {
         .onAppear(perform: setupTags)
     }
 
-    func finish(perform finished: @escaping () -> Void) -> Self {
+    func onFinish(perform finished: @escaping () -> Void) -> Self {
         var result = self
         result.finished = finished
         return result
