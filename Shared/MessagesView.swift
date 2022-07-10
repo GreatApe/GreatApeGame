@@ -24,8 +24,8 @@ struct MessagesView: View {
 
     private var timings: [Anim.Timing] {
         vm.strings.indices.map { index in
-            let stay = vm.stay && index == vm.strings.endIndex - 1
-            return .init(start: vm.timePerMessage * Double(index) + vm.delay, duration: stay ? .infinity : vm.timePerMessage)
+            let duration = vm.stay && index == vm.strings.endIndex - 1 ? .infinity : vm.timePerMessage
+            return .show(from: vm.timePerMessage * Double(index) + vm.delay, for: duration)
         }
     }
 

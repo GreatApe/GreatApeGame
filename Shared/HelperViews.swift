@@ -106,13 +106,13 @@ enum Side: Double {
 struct LeftMaskShape: Shape {
     private var ratio: Double
 
-    init(side: Side) {
-        self.ratio = side.rawValue
-    }
-
     var animatableData: Double {
         set { ratio = newValue }
         get { ratio }
+    }
+
+    init(side: Side) {
+        self.ratio = side.rawValue
     }
 
     func path(in rect: CGRect) -> Path {
@@ -123,13 +123,13 @@ struct LeftMaskShape: Shape {
 struct RightMaskShape: Shape {
     private var ratio: Double
 
-    init(side: Side) {
-        self.ratio = side.rawValue
-    }
-
     var animatableData: Double {
         set { ratio = newValue }
         get { ratio }
+    }
+
+    init(side: Side) {
+        self.ratio = side.rawValue
     }
 
     func path(in rect: CGRect) -> Path {
