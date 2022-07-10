@@ -13,7 +13,7 @@ struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(timings: vm.timings) { time in
+        TimeStack(timings: vm.timings, onFinished: vm.finished) { time in
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
@@ -28,7 +28,6 @@ struct WelcomeScreen: View {
                 .retro()
             TapView(perform: vm.tapBackground)
         }
-        .after(23, perform: vm.finished)
         .animationRamping(.simple(0.7))
         .apeLarge
     }

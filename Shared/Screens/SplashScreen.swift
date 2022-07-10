@@ -11,12 +11,11 @@ struct SplashScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(phaseTimings: vm.timings) { phase in
+        TimeStack(phaseTimings: vm.timings, onFinished: vm.finished) { phase in
             UnfairLogoView(phase: phase)
             UnfairTextView(phase: phase)
             TapView(perform: vm.tapBackground)
         }
-        .after(4, perform: vm.finished)
     }
 
     struct ViewModel {
@@ -26,7 +25,8 @@ struct SplashScreen: View {
         var timings: [LogoPhase: Double] {
             [.wide: 1,
              .bell: 1.5,
-             .offset: 2]
+             .offset: 2,
+             .finish: 4]
         }
     }
 }
@@ -88,6 +88,7 @@ enum LogoPhase: Int, PhaseEnum {
     case wide
     case bell
     case offset
+    case finish
 }
 
 struct UnfairLogo {
