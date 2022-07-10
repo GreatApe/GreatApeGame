@@ -50,30 +50,24 @@ struct TimeStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
-struct TapStack<Content: View>: View {
+struct TapStack<TagType: Hashable, Content: View>: View {
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
-    @State private var currentTag: AnyHashable = nil as Int?
+    @State private var currentTag: TagType? = nil
     private var finished: () -> Void = { }
     private let tappable: Bool
-    private let order: [AnyHashable]
-    private let content: Content
+    private let order: [TagType]
+    private let content: (TagType) -> Content
 
-    init<TagType: Hashable>(order: [TagType], startEmpty: Bool = false, tappable: Bool = false, @ViewBuilder content: () -> Content) {
+    init(order: [TagType], tappable: Bool = false, @ViewBuilder content: @escaping (TagType) -> Content) {
         self.tappable = tappable
-        self.order = startEmpty ? [nil as TagType?] + order : order
-        self.content = content()
-    }
-
-    init(tappable: Bool = false, @ViewBuilder content: () -> Content) {
-        self.tappable = tappable
-        self.order = Array(0..<1000)
-        self.content = content()
+        self.order = order
+        self.content = content
     }
 
     var body: some View {
         ZStack {
             TapView(perform: nextTag)
-            content
+            content(currentTag ?? order[0])
                 .allowsHitTesting(tappable)
                 .environment(\.animPhases, phases)
         }
@@ -87,9 +81,9 @@ struct TapStack<Content: View>: View {
     }
 
     private func setupTags() {
-        guard let first = order.first else { return }
-        currentTag = first
-        phases = .init(uniqueKeysWithValues: order.map { ($0, $0 == first ? .showing : .before) })
+        guard !order.isEmpty else { return }
+        currentTag = order[0]
+        phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == order[0] ? .showing : .before) })
 
         logTags()
     }
@@ -97,10 +91,10 @@ struct TapStack<Content: View>: View {
     private func nextTag() {
         defer { logTags() }
         phases[currentTag] = .after
-        guard let current = order.firstIndex(of: currentTag) else { return }
+        let current = currentTag.flatMap(order.firstIndex) ?? 0
         guard order.indices.contains(current + 1) else {
             finished()
-            currentTag = nil as Int?
+            currentTag = nil
             return
         }
 
@@ -116,6 +110,14 @@ struct TapStack<Content: View>: View {
         }
         .sorted { $0.tag < $1.tag }
         .forEach { print("\($0.tag): \($0.phase)") }
+    }
+}
+
+extension TapStack where TagType == Int {
+    init(tappable: Bool = false, @ViewBuilder content: @escaping (Int) -> Content) {
+        self.tappable = tappable
+        self.order = Array(0..<1000)
+        self.content = content
     }
 }
 

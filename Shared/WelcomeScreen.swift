@@ -49,16 +49,16 @@ struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(order: vm.order) {
+        TapStack(order: vm.order) { tag in
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
             Text(verbatim: .welcome2)
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
-            VideoClipView()
-                .transitionFade(tag: 3)
-                .animationRamping(.simple(0.3).delayed(by: 0.6))
+//            VideoClipView()
+//                .transitionFade(tag: 3)
+//                .animationRamping(.simple(0.3).delayed(by: 0.6))
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
@@ -72,7 +72,7 @@ struct WelcomeScreen: View {
         let tapBackground: () -> Void
         let finished: () -> Void
 
-        let order: [Int] = [1, 2, 3, 4]
+        let order: [Int] = [1, 2, 4]
     }
 }
 
