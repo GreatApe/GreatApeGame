@@ -81,7 +81,6 @@ struct TapStack<TagType: Hashable & Startable, Content: View>: View {
     }
 
     private func setupTags() {
-        guard !order.isEmpty else { return }
         let first = order.first ?? .start
         currentTag = first
         phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == first ? .showing : .before) })
@@ -119,9 +118,9 @@ extension Int: Startable {
 }
 
 extension TapStack where TagType == Int {
-    init(tappable: Bool = false, @ViewBuilder content: @escaping (Int) -> Content) {
+    init(count: Int = 10, tappable: Bool = false, @ViewBuilder content: @escaping (Int) -> Content) {
         self.tappable = tappable
-        self.order = Array(0..<1000)
+        self.order = Array(0..<count)
         self.content = content
     }
 }
