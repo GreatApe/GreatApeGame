@@ -30,6 +30,9 @@ struct MainView: View {
             case .welcome:
                 WelcomeScreen(vm: welcomeVM)
                     .transition(.retro)
+            case .about:
+                AboutScreen(vm: aboutVM)
+                    .transition(.retro)
             case .ready(let state):
                 ReadyScreen(vm: readyVM(state: state))
                     .transition(.retro)
@@ -49,6 +52,10 @@ struct MainView: View {
         .init(tapBackground: store[.tapBackground],
               finished: store[.finishedIntro]
         )
+    }
+
+    private var aboutVM: AboutScreen.ViewModel {
+        .init(finished: store[.finishedAbout])
     }
 
     private func readyVM(state: ReadyState) -> ReadyScreen.ViewModel {

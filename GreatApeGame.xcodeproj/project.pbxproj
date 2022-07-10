@@ -35,6 +35,7 @@
 		22A4BB8B287AF69600FFFAE4 /* AnimatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8A287AF69600FFFAE4 /* AnimatedView.swift */; };
 		22A4BB8D287AF6C400FFFAE4 /* Animators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8C287AF6C400FFFAE4 /* Animators.swift */; };
 		22A4BB8F287AFC3400FFFAE4 /* VideoClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */; };
+		22A4BB91287B1A4B00FFFAE4 /* AboutScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		22A4BB8A287AF69600FFFAE4 /* AnimatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedView.swift; sourceTree = "<group>"; };
 		22A4BB8C287AF6C400FFFAE4 /* Animators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animators.swift; sourceTree = "<group>"; };
 		22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoClipView.swift; sourceTree = "<group>"; };
+		22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				22A4BB86287AF5F700FFFAE4 /* Screens */,
 				223BEB6F284D5AB20053E5A8 /* Scoreboard.swift */,
 				226E5CED285C8FC20022BB3A /* MessagesView.swift */,
+				22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */,
 				223BEB6B284D5AB20053E5A8 /* ScoreView.swift */,
 				223BEB80284D5B0B0053E5A8 /* Menu.swift */,
 				22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */,
@@ -249,6 +252,7 @@
 				223BEB7C284D5AB20053E5A8 /* HelperViews.swift in Sources */,
 				223BEB74284D5AB20053E5A8 /* GeometryExtensions.swift in Sources */,
 				22A4BB8B287AF69600FFFAE4 /* AnimatedView.swift in Sources */,
+				22A4BB91287B1A4B00FFFAE4 /* AboutScreen.swift in Sources */,
 				22A4BB7E2874F68F00FFFAE4 /* TimeStack.swift in Sources */,
 				22A4BB8028763BFE00FFFAE4 /* PhasedShape.swift in Sources */,
 				22A4BB82287AF54B00FFFAE4 /* TimedShape.swift in Sources */,

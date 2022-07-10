@@ -53,6 +53,7 @@ enum AppAction {
 
     case finishedSplash
     case finishedIntro
+    case finishedAbout
     case tapBackground
 
     // Playing
@@ -130,6 +131,7 @@ struct AppState {
         case splash
         case welcome
         case ready(ReadyState)
+        case about
         case playing
     }
 }
@@ -183,6 +185,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                     state.screen = .ready(.menu(newEntries))
                 case .action(let item):
                     switch item {
+                        case .about:
+                            state.screen = .about
                         case .reallyReset:
                             try? environment.persistence.resetResults()
                             state.clearResults()
@@ -205,7 +209,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.screen = .ready(.normal(.display, .copied))
 
         case .finishedSplash:
-            print("finishedSplash")
             guard case .splash = state.screen else { break }
             if environment.hasSeenIntro {
                 state.screen = .ready(.normal(.display, nil))
@@ -217,6 +220,10 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             guard case .welcome = state.screen else { break }
             state.screen = .ready(.normal(.display, nil))
             environment.hasSeenIntro = true
+
+        case .finishedAbout:
+            guard case .about = state.screen else { break }
+            state.screen = .ready(.normal(.display, nil))
 
         case .tapBackground:
             switch state.screen {
@@ -264,6 +271,8 @@ extension AppState.Screen: CustomStringConvertible {
                 return "splash"
             case .welcome:
                 return "welcome"
+            case .about:
+                return "about"
             case .ready(let state):
                 return "ready(\(state))"
             case .playing:

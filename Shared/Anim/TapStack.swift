@@ -10,14 +10,14 @@ import SwiftUI
 struct TapStack<TagType: Hashable & Startable, Content: View>: View {
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: TagType? = nil
-    private var finished: () -> Void = { }
-    private let tappable: Bool
+    private var tappable: Bool = false
+    private var onFinish: () -> Void
     private let order: [TagType]
     private let content: (TagType) -> Content
 
-    init(order: [TagType], tappable: Bool = false, @ViewBuilder content: @escaping (TagType) -> Content) {
-        self.tappable = tappable
-        self.order = order
+    init<Order: Collection>(order: Order, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (TagType) -> Content) where Order.Element == TagType {
+        self.onFinish = onFinish
+        self.order = Array(order)
         self.content = content
     }
 
@@ -31,9 +31,9 @@ struct TapStack<TagType: Hashable & Startable, Content: View>: View {
         .onAppear(perform: setupTags)
     }
 
-    func onFinish(perform finished: @escaping () -> Void) -> Self {
+    func tappable(active: Bool = true) -> some View {
         var result = self
-        result.finished = finished
+        result.tappable = tappable
         return result
     }
 
@@ -50,7 +50,7 @@ struct TapStack<TagType: Hashable & Startable, Content: View>: View {
         phases[currentTag] = .after
         let current = currentTag.flatMap(order.firstIndex) ?? 0
         guard order.indices.contains(current + 1) else {
-            finished()
+            onFinish()
             currentTag = nil
             return
         }
@@ -70,18 +70,10 @@ struct TapStack<TagType: Hashable & Startable, Content: View>: View {
     }
 }
 
-extension TapStack where TagType == Int {
-    init(count: Int = 10, tappable: Bool = false, @ViewBuilder content: @escaping (Int) -> Content) {
-        self.tappable = tappable
-        self.order = Array(0..<count)
-        self.content = content
-    }
-}
-
 extension TapStack where TagType: PhaseEnum {
-    init(phased: TagType.Type, tappable: Bool = false, @ViewBuilder content: @escaping (TagType) -> Content) {
-        self.tappable = tappable
+    init(phased: TagType.Type, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (TagType) -> Content) {
         self.order = Array(TagType.allCases)
+        self.onFinish = onFinish
         self.content = content
     }
 }

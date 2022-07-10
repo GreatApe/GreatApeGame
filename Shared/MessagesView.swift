@@ -66,6 +66,11 @@ extension String {
     static let welcome2 = "Tap the boxes in order, once the numbers disappear"
     static let welcome3 = "Ayumu can do 10, how many can you handle?"
 
+    static let about1 = "Are you smarter than a chimpanzee? Are you smarter than a chimpanzee? Are you smarter than a chimpanzee?"
+    static let about2 = "Tap the boxes in order, once the numbers disappear Tap the boxes in order, once the numbers disappear Tap the boxes in order, once the numbers disappear"
+    static let about3 = "Ayumu can do 10, how many can you handle? Ayumu can do 10, how many can you handle? Ayumu can do 10, how many can you handle?"
+    static let about4 = "Are you smarter than a chimpanzee? Are you smarter than a chimpanzee? Are you smarter than a chimpanzee?"
+
     static let successStrings = ["Awesome", "Fantastic", "Amazing", "Nice work", "Great!", "Not bad!", "Wonderful"]
 
     static let tryAgain = "Try again!"

@@ -35,11 +35,10 @@ struct SplashScreen__: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(phased: LogoPhase.self) { phase in
+        TapStack(phased: LogoPhase.self, onFinish: vm.finished) { phase in
             UnfairLogoView(phase: phase)
             UnfairTextView(phase: phase)
         }
-        .onFinish(perform: vm.finished)
     }
 
     struct ViewModel {
