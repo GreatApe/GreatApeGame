@@ -40,7 +40,7 @@ struct TimeStack<Content: View>: View {
         }
     }
 
-    func finish(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
+    func after(_ finishTime: Double, perform finished: @escaping () -> Void) -> Self {
         var result = self
         result.finished = finished
         result.finishTime = finishTime
@@ -50,7 +50,7 @@ struct TimeStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
-struct TapStack<TagType: Hashable, Content: View>: View {
+struct TapStack<TagType: Hashable & Startable, Content: View>: View {
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: TagType? = nil
     private var finished: () -> Void = { }
@@ -67,7 +67,7 @@ struct TapStack<TagType: Hashable, Content: View>: View {
     var body: some View {
         ZStack {
             TapView(perform: nextTag)
-            content(currentTag ?? order[0])
+            content(currentTag ?? .start)
                 .allowsHitTesting(tappable)
                 .environment(\.animPhases, phases)
         }
@@ -82,8 +82,9 @@ struct TapStack<TagType: Hashable, Content: View>: View {
 
     private func setupTags() {
         guard !order.isEmpty else { return }
-        currentTag = order[0]
-        phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == order[0] ? .showing : .before) })
+        let first = order.first ?? .start
+        currentTag = first
+        phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == first ? .showing : .before) })
 
         logTags()
     }
@@ -113,10 +114,22 @@ struct TapStack<TagType: Hashable, Content: View>: View {
     }
 }
 
+extension Int: Startable {
+    static let start: Int = 0
+}
+
 extension TapStack where TagType == Int {
     init(tappable: Bool = false, @ViewBuilder content: @escaping (Int) -> Content) {
         self.tappable = tappable
         self.order = Array(0..<1000)
+        self.content = content
+    }
+}
+
+extension TapStack where TagType: PhaseEnum {
+    init(phased: TagType.Type, tappable: Bool = false, @ViewBuilder content: @escaping (TagType) -> Content) {
+        self.tappable = tappable
+        self.order = Array(TagType.allCases)
         self.content = content
     }
 }

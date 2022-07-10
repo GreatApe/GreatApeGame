@@ -29,7 +29,7 @@ struct WelcomeScreen__: View {
                 .retro()
             TapView(perform: vm.tapBackground)
         }
-        .finish(23, perform: vm.finished)
+        .after(23, perform: vm.finished)
         .animationRamping(.simple(0.7))
         .apeLarge
     }

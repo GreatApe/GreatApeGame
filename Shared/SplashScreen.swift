@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SplashScreen: View {
+struct SplashScreen__: View {
     let vm: ViewModel
 
     var body: some View {
@@ -19,7 +19,7 @@ struct SplashScreen: View {
                 TapView(perform: vm.tapBackground)
             }
         }
-        .finish(4, perform: vm.finished)
+        .after(4, perform: vm.finished)
     }
 
     struct ViewModel {
@@ -27,6 +27,26 @@ struct SplashScreen: View {
         let finished: () -> Void
     }
 }
+
+struct SplashScreen: View {
+    let vm: ViewModel
+
+    var body: some View {
+        TapStack(phased: LogoPhase.self) { phase in
+            ZStack {
+                UnfairLogoView(phase: phase)
+                UnfairTextView(phase: phase)
+            }
+        }
+        .onFinish(perform: vm.finished)
+    }
+
+    struct ViewModel {
+        let tapBackground: () -> Void
+        let finished: () -> Void
+    }
+}
+
 
 struct UnfairLogoView: View {
     let phase: LogoPhase

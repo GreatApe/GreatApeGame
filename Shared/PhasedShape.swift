@@ -69,7 +69,9 @@ extension Path {
     }
 }
 
-protocol PhaseEnum: CaseIterable, RawRepresentable where RawValue == Double {
+protocol PhaseEnum: CaseIterable, Startable, RawRepresentable where RawValue == Double { }
+
+protocol Startable {
     static var start: Self { get }
 }
 
