@@ -52,7 +52,7 @@ struct UnfairLogoView: View {
     let phase: LogoPhase
 
     var body: some View {
-        PhasedShape(phase: phase, points: UnfairLogo.points)
+        PhasedUnitShape(phase: phase, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
             .retro()
             .animation(.spring(), value: phase)

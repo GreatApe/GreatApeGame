@@ -7,26 +7,36 @@
 
 import SwiftUI
 
-struct TimedShape: Shape {
-    var r: Double
-    var points: (Double) -> [Path.Points]
+struct PhasedShape<P: PhaseEnum>: Shape {
+    private var r: Double
+    private var phase: P
+    private var makePath: (Steps<P>, CGRect) -> Path
 
     var animatableData: Double {
         set { r = newValue }
         get { r }
     }
 
+    init(phase: P, path makePath: @escaping (Steps<P>, CGRect) -> Path) {
+        self.r = phase.r
+        self.phase = phase
+        self.makePath = makePath
+    }
+
     func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.add(points(r), in: rect)
-        }
+        makePath(.init(r: r, phase: phase), rect)
     }
 }
 
-struct PhasedShape<P: PhaseEnum>: Shape {
+struct PhasedUnitShape<P: PhaseEnum>: Shape {
     private var r: Double
     private var phase: P
     private var points: (Steps<P>) -> [Path.Points]
+
+    var animatableData: Double {
+        set { r = newValue }
+        get { r }
+    }
 
     init(phase: P, points: @escaping (Steps<P>) -> [Path.Points]) {
         self.r = phase.r
@@ -34,14 +44,49 @@ struct PhasedShape<P: PhaseEnum>: Shape {
         self.points = points
     }
 
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.add(points(.init(r: r, phase: phase)), in: rect)
+        }
+    }
+}
+
+struct TimedShape: Shape {
+    private var r: Double
+    private var makePath: (Double, CGRect) -> Path
+
     var animatableData: Double {
         set { r = newValue }
         get { r }
     }
 
+    init(r: Double, path makePath: @escaping (Double, CGRect) -> Path) {
+        self.r = r
+        self.makePath = makePath
+    }
+
+    func path(in rect: CGRect) -> Path {
+        makePath(r, rect)
+    }
+}
+
+struct TimedUnitShape: Shape {
+    private var r: Double
+    private var points: (Double) -> [Path.Points]
+
+    var animatableData: Double {
+        set { r = newValue }
+        get { r }
+    }
+
+    init(r: Double, points: @escaping (Double) -> [Path.Points]) {
+        self.r = r
+        self.points = points
+    }
+
     func path(in rect: CGRect) -> Path {
         Path { path in
-            path.add(points(.init(r: r, phase: phase)), in: rect)
+            path.add(points(r), in: rect)
         }
     }
 }
