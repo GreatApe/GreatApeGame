@@ -50,6 +50,17 @@ struct TimeStack<Content: View>: View {
     private let epsilon: Double = 0.01
 }
 
+extension TimeStack {
+    init<Phase: PhaseEnum>(phaseTimings: [Phase: Double], @ViewBuilder content: @escaping (Phase) -> Content) {
+        self.timings = phaseTimings.mapValues { .init(start:$0) }
+        self.content = { time in content(TimeStack.phase(time: time, timings: phaseTimings)) }
+    }
+
+    private static func phase<Phase: PhaseEnum>(time: Double, timings: [Phase: Double]) -> Phase {
+        timings.filter { $0.value < time }.max { $0.value < $1.value }?.key ?? .start
+    }
+}
+
 struct TapStack<TagType: Hashable & Startable, Content: View>: View {
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: TagType? = nil

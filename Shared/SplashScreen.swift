@@ -7,17 +7,14 @@
 
 import SwiftUI
 
-struct SplashScreen__: View {
+struct SplashScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack { time in
-            let phase = LogoPhase(at: time)
-            ZStack {
-                UnfairLogoView(phase: phase)
-                UnfairTextView(phase: phase)
-                TapView(perform: vm.tapBackground)
-            }
+        TimeStack(phaseTimings: vm.timings) { phase in
+            UnfairLogoView(phase: phase)
+            UnfairTextView(phase: phase)
+            TapView(perform: vm.tapBackground)
         }
         .after(4, perform: vm.finished)
     }
@@ -25,18 +22,22 @@ struct SplashScreen__: View {
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
+
+        var timings: [LogoPhase: Double] {
+            [.wide: 1,
+             .bell: 1.5,
+             .offset: 2]
+        }
     }
 }
 
-struct SplashScreen: View {
+struct SplashScreen__: View {
     let vm: ViewModel
 
     var body: some View {
         TapStack(phased: LogoPhase.self) { phase in
-            ZStack {
-                UnfairLogoView(phase: phase)
-                UnfairTextView(phase: phase)
-            }
+            UnfairLogoView(phase: phase)
+            UnfairTextView(phase: phase)
         }
         .onFinish(perform: vm.finished)
     }
@@ -46,7 +47,6 @@ struct SplashScreen: View {
         let finished: () -> Void
     }
 }
-
 
 struct UnfairLogoView: View {
     let phase: LogoPhase
@@ -63,7 +63,7 @@ struct UnfairTextView: View {
     private let show: Bool
 
     init(phase: LogoPhase) {
-        self.show = phase.time >= LogoPhase.offset.time
+        self.show = phase >= .offset
     }
 
     var body: some View {
@@ -84,11 +84,11 @@ struct UnfairTextView: View {
     private let offset: CGFloat = 0.5 + 0.5 * (1 - UnfairLogo.peakShift) + UnfairLogo.margin
 }
 
-enum LogoPhase: Double, PhaseEnum {
+enum LogoPhase: Int, PhaseEnum {
     case start
-    case wide = 1
-    case bell = 1.5
-    case offset = 2
+    case wide
+    case bell
+    case offset
 }
 
 struct UnfairLogo {
