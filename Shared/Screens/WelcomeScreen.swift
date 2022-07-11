@@ -13,7 +13,7 @@ struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(timings: vm.timings, onFinished: vm.finished) { time in
+        TimeStack(timings: vm.timings, defaultRamp: .init(rampIn: 0.7, rampOut: 0.7), onFinished: vm.finished) { time in
             Text(verbatim: .welcome1)
                 .animated(using: MessageFade.self, tag: 1)
                 .retro()
@@ -21,14 +21,12 @@ struct WelcomeScreen: View {
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
             VideoClipView(url: videoURL)
-                .transitionFade(tag: 3)
-                .animationRamping(.simple(0.3))
+                .animatedTransition(tag: 3)
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
             TapView(perform: vm.tapBackground)
         }
-        .animationRamping(.simple(0.7))
         .apeLarge
     }
     
@@ -37,7 +35,7 @@ struct WelcomeScreen: View {
         let finished: () -> Void
         let timings: [Int: Anim.Timing] = [1: .show(from: 1, for: 2),
                                            2: .show(from: 4, for: 2),
-                                           3: .show(from: 7, for: 13),
+                                           3: .show(from: 7, for: 13).ramp(over: 0.3),
                                            4: .show(from: 20, for: 2)]
     }
 }

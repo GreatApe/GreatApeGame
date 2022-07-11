@@ -11,9 +11,9 @@ struct SplashScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(phaseTimings: vm.timings, onFinished: vm.finished) { phase in
-            UnfairLogoView(phase: phase)
-            UnfairTextView(phase: phase)
+        TimeStack(steps: vm.timings, onFinished: vm.finished) { step in
+            UnfairLogoView(step: step)
+            UnfairTextView(step: step)
             TapView(perform: vm.tapBackground)
         }
     }
@@ -22,7 +22,7 @@ struct SplashScreen: View {
         let tapBackground: () -> Void
         let finished: () -> Void
 
-        var timings: [LogoPhase: Double] {
+        var timings: [LogoStep: Double] {
             [.wide: 1,
              .bell: 1.5,
              .offset: 2,
@@ -35,9 +35,9 @@ struct SplashScreen__: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(phased: LogoPhase.self, onFinish: vm.finished) { phase in
-            UnfairLogoView(phase: phase)
-            UnfairTextView(phase: phase)
+        TapStack(stepped: LogoStep.self, onFinish: vm.finished) { step in
+            UnfairLogoView(step: step)
+            UnfairTextView(step: step)
         }
     }
 
@@ -48,21 +48,21 @@ struct SplashScreen__: View {
 }
 
 struct UnfairLogoView: View {
-    let phase: LogoPhase
+    let step: LogoStep
 
     var body: some View {
-        PhasedUnitShape(phase: phase, points: UnfairLogo.points)
+        SteppedUnitShape(step: step, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
             .retro()
-            .animation(.spring(), value: phase)
+            .animation(.spring(), value: step)
     }
 }
 
 struct UnfairTextView: View {
     private let show: Bool
 
-    init(phase: LogoPhase) {
-        self.show = phase >= .offset
+    init(step: LogoStep) {
+        self.show = step >= .offset
     }
 
     var body: some View {
@@ -83,7 +83,7 @@ struct UnfairTextView: View {
     private let offset: CGFloat = 0.5 + 0.5 * (1 - UnfairLogo.peakShift) + UnfairLogo.margin
 }
 
-enum LogoPhase: Int, PhaseEnum {
+enum LogoStep: Int, StepEnum {
     case start
     case wide
     case bell
@@ -92,12 +92,12 @@ enum LogoPhase: Int, PhaseEnum {
 }
 
 struct UnfairLogo {
-    static func points(steps: Steps<LogoPhase>) -> [Path.Points] {
+    static func points(steps: Steps<LogoStep>) -> [Path.Points] {
         let wide = steps[.wide]
         let bell = steps[.bell]
         let offset = steps[.offset]
 
-//        print("\(steps.r) \(steps.phase) ** wide: \(wide.timeString), bell: \(bell.timeString), offset: \(offset.timeString)")
+//        print("\(steps.r) \(steps.step) ** wide: \(wide.timeString), bell: \(bell.timeString), offset: \(offset.timeString)")
 
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down

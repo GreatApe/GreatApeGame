@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-struct TapStack<TagType: Hashable & Startable, Content: View>: View {
+
+struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
-    @State private var currentTag: TagType? = nil
+    @State private var currentTag: Tag? = nil
     private var tappable: Bool = false
     private var onFinish: () -> Void
-    private let order: [TagType]
-    private let content: (TagType) -> Content
+    private let order: [Tag]
+    private let content: (Tag) -> Content
 
-    init<Order: Collection>(order: Order, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (TagType) -> Content) where Order.Element == TagType {
+    init<Order: Collection>(order: Order, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) where Order.Element == Tag {
         self.onFinish = onFinish
         self.order = Array(order)
         self.content = content
@@ -70,9 +71,9 @@ struct TapStack<TagType: Hashable & Startable, Content: View>: View {
     }
 }
 
-extension TapStack where TagType: PhaseEnum {
-    init(phased: TagType.Type, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (TagType) -> Content) {
-        self.order = Array(TagType.allCases)
+extension TapStack where Tag: StepEnum {
+    init(stepped: Tag.Type, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) {
+        self.order = Array(Tag.allCases)
         self.onFinish = onFinish
         self.content = content
     }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     @Environment(\.animPhases) private var phases
-    @Environment(\.animRamping) private var ramping
+    @Environment(\.animRamps) private var ramps
     private let tag: AnyHashable
     private let content: Content
 
@@ -20,11 +20,12 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
 
     var body: some View {
         let phase = phases[tag] ?? .before
-        let duration = phase == .showing ? ramping.rampIn : ramping.rampOut
-        let delay = phase == .showing ? ramping.rampInDelay : 0
+        let ramp = ramps[tag] ?? .standard
+        let duration = phase == .showing ? ramp.rampIn : ramp.rampOut
         content
             .modifier(AnimatorType(phase: phase))
-            .animation(.linear(duration: duration).delay(delay), value: phase)
+            .environment(\.animRamp, ramp)
+            .animation(.linear(duration: duration), value: phase)
     }
 }
 
@@ -33,7 +34,7 @@ extension View {
         AnimatedView(animator: animator, tag: tag, content: self)
     }
 
-    func transitionFade(transition: AnyTransition = .opacity, tag: AnyHashable) -> some View {
+    func animatedTransition(with transition: AnyTransition = .opacity, tag: AnyHashable) -> some View {
         AnimatedView(animator: TransitionAnimator.self, tag: tag, content: self)
             .environment(\.animTransition, transition)
     }

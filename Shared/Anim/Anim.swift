@@ -25,6 +25,7 @@ enum Anim {
     struct Timing {
         let start: Double
         let duration: Double
+        let ramp: Ramp?
 
         static func start(at start: Double) -> Timing {
             .init(start: start, duration: .infinity)
@@ -37,33 +38,45 @@ enum Anim {
         static func show(from start: Double, until end: Double) -> Timing {
             .init(start: start, duration: end - start)
         }
-    }
 
-    struct Ramping {
-        let rampIn: Double
-        let rampOut: Double
-        let rampInDelay: Double
+        func ramp(over rampTime: Double) -> Timing {
+            ramp(in: rampTime, out: rampTime)
+        }
 
-        static var standard: Ramping { .simple(0.1) }
-        static func simple(_ ramp: Double) -> Ramping { .init(rampIn: ramp, rampOut: ramp, rampInDelay: 0) }
-        static func assymetric(rampIn: Double, rampOut: Double) -> Ramping { .init(rampIn: rampIn, rampOut: rampOut, rampInDelay: 0) }
+        func ramp(in rampIn: Double, out rampOut: Double) -> Timing {
+            .init(start: start, duration: duration, ramp: .init(rampIn: rampIn, rampOut: rampOut))
+        }
 
-        func delayed(by delay: Double) -> Ramping {
-            .init(rampIn: rampIn, rampOut: rampOut, rampInDelay: rampInDelay + delay)
+        private init(start: Double, duration: Double, ramp: Ramp = .standard) {
+            self.start = start
+            self.duration = duration
+            self.ramp = ramp
+        }
+
+        struct Ramp {
+            let rampIn: Double
+            let rampOut: Double
+
+            static let none: Self = .init(rampIn: 0, rampOut: 0)
+            static let standard: Self = .init(rampIn: defaultRamp, rampOut: defaultRamp)
+            private static let defaultRamp: Double = 0.1
         }
     }
 
-    static func phase(time: Double, timing: Timing) -> Phase {
-        let startFadeOut = timing.start + timing.duration
-        switch time {
-            case ..<timing.start: return .before
-            case startFadeOut...: return .after
-            default: return .showing
-        }
-    }
-
-    static func enumPhase<EnumPhase: PhaseEnum>(time: Double, timings: [EnumPhase: Double]) -> EnumPhase {
+    static func step<Step: StepEnum>(time: Double, timings: [Step: Double]) -> Step {
         timings.filter { $0.value < time }.max { $0.value < $1.value }?.key ?? .start
+    }
+}
+
+extension Dictionary where Key == Int, Value == Anim.Timing {
+    static func ordered(_ timings: [Anim.Timing]) -> Self {
+        let keysAndValues = timings.enumerated().map { ($0.offset, $0.element) }
+        return .init(uniqueKeysWithValues: keysAndValues)
+    }
+
+    static func sequence(_ startTimes: [Double], cross: Bool) -> Self {
+        fatalError()
+        //            .init(timings: timings)
     }
 }
 
@@ -72,8 +85,12 @@ extension Anim {
         static let defaultValue: [AnyHashable: Anim.Phase] = [:]
     }
 
-    fileprivate struct RampingKey: EnvironmentKey {
-        static let defaultValue: Ramping = .standard
+    fileprivate struct RampsKey: EnvironmentKey {
+        static let defaultValue: [AnyHashable: Anim.Timing.Ramp] = [:]
+    }
+
+    fileprivate struct RampKey: EnvironmentKey {
+        static let defaultValue: Anim.Timing.Ramp = .standard
     }
 
     fileprivate struct TransitionKey: EnvironmentKey {
@@ -87,20 +104,19 @@ extension EnvironmentValues {
         set { self[Anim.PhasesKey.self] = newValue }
     }
 
-    var animRamping: Anim.Ramping {
-        get { self[Anim.RampingKey.self] }
-        set { self[Anim.RampingKey.self] = newValue }
+    var animRamps: [AnyHashable: Anim.Timing.Ramp] {
+        get { self[Anim.RampsKey.self] }
+        set { self[Anim.RampsKey.self] = newValue }
+    }
+
+    var animRamp: Anim.Timing.Ramp {
+        get { self[Anim.RampKey.self] }
+        set { self[Anim.RampKey.self] = newValue }
     }
 
     var animTransition: AnyTransition {
         get { self[Anim.TransitionKey.self] }
         set { self[Anim.TransitionKey.self] = newValue }
-    }
-}
-
-extension View {
-    func animationRamping(_ ramping: Anim.Ramping) -> some View {
-        environment(\.animRamping, ramping)
     }
 }
 

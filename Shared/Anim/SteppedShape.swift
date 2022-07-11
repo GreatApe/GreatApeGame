@@ -1,5 +1,5 @@
 //
-//  PhasedShape.swift
+//  SteppedShape.swift
 //  GreatApeGame (iOS)
 //
 //  Created by Gustaf Kugelberg on 06/07/2022.
@@ -7,46 +7,46 @@
 
 import SwiftUI
 
-struct PhasedShape<P: PhaseEnum>: Shape {
+struct SteppedShape<Step: StepEnum>: Shape {
     private var r: Double
-    private var phase: P
-    private var makePath: (Steps<P>, CGRect) -> Path
+    private var step: Step
+    private var makePath: (Steps<Step>, CGRect) -> Path
 
     var animatableData: Double {
         set { r = newValue }
         get { r }
     }
 
-    init(phase: P, path makePath: @escaping (Steps<P>, CGRect) -> Path) {
-        self.r = phase.r
-        self.phase = phase
+    init(step: Step, path makePath: @escaping (Steps<Step>, CGRect) -> Path) {
+        self.r = step.r
+        self.step = step
         self.makePath = makePath
     }
 
     func path(in rect: CGRect) -> Path {
-        makePath(.init(r: r, phase: phase), rect)
+        makePath(.init(r: r, step: step), rect)
     }
 }
 
-struct PhasedUnitShape<P: PhaseEnum>: Shape {
+struct SteppedUnitShape<Step: StepEnum>: Shape {
     private var r: Double
-    private var phase: P
-    private var points: (Steps<P>) -> [Path.Points]
+    private var step: Step
+    private var points: (Steps<Step>) -> [Path.Points]
 
     var animatableData: Double {
         set { r = newValue }
         get { r }
     }
 
-    init(phase: P, points: @escaping (Steps<P>) -> [Path.Points]) {
-        self.r = phase.r
-        self.phase = phase
+    init(step: Step, points: @escaping (Steps<Step>) -> [Path.Points]) {
+        self.r = step.r
+        self.step = step
         self.points = points
     }
 
     func path(in rect: CGRect) -> Path {
         Path { path in
-            path.add(points(.init(r: r, phase: phase)), in: rect)
+            path.add(points(.init(r: r, step: step)), in: rect)
         }
     }
 }
@@ -74,7 +74,7 @@ extension Path {
     }
 }
 
-protocol PhaseEnum: Startable, CaseIterable, Comparable, RawRepresentable where RawValue == Int { }
+protocol StepEnum: Startable, CaseIterable, Comparable, RawRepresentable where RawValue == Int { }
 
 protocol Startable {
     static var start: Self { get }
@@ -84,7 +84,7 @@ extension Int: Startable {
     static let start: Int = 0
 }
 
-extension PhaseEnum {
+extension StepEnum {
     var r: Double {
         Double(rawValue)
     }
@@ -94,15 +94,15 @@ extension PhaseEnum {
     }
 }
 
-struct Steps<P: PhaseEnum> {
+struct Steps<Step: StepEnum> {
     let r: Double
-    let phase: P
+    let step: Step
 
-    subscript(phase: P) -> Double {
-        if self.phase == phase {
-            return 1 + r - phase.r
+    subscript(step: Step) -> Double {
+        if self.step == step {
+            return 1 + r - step.r
         }
 
-        return self.phase < phase ? 0 : 1
+        return self.step < step ? 0 : 1
     }
 }

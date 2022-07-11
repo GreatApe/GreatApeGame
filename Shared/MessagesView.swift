@@ -11,7 +11,7 @@ struct MessagesView: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(timings: timings.asDict) { time in
+        TimeStack(timings: .ordered(timings)) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
                     .apeLarge
@@ -19,7 +19,7 @@ struct MessagesView: View {
                     .retro()
             }
         }
-        .animationRamping(.simple(0.6))
+//        .animationRamping(.simple(0.6))
     }
 
     private var timings: [Anim.Timing] {

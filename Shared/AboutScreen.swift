@@ -26,7 +26,7 @@ struct AboutScreen: View {
                 .retro()
         }
         .ape
-        .animationRamping(.assymetric(rampIn: 0.3, rampOut: 0.7).delayed(by: 0.7))
+//        .animationRamping(.assymetric(rampIn: 0.3, rampOut: 0.7).delayed(by: 0.7))
         .overlay(alignment: .topTrailing) {
             Button(action: vm.finished) {
                 Image(systemName: "xmark")

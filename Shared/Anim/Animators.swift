@@ -77,7 +77,7 @@ struct SimpleFade: Animator, Animatable {
 // MARK: Transition Animator
 
 struct TransitionAnimator: Animator {
-    @Environment(\.animRamping) private var ramping
+    @Environment(\.animRamp) private var ramp
     @Environment(\.animTransition) private var transition
 
     private let showing: Bool
@@ -88,8 +88,8 @@ struct TransitionAnimator: Animator {
 
     func body(content: Content) -> some View {
         if showing {
-            content.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramping.rampIn).delay(ramping.rampInDelay)),
-                                           removal: transition.animation(.easeOut(duration: ramping.rampOut))))
+            content.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramp.rampIn)),
+                                           removal: transition.animation(.easeOut(duration: ramp.rampOut))))
         }
     }
 }
