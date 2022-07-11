@@ -73,15 +73,21 @@ enum Anim {
     struct Ramp {
         let rampIn: Double
         let rampOut: Double
+        let rampInDelay: Double
 
         static let standard: Ramp = .init(in: standardRampTime, out: standardRampTime)
         static let abrupt: Ramp = .init(in: 0, out: 0)
         static func over(_ time: Double) -> Ramp { .init(in: time, out: time) }
         static func assymetric(in rampIn: Double, out rampOut: Double) -> Ramp { .init(in: rampIn, out: rampOut) }
 
-        private init(in rampIn: Double, out rampOut: Double) {
+        func delayRampIn(by delay: Double) -> Self {
+            .init(in: rampIn, out: rampOut, rampInDelay: delay)
+        }
+
+        private init(in rampIn: Double, out rampOut: Double, rampInDelay: Double = 0) {
             self.rampIn = rampIn
             self.rampOut = rampOut
+            self.rampInDelay = rampInDelay
         }
 
         private static let standardRampTime: Double = 0.1
@@ -89,18 +95,6 @@ enum Anim {
 
     static func currentStep<Step: StepEnum>(time: Double, timings: [Step: Double]) -> Step {
         timings.filter { $0.value <= time }.max { $0.value < $1.value }?.key ?? .start
-    }
-}
-
-extension Dictionary where Key == Int, Value == Anim.Timing {
-    static func ordered(_ timings: [Anim.Timing]) -> Self {
-        let keysAndValues = timings.enumerated().map { ($0.offset, $0.element) }
-        return .init(uniqueKeysWithValues: keysAndValues)
-    }
-
-    static func sequence(_ startTimes: [Double], cross: Bool) -> Self {
-        fatalError()
-        //            .init(timings: timings)
     }
 }
 

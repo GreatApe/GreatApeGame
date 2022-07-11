@@ -15,10 +15,13 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     private var tappable: Bool = false
     private var onFinish: () -> Void
     private let order: [Tag]
-    private let ramps: [Tag: Anim.Timing.RampType]
+    private let ramps: [Tag: Anim.Ramp]
     private let content: (Tag) -> Content
 
-    init<Order: Collection>(order: Order, ramps: [Tag: Anim.Timing.RampType] = [:], onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) where Order.Element == Tag {
+    init<Order: Collection>(order: Order,
+                            ramps: [Tag: Anim.Ramp] = [:],
+                            onFinish: @escaping () -> Void = { },
+                            @ViewBuilder content: @escaping (Tag) -> Content) where Order.Element == Tag {
         self.onFinish = onFinish
         self.order = Array(order)
         self.ramps = ramps
@@ -26,15 +29,13 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     }
 
     var body: some View {
-        let rampTimes = order.map { ($0, ramps[$0]?.ramp ?? defaultRamp) }
-        let _ = print(rampTimes)
         ZStack {
             TapView(perform: nextTag)
             content(currentTag ?? .start)
                 .allowsHitTesting(tappable)
                 .environment(\.animPhases, phases)
         }
-        .environment(\.animRamps, .init(rampTimes) { $1 })
+        .environment(\.animRamps, rampTimes())
         .onAppear(perform: setupTags)
     }
 
@@ -70,6 +71,24 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         phases[currentTag] = .during
     }
 
+    private func rampTimes() -> [Tag: Anim.Ramp] {
+        let rampTimes = order.map { ramps[$0] ?? defaultRamp }
+
+        var result: [Tag: Anim.Ramp] = [:]
+        for (index, tag) in order.enumerated() {
+            let delay = rampTimes.indices.contains(index - 1) ? rampTimes[index - 1].rampOut : 0
+            result[tag] = rampTimes[index]//.delayRampIn(by: delay)
+        }
+
+        for tag in order {
+            if let ramp = result[tag] {
+                print("TAG: \(tag): \(ramp.rampIn) - \(ramp.rampOut) - D:\(ramp.rampInDelay)")
+            }
+        }
+
+        return result
+    }
+
     // FIXME: remove
     private func logTags() {
         print("-- \(currentTag) --")
@@ -83,7 +102,10 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
 }
 
 extension TapStack where Tag: StepEnum {
-    init(stepped: Tag.Type, ramps: [Tag: Anim.Timing.RampType] = [:], onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) {
+    init(stepped: Tag.Type,
+         ramps: [Tag: Anim.Ramp] = [:],
+         onFinish: @escaping () -> Void = { },
+         @ViewBuilder content: @escaping (Tag) -> Content) {
         self.order = Array(Tag.allCases)
         self.ramps = ramps
         self.onFinish = onFinish

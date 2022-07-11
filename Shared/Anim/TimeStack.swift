@@ -97,3 +97,15 @@ extension TimeStack {
         return .init(uniqueKeysWithValues: timings)
     }
 }
+
+extension Dictionary where Key == Int, Value == Anim.Timing {
+    static func ordered(_ timings: [Anim.Timing]) -> Self {
+        let keysAndValues = timings.enumerated().map { ($0.offset, $0.element) }
+        return .init(uniqueKeysWithValues: keysAndValues)
+    }
+
+    static func sequence(_ startTimes: [Double], cross: Bool) -> Self {
+        fatalError()
+        //            .init(timings: timings)
+    }
+}

@@ -22,10 +22,12 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
         let phase = phases[tag] ?? .before
         let ramp = ramps[tag] ?? .standard
         let duration = phase == .during ? ramp.rampIn : ramp.rampOut
+        let delay = phase == .during ? ramp.rampInDelay : 0
+
         content
             .modifier(AnimatorType(phase: phase))
             .environment(\.animRamp, ramp)
-            .animation(.linear(duration: duration), value: phase)
+            .animation(.linear(duration: duration).delay(delay), value: phase)
     }
 }
 
