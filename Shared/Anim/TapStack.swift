@@ -43,11 +43,11 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         currentTag = first
         phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == first ? .during : .before) })
 
-        logTags()
+        logTags() // FIXME: remove
     }
 
     private func nextTag() {
-        defer { logTags() }
+        defer { logTags() } // FIXME: remove
         phases[currentTag] = .after
         let current = currentTag.flatMap(order.firstIndex) ?? 0
         guard order.indices.contains(current + 1) else {
@@ -60,6 +60,7 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         phases[currentTag] = .during
     }
 
+    // FIXME: remove
     private func logTags() {
         print("-- \(currentTag) --")
         phases.compactMap { tag, phase -> (tag: Int, phase: Anim.Phase)? in

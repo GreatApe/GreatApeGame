@@ -34,9 +34,7 @@ struct TimeStack<Content: View>: View {
         let ramps = timings.mapValues { $0.ramp.ramp ?? defaultRamp }
         TimelineView(.periodic(from: .now, by: 0.1)) { context in
             let time = context.date.timeIntervalSince(start) - epsilon
-
             let phases = timings.mapValues { phase(time: time, timing: $0) }
-
             ZStack {
                 content(time)
                     .environment(\.animPhases, phases)
@@ -45,7 +43,7 @@ struct TimeStack<Content: View>: View {
                             onFinished()
                         }
                     }
-                    .onChange(of: phases, perform: logTags)
+                    .onChange(of: phases, perform: logTags) // FIXME: remove
             }
         }
         .environment(\.animRamps, ramps)
@@ -67,6 +65,7 @@ struct TimeStack<Content: View>: View {
         }
     }
 
+    // FIXME: remove
     private func logTags(phases: [AnyHashable: Anim.Phase]) {
         print("----")
         phases.compactMap { tag, phase -> (tag: LogoStep, phase: Anim.Phase)? in
