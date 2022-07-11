@@ -100,19 +100,19 @@ enum Anim {
 
 extension Anim {
     fileprivate struct PhasesKey: EnvironmentKey {
-        static let defaultValue: [AnyHashable: Anim.Phase] = [:]
+        static let defaultValue: [AnyHashable: Phase] = [:]
     }
 
     fileprivate struct RampsKey: EnvironmentKey {
-        static let defaultValue: [AnyHashable: Anim.Ramp] = [:]
+        static let defaultValue: [AnyHashable: Ramp] = [:]
     }
 
     fileprivate struct RampKey: EnvironmentKey {
-        static let defaultValue: Anim.Ramp = .standard
+        static let defaultValue: Ramp = .standard
     }
 
     fileprivate struct DefaultRampKey: EnvironmentKey {
-        static let defaultValue: Anim.Ramp = .standard
+        static let defaultValue: Ramp = .standard
     }
 
     fileprivate struct TransitionKey: EnvironmentKey {
