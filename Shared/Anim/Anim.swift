@@ -25,46 +25,70 @@ enum Anim {
     struct Timing {
         let start: Double
         let duration: Double
-        let ramp: Ramp?
+        let ramp: RampType
 
-        static func start(at start: Double) -> Timing {
-            .init(start: start, duration: .infinity)
+        var end: Double {
+            start + duration
         }
 
-        static func show(from start: Double, for duration: Double) -> Timing {
-            .init(start: start, duration: duration)
+        static func start(at start: Double, ramp: RampType = .defaultValue) -> Timing {
+            .init(start: start, duration: .infinity, ramp: ramp)
         }
 
-        static func show(from start: Double, until end: Double) -> Timing {
-            .init(start: start, duration: end - start)
+        static func show(from start: Double, for duration: Double, ramp: RampType = .defaultValue) -> Timing {
+            .init(start: start, duration: duration, ramp: ramp)
         }
 
-        func ramp(over rampTime: Double) -> Timing {
-            ramp(in: rampTime, out: rampTime)
+        static func show(from start: Double, until end: Double, ramp: RampType = .defaultValue) -> Timing {
+            .init(start: start, duration: end - start, ramp: ramp)
         }
 
-        func ramp(in rampIn: Double, out rampOut: Double) -> Timing {
-            .init(start: start, duration: duration, ramp: .init(rampIn: rampIn, rampOut: rampOut))
-        }
-
-        private init(start: Double, duration: Double, ramp: Ramp = .standard) {
+        private init(start: Double, duration: Double, ramp: RampType) {
             self.start = start
             self.duration = duration
             self.ramp = ramp
         }
 
-        struct Ramp {
-            let rampIn: Double
-            let rampOut: Double
+        enum RampType {
+            case defaultValue
+            case abrupt
+            case over(Double)
+            case assymetric(in: Double, out: Double)
 
-            static let none: Self = .init(rampIn: 0, rampOut: 0)
-            static let standard: Self = .init(rampIn: defaultRamp, rampOut: defaultRamp)
-            private static let defaultRamp: Double = 0.1
+            var ramp: Ramp? {
+                switch self {
+                    case .defaultValue:
+                        return nil
+                    case .abrupt:
+                        return .abrupt
+                    case .over(let time):
+                        return .over(time)
+                    case .assymetric(in: let rampIn, out: let rampOut):
+                        return .assymetric(in: rampIn, out: rampOut)
+                }
+            }
         }
     }
 
-    static func step<Step: StepEnum>(time: Double, timings: [Step: Double]) -> Step {
-        timings.filter { $0.value < time }.max { $0.value < $1.value }?.key ?? .start
+    struct Ramp {
+        let rampIn: Double
+        let rampOut: Double
+
+        static let standard: Ramp = .init(in: standardRampTime, out: standardRampTime)
+        static let abrupt: Ramp = .init(in: 0, out: 0)
+        static func over(_ time: Double) -> Ramp { .init(in: time, out: time) }
+        static func assymetric(in rampIn: Double, out rampOut: Double) -> Ramp { .init(in: rampIn, out: rampOut) }
+
+        private init(in rampIn: Double, out rampOut: Double) {
+            self.rampIn = rampIn
+            self.rampOut = rampOut
+        }
+
+        private static let standardRampTime: Double = 0.1
+    }
+
+    static func currentStep<Step: StepEnum>(time: Double, timings: [Step: Double]) -> Step {
+        timings.filter { $0.value <= time }.max { $0.value < $1.value }?.key ?? .start
     }
 }
 
@@ -86,11 +110,15 @@ extension Anim {
     }
 
     fileprivate struct RampsKey: EnvironmentKey {
-        static let defaultValue: [AnyHashable: Anim.Timing.Ramp] = [:]
+        static let defaultValue: [AnyHashable: Anim.Ramp] = [:]
     }
 
     fileprivate struct RampKey: EnvironmentKey {
-        static let defaultValue: Anim.Timing.Ramp = .standard
+        static let defaultValue: Anim.Ramp = .standard
+    }
+
+    fileprivate struct DefaultRampKey: EnvironmentKey {
+        static let defaultValue: Anim.Ramp = .standard
     }
 
     fileprivate struct TransitionKey: EnvironmentKey {
@@ -104,14 +132,19 @@ extension EnvironmentValues {
         set { self[Anim.PhasesKey.self] = newValue }
     }
 
-    var animRamps: [AnyHashable: Anim.Timing.Ramp] {
+    var animRamps: [AnyHashable: Anim.Ramp] {
         get { self[Anim.RampsKey.self] }
         set { self[Anim.RampsKey.self] = newValue }
     }
 
-    var animRamp: Anim.Timing.Ramp {
+    var animRamp: Anim.Ramp {
         get { self[Anim.RampKey.self] }
         set { self[Anim.RampKey.self] = newValue }
+    }
+
+    var animDefaultRamp: Anim.Ramp {
+        get { self[Anim.DefaultRampKey.self] }
+        set { self[Anim.DefaultRampKey.self] = newValue }
     }
 
     var animTransition: AnyTransition {

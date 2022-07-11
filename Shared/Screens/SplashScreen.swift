@@ -23,7 +23,8 @@ struct SplashScreen: View {
         let finished: () -> Void
 
         var timings: [LogoStep: Double] {
-            [.wide: 1,
+            [.start: 0.5,
+             .wide: 1,
              .bell: 1.5,
              .offset: 2,
              .finish: 4]
