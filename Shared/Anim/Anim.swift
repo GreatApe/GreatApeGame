@@ -10,13 +10,13 @@ import SwiftUI
 enum Anim {
     enum Phase: Equatable {
         case before
-        case showing
+        case during
         case after
 
         var x: Double {
             switch self {
                 case .before: return -1
-                case .showing: return 0
+                case .during: return 0
                 case .after: return 1
             }
         }
@@ -157,7 +157,7 @@ extension Anim.Phase: CustomStringConvertible {
     var description: String {
         switch self {
             case .before: return "Before"
-            case .showing: return "Showing"
+            case .during: return "During"
             case .after: return "After"
         }
     }

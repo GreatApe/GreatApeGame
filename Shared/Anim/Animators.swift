@@ -83,7 +83,7 @@ struct TransitionAnimator: Animator {
     private let showing: Bool
 
     init(phase: Anim.Phase) {
-        self.showing = phase == .showing
+        self.showing = phase == .during
     }
 
     func body(content: Content) -> some View {

@@ -41,7 +41,7 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     private func setupTags() {
         let first = order.first ?? .start
         currentTag = first
-        phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == first ? .showing : .before) })
+        phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == first ? .during : .before) })
 
         logTags()
     }
@@ -57,7 +57,7 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         }
 
         currentTag = order[current + 1]
-        phases[currentTag] = .showing
+        phases[currentTag] = .during
     }
 
     private func logTags() {

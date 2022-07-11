@@ -21,7 +21,7 @@ struct AnimatedView<AnimatorType: Animator, Content: View>: View {
     var body: some View {
         let phase = phases[tag] ?? .before
         let ramp = ramps[tag] ?? .standard
-        let duration = phase == .showing ? ramp.rampIn : ramp.rampOut
+        let duration = phase == .during ? ramp.rampIn : ramp.rampOut
         content
             .modifier(AnimatorType(phase: phase))
             .environment(\.animRamp, ramp)

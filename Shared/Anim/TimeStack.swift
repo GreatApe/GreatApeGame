@@ -63,7 +63,7 @@ struct TimeStack<Content: View>: View {
         switch time {
             case ..<timing.start: return .before
             case startFadeOut...: return .after
-            default: return .showing
+            default: return .during
         }
     }
 
@@ -82,37 +82,19 @@ extension TimeStack {
     init<Step: StepEnum>(steps: [Step: Double],
                          onFinished: @escaping () -> Void = { },
                          @ViewBuilder content: @escaping (Step) -> Content) {
-
-        if let start = steps[.start], start != 0 { print("Start is implictly set to 0") }
-
-        let sortedSteps = [(.start, 0)] + steps
-            .sorted { $0.value < $1.value }
-            .filter { $0.key != .start }
-
-        let durations = zip(sortedSteps, sortedSteps.dropFirst()).map { this, next in
-            next.value - this.value
-        } + [0]
-
-        let timings = zip(sortedSteps, durations).map { step, duration in
-            (step.key, Anim.Timing.show(from: step.value, for: duration, ramp: .abrupt))
-        }
-
-
-        print("STEPS =====")
-        // Sort, remove and re-add .start
-
-        for s in sortedSteps {
-            print("\(s.key): \(s.value)")
-        }
-
-        print("GIVES =====")
-        for g in timings {
-            print("\(g.0): \(g.1.start) -- \(g.1.duration) -- \(g.1.end)")
-        }
-        print("===//")
-
-        self.timings = .init(uniqueKeysWithValues: timings)
+        self.timings = TimeStack.stepTimings(steps: steps)
         self.onFinished = onFinished
         self.content = { time in content(Anim.currentStep(time: time, timings: steps)) }
+    }
+
+    private static func stepTimings<Step: StepEnum>(steps: [Step: Double]) -> [AnyHashable: Anim.Timing] {
+        var steps = steps
+        steps[.start] = 0
+        let sorted = steps.sorted { $0.value < $1.value }
+        let timings = zip(sorted, sorted.dropFirst() + [sorted[sorted.endIndex - 1]]).map { this, next in
+            (this.key, Anim.Timing.show(from: this.value, until: next.value, ramp: .abrupt))
+        }
+
+        return .init(uniqueKeysWithValues: timings)
     }
 }
