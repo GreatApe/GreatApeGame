@@ -11,7 +11,7 @@ import SwiftUI
 struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     @Environment(\.animDefaultRamp) private var defaultRamp
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
-    @State private var currentTag: Tag? = nil
+    @State private var currentTag: Tag = .start
     private var tappable: Bool = false
     private var onFinish: () -> Void
     private let order: [Tag]
@@ -29,13 +29,14 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     }
 
     var body: some View {
+        let rampTimes = order.map { ($0, ramps[$0] ?? defaultRamp) }
         ZStack {
             TapView(perform: nextTag)
-            content(currentTag ?? .start)
+            content(currentTag)
                 .allowsHitTesting(tappable)
                 .environment(\.animPhases, phases)
         }
-        .environment(\.animRamps, rampTimes())
+        .environment(\.animRamps, .init(rampTimes) { $1 })
         .onAppear(perform: setupTags)
     }
 
@@ -52,7 +53,7 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     private func setupTags() {
         let first = order.first ?? .start
         currentTag = first
-        phases = .init(uniqueKeysWithValues: order.map { (.init($0), $0 == first ? .during : .before) })
+        phases = .init(order.map { (.init($0), $0 == first ? .during : .before) }) { $1 }
 
         logTags() // FIXME: remove
     }
@@ -60,33 +61,18 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     private func nextTag() {
         defer { logTags() } // FIXME: remove
         phases[currentTag] = .after
-        let current = currentTag.flatMap(order.firstIndex) ?? 0
+        let current = order.firstIndex(of: currentTag) ?? 0
         guard order.indices.contains(current + 1) else {
-            onFinish()
-            currentTag = nil
+            let delay = (ramps[currentTag] ?? defaultRamp).rampOut
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                onFinish()
+            }
+
             return
         }
 
         currentTag = order[current + 1]
         phases[currentTag] = .during
-    }
-
-    private func rampTimes() -> [Tag: Anim.Ramp] {
-        let rampTimes = order.map { ramps[$0] ?? defaultRamp }
-
-        var result: [Tag: Anim.Ramp] = [:]
-        for (index, tag) in order.enumerated() {
-            let delay = rampTimes.indices.contains(index - 1) ? rampTimes[index - 1].rampOut : 0
-            result[tag] = rampTimes[index]//.delayRampIn(by: delay)
-        }
-
-        for tag in order {
-            if let ramp = result[tag] {
-                print("TAG: \(tag): \(ramp.rampIn) - \(ramp.rampOut) - D:\(ramp.rampInDelay)")
-            }
-        }
-
-        return result
     }
 
     // FIXME: remove
