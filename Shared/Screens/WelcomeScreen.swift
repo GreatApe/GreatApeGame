@@ -48,14 +48,12 @@ struct WelcomeScreen: View {
         TapStack(order: 0...3, ramps: vm.ramps, onFinish: vm.finished) { tag in
             Text(verbatim: .welcome1)
                 .transitioned(tag: 1)
-//                .animated(using: MessageFade.self, tag: 1)
                 .retro()
             Text(verbatim: .welcome2)
                 .transitioned(tag: 2)
                 .retro()
             Text(verbatim: .welcome3)
                 .transitioned(tag: 3)
-//                .animated(using: MessageFade.self, tag: 3)
                 .retro()
         }
         .defaultRamp(.over(0.7))

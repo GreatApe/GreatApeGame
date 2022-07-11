@@ -7,12 +7,10 @@
 
 import SwiftUI
 
-
 struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     @Environment(\.animDefaultRamp) private var defaultRamp
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: Tag = .start
-    private var tappable: Bool = false
     private var onFinish: () -> Void
     private let order: [Tag]
     private let ramps: [Tag: Anim.Ramp]
@@ -31,19 +29,12 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     var body: some View {
         let rampTimes = order.map { ($0, ramps[$0] ?? defaultRamp) }
         ZStack {
-            TapView(perform: nextTag)
             content(currentTag)
-                .allowsHitTesting(tappable)
                 .environment(\.animPhases, phases)
+            TapView(perform: nextTag)
         }
         .environment(\.animRamps, .init(rampTimes) { $1 })
         .onAppear(perform: setupTags)
-    }
-
-    func tappable(active: Bool = true) -> Self {
-        var result = self
-        result.tappable = tappable
-        return result
     }
 
     func defaultRamp(_ ramp: Anim.Ramp) -> some View {
@@ -55,11 +46,11 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         currentTag = first
         phases = .init(order.map { (.init($0), $0 == first ? .during : .before) }) { $1 }
 
-        logTags() // FIXME: remove
+        logTags()
     }
 
     private func nextTag() {
-        defer { logTags() } // FIXME: remove
+        defer { logTags() }
         phases[currentTag] = .after
         let current = order.firstIndex(of: currentTag) ?? 0
         guard order.indices.contains(current + 1) else {
