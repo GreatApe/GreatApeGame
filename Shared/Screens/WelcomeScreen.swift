@@ -21,7 +21,7 @@ struct WelcomeScreen__: View {
                 .animated(using: MessageFade.self, tag: 2)
                 .retro()
             VideoClipView(url: videoURL)
-                .animatedTransition(tag: 3)
+                .transitioned(tag: 3)
             Text(verbatim: .welcome3)
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
@@ -41,47 +41,21 @@ struct WelcomeScreen__: View {
     }
 }
 
-//struct WelcomeScreen: View {
-//    let vm: ViewModel
-//
-//    var body: some View {
-//        TimeStack(timings: .sequenced([2, 4, 6], overlap: 0), onFinished: vm.finished) { time in
-//            Text(verbatim: "1" + .welcome1)
-//                .animated(using: MessageFade.self, tag: 1)
-//                .retro()
-//            Text(verbatim: "2" + .welcome2)
-//                .animated(using: MessageFade.self, tag: 2)
-//                .retro()
-//            Text(verbatim: "3" + .welcome3)
-//                .animated(using: MessageFade.self, tag: 3)
-//                .retro()
-//            TapView(perform: vm.tapBackground)
-//        }
-////        .defaultRamp(.over(0.6))
-//        .apeLarge
-//    }
-//
-//    struct ViewModel {
-//        let tapBackground: () -> Void
-//        let finished: () -> Void
-//    }
-//}
-
-struct WelcomeScreen_: View {
+struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
         TapStack(order: 0...3, ramps: vm.ramps, onFinish: vm.finished) { tag in
             Text(verbatim: .welcome1)
-                .animated(using: MessageFade.self, tag: 1)
+                .transitioned(tag: 1)
+//                .animated(using: MessageFade.self, tag: 1)
                 .retro()
             Text(verbatim: .welcome2)
-                .animated(using: MessageFade.self, tag: 2)
+                .transitioned(tag: 2)
                 .retro()
-//            VideoClipView(url: videoURL)
-//                .animatedTransition(tag: 3)
             Text(verbatim: .welcome3)
-                .animated(using: MessageFade.self, tag: 3)
+                .transitioned(tag: 3)
+//                .animated(using: MessageFade.self, tag: 3)
                 .retro()
         }
         .defaultRamp(.over(0.7))
@@ -91,9 +65,9 @@ struct WelcomeScreen_: View {
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
-        let ramps: [Int: Anim.Ramp] = [1: .over(1),
-                                       2: .over(2).delayRampIn(by: 1),
-                                       3: .over(3).delayRampIn(by: 2)]
+        let ramps: [Int: Anim.Ramp] = [1: .over(0.6),
+                                       2: .over(0.6).delayRampIn(by: 0.6),
+                                       3: .over(0.6).delayRampIn(by: 0.6)]
     }
 }
 

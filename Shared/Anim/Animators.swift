@@ -88,7 +88,7 @@ struct TransitionAnimator: Animator {
 
     func body(content: Content) -> some View {
         if showing {
-            content.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramp.rampIn)),
+            content.transition(.asymmetric(insertion: transition.animation(.easeIn(duration: ramp.rampIn).delay(ramp.rampInDelay)),
                                            removal: transition.animation(.easeOut(duration: ramp.rampOut))))
         }
     }

@@ -36,7 +36,7 @@ extension View {
         AnimatedView(animator: animator, tag: tag, content: self)
     }
 
-    func animatedTransition(with transition: AnyTransition = .opacity, tag: AnyHashable) -> some View {
+    func transitioned(with transition: AnyTransition = .opacity, tag: AnyHashable) -> some View {
         AnimatedView(animator: TransitionAnimator.self, tag: tag, content: self)
             .environment(\.animTransition, transition)
     }
