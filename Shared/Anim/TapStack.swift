@@ -9,33 +9,43 @@ import SwiftUI
 
 
 struct TapStack<Tag: Hashable & Startable, Content: View>: View {
+    @Environment(\.animDefaultRamp) private var defaultRamp
     @State private var phases: [AnyHashable: Anim.Phase] = [:]
     @State private var currentTag: Tag? = nil
     private var tappable: Bool = false
     private var onFinish: () -> Void
     private let order: [Tag]
+    private let ramps: [Tag: Anim.Timing.RampType]
     private let content: (Tag) -> Content
 
-    init<Order: Collection>(order: Order, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) where Order.Element == Tag {
+    init<Order: Collection>(order: Order, ramps: [Tag: Anim.Timing.RampType] = [:], onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) where Order.Element == Tag {
         self.onFinish = onFinish
         self.order = Array(order)
+        self.ramps = ramps
         self.content = content
     }
 
     var body: some View {
+        let rampTimes = order.map { ($0, ramps[$0]?.ramp ?? defaultRamp) }
+        let _ = print(rampTimes)
         ZStack {
             TapView(perform: nextTag)
             content(currentTag ?? .start)
                 .allowsHitTesting(tappable)
                 .environment(\.animPhases, phases)
         }
+        .environment(\.animRamps, .init(rampTimes) { $1 })
         .onAppear(perform: setupTags)
     }
 
-    func tappable(active: Bool = true) -> some View {
+    func tappable(active: Bool = true) -> Self {
         var result = self
         result.tappable = tappable
         return result
+    }
+
+    func defaultRamp(_ ramp: Anim.Ramp) -> some View {
+        self.environment(\.animDefaultRamp, ramp)
     }
 
     private func setupTags() {
@@ -73,8 +83,9 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
 }
 
 extension TapStack where Tag: StepEnum {
-    init(stepped: Tag.Type, onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) {
+    init(stepped: Tag.Type, ramps: [Tag: Anim.Timing.RampType] = [:], onFinish: @escaping () -> Void = { }, @ViewBuilder content: @escaping (Tag) -> Content) {
         self.order = Array(Tag.allCases)
+        self.ramps = ramps
         self.onFinish = onFinish
         self.content = content
     }

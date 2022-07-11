@@ -9,7 +9,7 @@ import SwiftUI
 
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
-struct WelcomeScreen: View {
+struct WelcomeScreen__: View {
     let vm: ViewModel
 
     var body: some View {
@@ -39,3 +39,32 @@ struct WelcomeScreen: View {
                                            4: .show(from: 20, for: 2)]
     }
 }
+
+struct WelcomeScreen: View {
+    let vm: ViewModel
+
+    var body: some View {
+        TapStack(order: 0...4, ramps: vm.ramps, onFinish: vm.finished) { tag in
+            Text(verbatim: .welcome1)
+                .animated(using: MessageFade.self, tag: 1)
+                .retro()
+            Text(verbatim: .welcome2)
+                .animated(using: MessageFade.self, tag: 2)
+                .retro()
+            VideoClipView(url: videoURL)
+                .animatedTransition(tag: 3)
+            Text(verbatim: .welcome3)
+                .animated(using: MessageFade.self, tag: 4)
+                .retro()
+        }
+        .defaultRamp(.over(0.7))
+        .apeLarge
+    }
+
+    struct ViewModel {
+        let tapBackground: () -> Void
+        let finished: () -> Void
+        let ramps: [Int: Anim.Timing.RampType] = [3: .over(0.3)]
+    }
+}
+
