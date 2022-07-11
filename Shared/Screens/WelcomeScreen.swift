@@ -41,7 +41,33 @@ struct WelcomeScreen__: View {
     }
 }
 
-struct WelcomeScreen: View {
+//struct WelcomeScreen: View {
+//    let vm: ViewModel
+//
+//    var body: some View {
+//        TimeStack(timings: .sequenced([2, 4, 6], overlap: 0), onFinished: vm.finished) { time in
+//            Text(verbatim: "1" + .welcome1)
+//                .animated(using: MessageFade.self, tag: 1)
+//                .retro()
+//            Text(verbatim: "2" + .welcome2)
+//                .animated(using: MessageFade.self, tag: 2)
+//                .retro()
+//            Text(verbatim: "3" + .welcome3)
+//                .animated(using: MessageFade.self, tag: 3)
+//                .retro()
+//            TapView(perform: vm.tapBackground)
+//        }
+////        .defaultRamp(.over(0.6))
+//        .apeLarge
+//    }
+//
+//    struct ViewModel {
+//        let tapBackground: () -> Void
+//        let finished: () -> Void
+//    }
+//}
+
+struct WelcomeScreen_: View {
     let vm: ViewModel
 
     var body: some View {

@@ -67,7 +67,6 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 onFinish()
             }
-
             return
         }
 

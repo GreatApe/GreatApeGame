@@ -104,8 +104,18 @@ extension Dictionary where Key == Int, Value == Anim.Timing {
         return .init(uniqueKeysWithValues: keysAndValues)
     }
 
-    static func sequence(_ startTimes: [Double], cross: Bool) -> Self {
-        fatalError()
-        //            .init(timings: timings)
-    }
+//    static func sequenced(_ durations: [Double], overlap: Double) -> Self {
+//        let sorted = Set(startTimes + [0]).sorted().enumerated()
+//
+//        let timings = zip(sorted, sorted.dropFirst()).map { this, next in
+//            (this.offset, Anim.Timing.show(from: this.element, until: next.element, ramp: .abrupt))
+//        }
+//
+//        print("====")
+//        for xxx in timings {
+//            print("\(xxx.0): \(xxx.1.start) -- \(xxx.1.duration) -- \(xxx.1.end)")
+//        }
+//
+//        return .init(uniqueKeysWithValues: timings)
+//    }
 }
