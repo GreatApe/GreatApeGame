@@ -10,16 +10,16 @@ import SwiftUI
 struct TimeStack<Content: View>: View {
     @State private var start: Date = .now
     @State private var didFinish: Bool = false
-    private let lastTag: AnyHashable?
     private let timings: [AnyHashable: Anim.Timing]
     private let defaultRamp: Anim.Timing.Ramp
+    private let finishTime: Double?
     private let onFinished: () -> Void
     private let content: (Double) -> Content
 
     init(@ViewBuilder content: @escaping (Double) -> Content) {
-        self.lastTag = nil
         self.timings = [:]
         self.defaultRamp = .none
+        self.finishTime = nil
         self.onFinished = { }
         self.content = content
     }
@@ -28,9 +28,9 @@ struct TimeStack<Content: View>: View {
                         defaultRamp: Anim.Timing.Ramp = .standard,
                         onFinished: @escaping () -> Void = { },
                         @ViewBuilder content: @escaping (Double) -> Content) {
-        self.lastTag = nil
         self.timings = timings
         self.defaultRamp = defaultRamp
+        self.finishTime = nil
         self.onFinished = onFinished
         self.content = content
     }
@@ -43,9 +43,9 @@ struct TimeStack<Content: View>: View {
                     .environment(\.animPhases, timings.mapValues { phase(time: time, timing: $0) })
                     .environment(\.animRamps, timings.mapValues { $0.ramp ?? defaultRamp })
                     .onChange(of: time) { t in
-//                        if t > finishTime {
-//                            finished()
-//                        }
+                        if let finishTime = finishTime, t > finishTime {
+                            onFinished()
+                        }
                     }
             }
         }
@@ -67,9 +67,9 @@ extension TimeStack {
     init<Step: StepEnum>(steps: [Step: Double],
                          onFinished: @escaping () -> Void = { },
                          @ViewBuilder content: @escaping (Step) -> Content) {
-        self.lastTag = nil
         self.timings = steps.mapValues(Anim.Timing.start)
         self.defaultRamp = .none
+        self.finishTime = steps.values.max()
         self.onFinished = onFinished
         self.content = { time in content(Anim.step(time: time, timings: steps)) }
     }
