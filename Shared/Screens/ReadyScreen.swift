@@ -33,7 +33,7 @@ struct ReadyScreen: View {
                 Spacer()
                 Button(action: vm.tapShare) {
                     Image(systemName: "square.and.arrow.up")
-                        .apeLarge
+                        .ape(large: true)
                         .retro()
                         .padding()
                 }

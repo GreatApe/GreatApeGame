@@ -63,7 +63,7 @@ struct ScoreboardLineView: View {
                 Text("Try it!")
             }
         }
-        .ape
+        .ape()
     }
 }
 

@@ -14,7 +14,7 @@ struct MessagesView: View {
         TimeStack(timings: .ordered(timings)) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
-                    .apeLarge
+                    .ape(large: true)
                     .animated(using: MessageFade.self, tag: index)
                     .retro()
             }
@@ -43,17 +43,17 @@ struct Messages: Equatable {
     var delay: Double = 0
     var timePerMessage: Double = 2.5
     var stay: Bool = false
+    var small: Bool = false
 
     static func success() -> Self {
-        .init(strings: String.successStrings)
-//        .init(strings: String.successStrings.randomElement().asArray)
+        .init(strings: String.successStrings.randomElement().asArray)
     }
 
     static let tryAgain: Self = .init(strings: [.tryAgain])
     static let easier: Self = .init(strings: [.easier])
     static let scoreboard: Self = .init(strings: [.scoreboard])
     static let levelChange: Self = .init(strings: [.levelChange])
-    static let copied: Self = .init(strings: [.copied])
+    static let copied: Self = .init(strings: [.copied], small: true)
     static let didReset: Self = .init(strings: [.didReset])
 
     static func levelUp(_ level: Int) -> Self {

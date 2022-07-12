@@ -25,12 +25,12 @@ struct AboutScreen: View {
                 .animated(using: MessageFade.self, tag: 4)
                 .retro()
         }
-        .ape
-//        .animationRamping(.assymetric(rampIn: 0.3, rampOut: 0.7).delayed(by: 0.7))
+        .defaultRamp(.assymetric(in: 0.3, out: 0.7).delayRampIn(by: 0.7))
+        .ape()
         .overlay(alignment: .topTrailing) {
             Button(action: vm.finished) {
                 Image(systemName: "xmark")
-                    .apeLarge
+                    .ape(large: true)
                     .padding(20)
             }
         }

@@ -79,7 +79,7 @@ struct TimeView: View {
 
     var body: some View {
         Text(verbatim: "2345")
-            .ape
+            .ape()
             .opacity(0)
             .modifier(TimeModifier(time: time))
             .animation(.easeInOut(duration: slideDuration), value: time)
@@ -116,7 +116,7 @@ struct TimeModifier: ViewModifier, Animatable {
                         CounterDigit(height: height, digit: tenths, excess: tenthsExcess)
                         CounterDigit(height: height, digit: hundreths, excess: hundrethsExcess)
                     }
-                    .ape
+                    .ape()
                 }
             }
     }
@@ -186,7 +186,7 @@ struct LevelBoxes: View {
                     .transition(.scale)
             }
         }
-        .ape
+        .ape()
     }
 
     private var boxes: [BoxModel] {

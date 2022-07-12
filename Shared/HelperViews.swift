@@ -50,26 +50,9 @@ extension String {
     }
 }
 
-struct ApeLabel: View {
-    let systemName: String
-    let text: Text
-
-    var body: some View {
-        HStack {
-            Image(systemName: systemName)
-            text
-        }
-        .ape
-    }
-}
-
 extension View {
-    var ape: some View {
-        modifier(ApeModifier())
-    }
-
-    var apeLarge: some View {
-        modifier(ApeModifier(large: true))
+    func ape(large: Bool = false) -> some View {
+        modifier(ApeModifier(large: large))
     }
 }
 
@@ -93,7 +76,7 @@ struct MenuText: View {
 
     var body: some View {
         ReadyScreen.ViewModel.text(for: item)
-            .apeLarge
+            .ape(large: true)
             .retro()
     }
 }
