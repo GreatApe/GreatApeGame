@@ -25,48 +25,28 @@ enum Anim {
     struct Timing {
         let start: Double
         let duration: Double
-        let ramp: RampType
+        let ramp: Ramp?
 
         var end: Double {
             start + duration
         }
 
-        static func start(at start: Double, ramp: RampType = .defaultValue) -> Timing {
+        static func start(at start: Double, ramp: Ramp? = nil) -> Timing {
             .init(start: start, duration: .infinity, ramp: ramp)
         }
 
-        static func show(from start: Double, for duration: Double, ramp: RampType = .defaultValue) -> Timing {
+        static func show(from start: Double, for duration: Double, ramp: Ramp? = nil) -> Timing {
             .init(start: start, duration: duration, ramp: ramp)
         }
 
-        static func show(from start: Double, until end: Double, ramp: RampType = .defaultValue) -> Timing {
+        static func show(from start: Double, until end: Double, ramp: Ramp? = nil) -> Timing {
             .init(start: start, duration: end - start, ramp: ramp)
         }
 
-        private init(start: Double, duration: Double, ramp: RampType) {
+        private init(start: Double, duration: Double, ramp: Ramp?) {
             self.start = start
             self.duration = duration
             self.ramp = ramp
-        }
-
-        enum RampType {
-            case defaultValue
-            case abrupt
-            case over(Double)
-            case assymetric(in: Double, out: Double)
-
-            var ramp: Ramp? {
-                switch self {
-                    case .defaultValue:
-                        return nil
-                    case .abrupt:
-                        return .abrupt
-                    case .over(let time):
-                        return .over(time)
-                    case .assymetric(in: let rampIn, out: let rampOut):
-                        return .assymetric(in: rampIn, out: rampOut)
-                }
-            }
         }
     }
 

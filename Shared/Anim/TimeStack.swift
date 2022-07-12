@@ -31,7 +31,7 @@ struct TimeStack<Content: View>: View {
 
     var body: some View {
         let finishTime = timings.values.map(\.end).max() ?? .infinity
-        let ramps = timings.mapValues { $0.ramp.ramp ?? defaultRamp }
+        let ramps = timings.mapValues { $0.ramp ?? defaultRamp }
         TimelineView(.periodic(from: .now, by: 0.1)) { context in
             let time = context.date.timeIntervalSince(start) - epsilon
             let phases = timings.mapValues { phase(time: time, timing: $0) }
@@ -56,7 +56,7 @@ struct TimeStack<Content: View>: View {
     private let epsilon: Double = 0.01
 
     private func phase(time: Double, timing: Anim.Timing) -> Anim.Phase {
-        let ramp = timing.ramp.ramp ?? defaultRamp
+        let ramp = timing.ramp ?? defaultRamp
         let startFadeOut = timing.start + timing.duration - ramp.rampOut
         switch time {
             case ..<timing.start: return .before

@@ -8,8 +8,6 @@
 import SwiftUI
 
 extension AnyTransition {
-    static let retro2: Self = .scale.animation(.linear(duration: 2))
-
     static let retro: Self = .retro(0)
     static func retro(_ delay: Double) -> Self { .asymmetric(insertion: .opacity.animation(.default.delay(delay)),
                                                              removal: .opacity.animation(.linear(duration: 0.012))) }
