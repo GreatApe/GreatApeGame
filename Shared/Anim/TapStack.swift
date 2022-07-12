@@ -88,3 +88,34 @@ extension TapStack where Tag: StepEnum {
         self.content = content
     }
 }
+
+//extension TapStack {
+//    init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
+//                                                                        ramp: Anim.Ramp = .standard,
+//                                                                        animator: AnimatorType.Type,
+//                                                                        onFinish: @escaping () -> Void = { },
+//                                                                        @ViewBuilder content: @escaping (Data.Element) -> V)
+//    where Data.Element: Identifiable, Data.Element == Tag, Content == ForEach<Data, Data.Element.ID, AnimatedView<AnimatorType, V>> {
+//        self.init(order: data, ramps: [:], onFinish: onFinish) { currentTag in
+//            ForEach(data) { tag in
+//                AnimatedView(animator: AnimatorType.self, tag: tag, content: content(tag))
+//            }
+//        }
+//    }
+//}
+
+extension TapStack {
+    init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
+                                                                        ramp: Anim.Ramp = .standard,
+                                                                        animator: AnimatorType.Type,
+                                                                        onFinish: @escaping () -> Void = { },
+                                                                        @ViewBuilder content: @escaping (Data.Element) -> V)
+    where Data.Element: Hashable, Data.Element == Tag, Content == ForEach<Data, Data.Element, AnimatedView<AnimatorType, V>> {
+        let ramps = Dictionary(uniqueKeysWithValues: data.map { ($0, ramp.delayRampIn(by: $0 == data.first ? 0 : ramp.rampOut)) })
+        self.init(order: data, ramps: ramps, onFinish: onFinish) { currentTag in
+            ForEach(data, id: \.self) { tag in
+                AnimatedView(animator: AnimatorType.self, tag: tag, content: content(tag))
+            }
+        }
+    }
+}

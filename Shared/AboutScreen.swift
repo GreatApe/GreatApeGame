@@ -11,21 +11,10 @@ struct AboutScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(order: vm.order, onFinish: vm.finished) { tag in
-            Text(verbatim: .about1)
-                .animated(using: MessageFade.self, tag: 1)
-                .retro()
-            Text(verbatim: .about2)
-                .animated(using: MessageFade.self, tag: 2)
-                .retro()
-            Text(verbatim: .about3)
-                .animated(using: MessageFade.self, tag: 3)
-                .retro()
-            Text(verbatim: .about4)
-                .animated(using: MessageFade.self, tag: 4)
+        TapStack(forEach: 1...4, ramp: vm.ramp, animator: MessageFade.self, onFinish: vm.finished) { index in
+            Text(verbatim: "\(index)" + .about1)
                 .retro()
         }
-        .defaultRamp(.assymetric(in: 0.3, out: 0.7).delayRampIn(by: 0.7))
         .ape()
         .overlay(alignment: .topTrailing) {
             Button(action: vm.finished) {
@@ -38,6 +27,8 @@ struct AboutScreen: View {
 
     struct ViewModel {
         let finished: () -> Void
+
         let order: [Int] = [1, 2, 3, 4]
+        let ramp: Anim.Ramp = .assymetric(in: 0.3, out: 0.7)
     }
 }

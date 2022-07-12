@@ -39,8 +39,9 @@ struct TimeStack<Content: View>: View {
                 content(time)
                     .environment(\.animPhases, phases)
                     .onChange(of: time) { t in
-                        if t > finishTime {
+                        if t > finishTime, !didFinish {
                             onFinished()
+                            didFinish = true
                         }
                     }
                     .onChange(of: phases, perform: logTags) // FIXME: remove
