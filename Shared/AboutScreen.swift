@@ -11,9 +11,10 @@ struct AboutScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(forEach: 1...4, ramp: vm.ramp, animator: MessageFade.self, onFinish: vm.finished) { index in
-            Text(verbatim: "\(index)" + .about1)
+        TapStack(forEachTag: 0...5, ramp: vm.ramp, animator: MessageFade.self, onFinish: vm.finished) { index in
+            Text(String.about[index])
                 .retro()
+                .padding(.horizontal, 100)
         }
         .ape()
         .overlay(alignment: .topTrailing) {
@@ -27,8 +28,6 @@ struct AboutScreen: View {
 
     struct ViewModel {
         let finished: () -> Void
-
-        let order: [Int] = [1, 2, 3, 4]
         let ramp: Anim.Ramp = .assymetric(in: 0.3, out: 0.7)
     }
 }

@@ -66,6 +66,15 @@ extension String {
     static let welcome2 = "Tap the boxes in order, once the numbers disappear"
     static let welcome3 = "Ayumu can do 10, how many can you handle?"
 
+    static let about = [
+        "The Great Ape Game was conceived after a visit to the chimpanzees and researchers at the Kyoto Primate Research Institute",
+        "The chimpanzee Ayumu lives in a beautiful tree filled facility with his friends, and volunteers in cognitive reasearch",
+        "A viral video shows how he quickly identifies and memorizes up to 9 numbers, that only flash very briefly",
+        "We wanted to see how well human subjects perform on the same game, so we built this game",
+        "Most people can't manage more than 5 numbers when times get below 0.5 s, what's _your_ records?",
+        "Designed and developed by\n\nUnfair Advantage\n\nsales@unfair.me",
+    ]
+
     static let about1 = "Are you smarter than a chimpanzee? Are you smarter than a chimpanzee? Are you smarter than a chimpanzee?"
     static let about2 = "Tap the boxes in order, once the numbers disappear Tap the boxes in order, once the numbers disappear Tap the boxes in order, once the numbers disappear"
     static let about3 = "Ayumu can do 10, how many can you handle? Ayumu can do 10, how many can you handle? Ayumu can do 10, how many can you handle?"
@@ -84,8 +93,6 @@ extension String {
     static let copied = "Your best times have been copied to the clipboard!"
 
     static let didReset = "All scores have been cleared"
-
-    static let about = "Designed and developed by Unfair Advantage. sales@unfair.me"
 
     static func levelUp(boxes: Int) -> [String] {
         if boxes == 3 {

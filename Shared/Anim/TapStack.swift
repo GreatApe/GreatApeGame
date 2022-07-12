@@ -89,32 +89,31 @@ extension TapStack where Tag: StepEnum {
     }
 }
 
-//extension TapStack {
-//    init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
-//                                                                        ramp: Anim.Ramp = .standard,
-//                                                                        animator: AnimatorType.Type,
-//                                                                        onFinish: @escaping () -> Void = { },
-//                                                                        @ViewBuilder content: @escaping (Data.Element) -> V)
-//    where Data.Element: Identifiable, Data.Element == Tag, Content == ForEach<Data, Data.Element.ID, AnimatedView<AnimatorType, V>> {
-//        self.init(order: data, ramps: [:], onFinish: onFinish) { currentTag in
-//            ForEach(data) { tag in
-//                AnimatedView(animator: AnimatorType.self, tag: tag, content: content(tag))
-//            }
-//        }
-//    }
-//}
-
 extension TapStack {
+    init<Tags: RandomAccessCollection, V: View, AnimatorType: Animator>(forEachTag tags: Tags,
+                                                                        ramp: Anim.Ramp = .standard,
+                                                                        animator: AnimatorType.Type,
+                                                                        onFinish: @escaping () -> Void = { },
+                                                                        @ViewBuilder content: @escaping (Tag) -> V)
+    where Tags.Element == Tag, Content == ForEach<Tags, Tag, AnimatedView<AnimatorType, V>> {
+        let ramps = Dictionary(uniqueKeysWithValues: tags.map { ($0, ramp.delayRampIn(by: $0 == tags.first ? 0 : ramp.rampOut)) })
+        self.init(order: tags, ramps: ramps, onFinish: onFinish) { _ in
+            ForEach(tags, id: \.self) { tag in
+                AnimatedView(animator: AnimatorType.self, tag: tag, content: content(tag))
+            }
+        }
+    }
+
     init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
                                                                         ramp: Anim.Ramp = .standard,
                                                                         animator: AnimatorType.Type,
                                                                         onFinish: @escaping () -> Void = { },
                                                                         @ViewBuilder content: @escaping (Data.Element) -> V)
-    where Data.Element: Hashable, Data.Element == Tag, Content == ForEach<Data, Data.Element, AnimatedView<AnimatorType, V>> {
-        let ramps = Dictionary(uniqueKeysWithValues: data.map { ($0, ramp.delayRampIn(by: $0 == data.first ? 0 : ramp.rampOut)) })
-        self.init(order: data, ramps: ramps, onFinish: onFinish) { currentTag in
-            ForEach(data, id: \.self) { tag in
-                AnimatedView(animator: AnimatorType.self, tag: tag, content: content(tag))
+    where Data.Element: Identifiable, Data.Element.ID: Startable, Data.Element.ID == Tag, Content == ForEach<Data, Tag, AnimatedView<AnimatorType, V>> {
+        let ramps = Dictionary(uniqueKeysWithValues: data.map { ($0.id, ramp.delayRampIn(by: $0.id == data.first?.id ? 0 : ramp.rampOut)) })
+        self.init(order: data.map(\.id), ramps: ramps, onFinish: onFinish) { currentTag in
+            ForEach(data) { datum in
+                AnimatedView(animator: AnimatorType.self, tag: datum.id, content: content(datum))
             }
         }
     }
