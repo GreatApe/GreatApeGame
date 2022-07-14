@@ -45,12 +45,9 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         let first = order.first ?? .start
         currentTag = first
         phases = .init(order.map { (.init($0), $0 == first ? .during : .before) }) { $1 }
-
-        logTags()
     }
 
     private func nextTag() {
-        defer { logTags() }
         phases[currentTag] = .after
         let current = order.firstIndex(of: currentTag) ?? 0
         guard order.indices.contains(current + 1) else {
@@ -63,17 +60,6 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
 
         currentTag = order[current + 1]
         phases[currentTag] = .during
-    }
-
-    // FIXME: remove
-    private func logTags() {
-        print("-- \(currentTag) --")
-        phases.compactMap { tag, phase -> (tag: Int, phase: Anim.Phase)? in
-            guard let intTag = tag.base as? Int else { return nil }
-            return (intTag, phase)
-        }
-        .sorted { $0.tag < $1.tag }
-        .forEach { print("\($0.tag): \($0.phase)") }
     }
 }
 

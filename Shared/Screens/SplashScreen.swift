@@ -97,8 +97,6 @@ struct UnfairLogo {
         let bell = steps[.bell]
         let offset = steps[.offset]
 
-//        print("\(steps.r) \(steps.step) ** wide: \(wide.timeString), bell: \(bell.timeString), offset: \(offset.timeString)")
-
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down
 

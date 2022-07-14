@@ -44,7 +44,6 @@ struct TimeStack<Content: View>: View {
                             didFinish = true
                         }
                     }
-                    .onChange(of: phases, perform: logTags) // FIXME: remove
             }
         }
         .environment(\.animRamps, ramps)
@@ -64,17 +63,6 @@ struct TimeStack<Content: View>: View {
             case startFadeOut...: return .after
             default: return .during
         }
-    }
-
-    // FIXME: remove
-    private func logTags(phases: [AnyHashable: Anim.Phase]) {
-        print("----")
-        phases.compactMap { tag, phase -> (tag: LogoStep, phase: Anim.Phase)? in
-            guard let intTag = tag.base as? LogoStep else { return nil }
-            return (intTag, phase)
-        }
-        .sorted { $0.tag < $1.tag }
-        .forEach { print("\($0.tag): \($0.phase)") }
     }
 }
 
