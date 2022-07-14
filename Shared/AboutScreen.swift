@@ -11,7 +11,7 @@ struct AboutScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TapStack(forEachTag: 0...5, ramp: vm.ramp, animator: MessageFade.self, onFinish: vm.finished) { index in
+        TapStack(forEachTag: 0...5, ramp: vm.ramp, animator: MessageFade.self, onFinished: vm.finished) { index in
             if index == 5 {
                 VStack {
                     Text("Links")

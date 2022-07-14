@@ -14,10 +14,10 @@ struct MessagesView: View {
         TimeStack(timings: .ordered(timings)) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
+                    .fixedSize(horizontal: false, vertical: true)
                     .ape(style: .largeText)
                     .animated(using: MessageFade.self, tag: index)
                     .retro()
-                    .border(.white)
             }
         }
     }
@@ -25,7 +25,7 @@ struct MessagesView: View {
     private var timings: [Anim.Timing] {
         vm.strings.indices.map { index in
             let duration = vm.stay && index == vm.strings.endIndex - 1 ? .infinity : vm.timePerMessage
-            return .show(from: vm.timePerMessage * Double(index) + vm.delay, for: duration)
+            return .show(from: vm.timePerMessage * Double(index) + vm.delay, for: duration, ramp: .over(0.3))
         }
     }
 
