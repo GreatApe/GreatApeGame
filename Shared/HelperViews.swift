@@ -92,7 +92,7 @@ struct ApeModifier: ViewModifier {
                 case .largeText:
                     return 50
                 case .logo:
-                    return 60
+                    return 61
                 case .linkHeader, .link:
                     return 35
             }

@@ -14,7 +14,7 @@ struct SplashScreen: View {
         TimeStack(steps: vm.timings, onFinished: vm.finished) { step in
             UnfairLogoView(step: step)
             UnfairTextView(step: step)
-//            TapView(perform: vm.tapBackground)
+            TapView(perform: vm.tapBackground)
         }
         .frame(width: Self.size.width, height: Self.size.height)
     }
@@ -35,28 +35,13 @@ struct SplashScreen: View {
 }
 
 struct UnfairLogoView: View {
-    @State var num = 0
-
     let step: LogoStep
 
     var body: some View {
-        SteppedUnitShape(step: step) { steps in
-            UnfairLogo.points(steps: steps, num: Double(num))
-        }
+        SteppedUnitShape(step: step, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
-//        .stroke(.red.opacity(0.7), lineWidth: 4)
             .retro()
             .animation(.spring(), value: step)
-
-//            .background {
-//                Image("normal")
-//                    .offset(x: 2.5, y: -31)
-//                    .scaleEffect(x: 1.11, y: 0.94)
-//            }
-//            .onTapGesture {
-//                num += 1
-//            }
-
     }
 }
 
@@ -94,13 +79,10 @@ enum LogoStep: Int, StepEnum {
 }
 
 struct UnfairLogo {
-    static func points(steps: Steps<LogoStep>, num: Double) -> [Path.Points] {
+    static func points(steps: Steps<LogoStep>) -> [Path.Points] {
         let wide = steps[.wide]
         let bell = steps[.bell]
         let offset = steps[.offset]
-
-//        let midDelta = midDelta - 0.01 * num * .right
-//        print("midDelta: \(midDelta.x)")
 
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down
@@ -130,7 +112,7 @@ struct UnfairLogo {
     private static let peakHeight: CGFloat = 0.5
     private static let sigmaHeight: CGFloat = 0.23
     private static let bellWidth: CGFloat = 0.8
-    private static let lineOffset: CGFloat = 0.25
+    private static let lineOffset: CGFloat = 0.26
 
     private static let midDelta: UnitPoint = .init(x: 0.1, y: 0)
     private static let sideDelta: UnitPoint = .init(x: 0.27, y: 0)
