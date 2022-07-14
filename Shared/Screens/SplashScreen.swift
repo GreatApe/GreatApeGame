@@ -70,7 +70,7 @@ struct UnfairTextView: View {
             HStack {
                 Spacer()
                 Text(verbatim: "Unfair Advantage")
-                    .ape(large: true)
+                    .ape(style: .logo)
                     .retro()
                     .offset(x: show ? 0 : -0.1 * proxy.size.width, y: proxy.size.height * offset)
                     .opacity(show ? 1 : 0)

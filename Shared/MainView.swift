@@ -55,7 +55,8 @@ struct MainView: View {
     }
 
     private var aboutVM: AboutScreen.ViewModel {
-        .init(finished: store[.finishedAbout])
+        .init(finished: store[.finishedAbout],
+              tapLink: { store.send(.tapAboutMenu($0)) })
     }
 
     private func readyVM(state: ReadyState) -> ReadyScreen.ViewModel {

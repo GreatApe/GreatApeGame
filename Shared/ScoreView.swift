@@ -186,7 +186,7 @@ struct LevelBoxes: View {
                     .transition(.scale)
             }
         }
-        .ape()
+        .ape(style: .boxes)
     }
 
     private var boxes: [BoxModel] {

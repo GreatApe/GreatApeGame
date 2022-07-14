@@ -54,6 +54,9 @@ enum AppAction {
     case finishedSplash
     case finishedIntro
     case finishedAbout
+
+    case tapAboutMenu(AboutLink)
+
     case tapBackground
 
     // Playing
@@ -253,7 +256,22 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             } else {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain))
             }
+
+        case .tapAboutMenu(let link):
+            switch link {
+                case .kpri:
+                    openLink(urlString: "https://www.kyoto-u.ac.jp/en/research/fields/research-institutes/primate-research-institute-pri")
+                case .ayumu:
+                    openLink(urlString: "https://www.pri.kyoto-u.ac.jp/sections/langint/ai/en/friends/ayumu.html")
+                case .unfairAdvantage:
+                    openLink(urlString: "https://unfair.me")
+            }
     }
+}
+
+private func openLink(urlString: String) {
+    guard let url = URL(string: urlString) else { return }
+    UIApplication.shared.open(url)
 }
 
 // MARK: - CustomStringConvertible

@@ -49,16 +49,16 @@ extension String {
 }
 
 extension View {
-    func ape(large: Bool = false) -> some View {
-        modifier(ApeModifier(large: large))
+    func ape(style: ApeModifier.Style = .smallText) -> some View {
+        modifier(ApeModifier(style: style))
     }
 }
 
 struct ApeModifier: ViewModifier {
     private let font: Font
 
-    init(large: Bool = false) {
-        self.font = .custom("Futura Medium", size: large ? 50 : 30, relativeTo: .title)
+    init(style: Style) {
+        self.font = .custom(style.fontName, size: style.size, relativeTo: .title)
     }
 
     func body(content: Content) -> some View {
@@ -67,6 +67,37 @@ struct ApeModifier: ViewModifier {
             .font(font)
             .foregroundColor(.white)
     }
+
+    enum Style: Equatable {
+        case smallText
+        case boxes
+        case largeText
+        case logo
+        case linkHeader
+        case link
+
+        var fontName: String {
+            switch self {
+                case .smallText, .largeText, .link, .linkHeader:
+                    return "AmericanTypeWriter"
+                case .boxes, .logo:
+                    return "Futura Medium"
+            }
+        }
+
+        var size: Double {
+            switch self {
+                case .smallText, .boxes:
+                    return 30
+                case .largeText:
+                    return 50
+                case .logo:
+                    return 60
+                case .linkHeader, .link:
+                    return 35
+            }
+        }
+    }
 }
 
 struct MenuText: View {
@@ -74,7 +105,7 @@ struct MenuText: View {
 
     var body: some View {
         ReadyScreen.ViewModel.text(for: item)
-            .ape(large: true)
+            .ape(style: .largeText)
             .retro()
     }
 }
@@ -137,49 +168,3 @@ struct TapView: View {
             .onTapGesture(perform: perform)
     }
 }
-
-struct MyTestView: View {
-    @State private var time: Double = 1.56
-    @State private var level: Int = 5
-
-    @State private var excess: Double = 0
-    @State private var anchorZ: Double = -1.12
-    @State private var perspective: Double = 0.2
-    @State private var angle: Double = 36
-
-    var body: some View {
-        HStack {
-            VStack {
-                HStack(spacing: 10) {
-                    Spacer()
-                    Button("Level -") {
-                        level -= 1
-                    }
-                    Button("Level +") {
-                        level += 1
-                    }
-                    Button("Time -") {
-                        time *= 0.99
-                    }
-                    Button("Time +") {
-                        time *= 1.01
-                    }
-                    Spacer()
-                }
-                //                FeedbackView(vm: .init(level: level, time: time, newTime: time, success: true))
-                .padding(25)
-                .background(.black)
-                //                Slider(value: $excess, in: -1...1)
-                //                Slider(value: $anchorZ, in: -2...2)
-                //                Text(verbatim: "anchorZ: \(anchorZ)")
-                //                Slider(value: $perspective, in: 0...3)
-                //                Text(verbatim: "perspective: \(perspective)")
-                //                Slider(value: $angle, in: 20...45)
-                //                Text(verbatim: "angle: \(angle)")
-            }
-            .frame(width: 400)
-
-        }
-    }
-}
-

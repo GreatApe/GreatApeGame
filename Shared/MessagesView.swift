@@ -14,12 +14,12 @@ struct MessagesView: View {
         TimeStack(timings: .ordered(timings)) { time in
             ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
                 Text(string)
-                    .ape(large: true)
+                    .ape(style: .largeText)
                     .animated(using: MessageFade.self, tag: index)
                     .retro()
+                    .border(.white)
             }
         }
-//        .animationRamping(.simple(0.6))
     }
 
     private var timings: [Anim.Timing] {
@@ -53,8 +53,8 @@ struct Messages: Equatable {
     static let easier: Self = .init(strings: [.easier])
     static let scoreboard: Self = .init(strings: [.scoreboard])
     static let levelChange: Self = .init(strings: [.levelChange])
-    static let copied: Self = .init(strings: [.copied], small: true)
-    static let didReset: Self = .init(strings: [.didReset])
+    static let copied: Self = .init(strings: [.copied], stay: true)
+    static let didReset: Self = .init(strings: [.didReset], stay: true)
 
     static func levelUp(_ level: Int) -> Self {
         .init(strings: String.levelUp(boxes: level), delay: 1)
@@ -63,22 +63,16 @@ struct Messages: Equatable {
 
 extension String {
     static let welcome1 = "Are you smarter than a chimpanzee?"
-    static let welcome2 = "Tap the boxes in order, once the numbers disappear"
-    static let welcome3 = "Ayumu can do 10, how many can you handle?"
+    static let welcome2 = "Tap the numbers in order, once they turn into boxes"
+    static let welcome3 = "Ayumu can do 9, how many can you handle?"
 
     static let about = [
         "The Great Ape Game was conceived after a visit to the chimpanzees and researchers at the Kyoto Primate Research Institute",
-        "The chimpanzee Ayumu lives in a beautiful tree filled facility with his friends, and volunteers in cognitive reasearch",
-        "A viral video shows how he quickly identifies and memorizes up to 9 numbers, that only flash very briefly",
-        "We wanted to see how well human subjects perform on the same game, so we built this game",
-        "Most people can't manage more than 5 numbers when times get below 0.5 s, what's _your_ records?",
-        "Designed and developed by\n\nUnfair Advantage\n\nsales@unfair.me",
+        "Here the chimpanzee Ayumu lives in a beautiful tree filled facility with his friends, and volunteers in cognitive reasearch, only asking for fruit in return",
+        "The clip in the intro shows how he quickly identifies and memorizes up to 9 numbers, after seeing them for less than a second",
+        "We wanted to see how well human subjects perform on the same task, so we built this game. It turns out most people can't get past 5 or 6 numbers.",
+        "Designed and developed by\n\nUnfair Advantage\nsales@unfair.me",
     ]
-
-    static let about1 = "Are you smarter than a chimpanzee? Are you smarter than a chimpanzee? Are you smarter than a chimpanzee?"
-    static let about2 = "Tap the boxes in order, once the numbers disappear Tap the boxes in order, once the numbers disappear Tap the boxes in order, once the numbers disappear"
-    static let about3 = "Ayumu can do 10, how many can you handle? Ayumu can do 10, how many can you handle? Ayumu can do 10, how many can you handle?"
-    static let about4 = "Are you smarter than a chimpanzee? Are you smarter than a chimpanzee? Are you smarter than a chimpanzee?"
 
     static let successStrings = ["Awesome", "Fantastic", "Amazing", "Nice work", "Great!", "Not bad!", "Wonderful"]
 
@@ -90,7 +84,7 @@ extension String {
 
     static let levelChange = "Tap a line on the scoreboard to try that level"
 
-    static let copied = "Your best times have been copied to the clipboard!"
+    static let copied = "Your best times have been copied to the clipboard"
 
     static let didReset = "All scores have been cleared"
 

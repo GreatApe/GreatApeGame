@@ -9,9 +9,7 @@ import SwiftUI
 
 private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
 
-typealias WelcomeScreen = WelcomeScreen1
-
-struct WelcomeScreen1: View {
+struct WelcomeScreen: View {
     let vm: ViewModel
 
     var body: some View {
@@ -30,7 +28,7 @@ struct WelcomeScreen1: View {
             TapView(perform: vm.tapBackground)
         }
         .defaultRamp(.over(0.6))
-        .ape(large: true)
+        .ape(style: .largeText)
     }
     
     struct ViewModel {
@@ -59,7 +57,7 @@ struct WelcomeScreen2: View {
                 .retro()
         }
         .defaultRamp(.over(0.7))
-        .ape(large: true)
+        .ape(style: .largeText)
     }
 
     struct ViewModel {

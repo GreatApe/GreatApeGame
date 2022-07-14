@@ -29,9 +29,9 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     var body: some View {
         let rampTimes = order.map { ($0, ramps[$0] ?? defaultRamp) }
         ZStack {
+            TapView(perform: nextTag)
             content(currentTag)
                 .environment(\.animPhases, phases)
-            TapView(perform: nextTag)
         }
         .environment(\.animRamps, .init(rampTimes) { $1 })
         .onAppear(perform: setupTags)
