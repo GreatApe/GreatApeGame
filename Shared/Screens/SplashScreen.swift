@@ -11,7 +11,7 @@ struct SplashScreen: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(steps: vm.timings, onFinished: vm.finished) { step in
+        TimeStack(durations: vm.durations, onFinished: vm.finished) { step in
             TitleView(step: step)
             UnfairLogoView(step: step)
             UnfairTextView(step: step)
@@ -20,27 +20,34 @@ struct SplashScreen: View {
         .frame(width: Self.size.width, height: Self.size.height)
     }
 
+    func comp() {
+        var elapsed: Double = 0
+        var timings: [LogoStep: Double] = [.start: 0]
+        for (this, next) in zip(LogoStep.allCases, LogoStep.allCases.dropFirst()) {
+            elapsed += vm.durations[this, default: 0]
+            timings[next] = elapsed
+        }
+    }
+
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
 
-        var timings: [LogoStep: Double] {
-            [
-                .wide: 1,
-                .bell: 1.5,
-                .offset: 2,
-                .titleA: 3 + 2 * 0.1,
-                .titleG: 3 + 2 * 0.2,
-                .titleE2: 3 + 2 * 0.3,
-                .titleR: 3 + 2 * 0.4,
-                .titleA2: 3 + 2 * 0.5,
-                .titleE: 3 + 2 * 0.6,
-                .titleP: 3 + 2 * 0.7,
-                .titleT: 3 + 2 * 0.8,
-                .titleNone: 3 + 2 * 0.9,
-                .titleFull: 3 + 2.2,
-                .finish: 6.5]
-        }
+        let durations: [LogoStep: Double] = [.start: 0.5,
+                                             .wide: 0.5,
+                                             .bell: 0.5,
+                                             .offset: 0.8,
+                                             .blank: 0.3,
+                                             .titleA: 0.2,
+                                             .titleG: 0.2,
+                                             .titleE2: 0.2,
+                                             .titleR: 0.2,
+                                             .titleA2: 0.2,
+                                             .titleE: 0.2,
+                                             .titleP: 0.2,
+                                             .titleT: 0.2,
+                                             .titleNone: 0.4,
+                                             .titleFull: 1.3]
     }
 
     static let size: CGSize = .init(width: 609, height: 337.5)
@@ -117,14 +124,15 @@ enum LogoStep: Int, StepEnum {
     case wide
     case bell
     case offset
-    case titleG
-    case titleR
-    case titleE
+    case blank
     case titleA
-    case titleT
-    case titleA2
-    case titleP
+    case titleG
     case titleE2
+    case titleR
+    case titleA2
+    case titleE
+    case titleP
+    case titleT
     case titleNone
     case titleFull
     case finish
@@ -135,8 +143,6 @@ struct UnfairLogo {
         let wide = steps[.wide]
         let bell = steps[.bell]
         let offset = steps[.offset]
-
-        print("\(steps.r): \(steps.currentStep) wide: \(wide)")
 
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down

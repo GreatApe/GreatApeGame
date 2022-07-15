@@ -73,9 +73,10 @@ enum Anim {
         private static let standardRampTime: Double = 0.1
     }
 
-    static func currentStep<Step: StepEnum>(time: Double, timings: [Step: Double]) -> Step {
-        timings.filter { $0.value <= time }.max { $0.value < $1.value }?.key ?? .start
+    static func currentStep<Step: StepEnum>(time: Double, timings: [Step: Anim.Timing]) -> Step {
+        timings.filter { $0.value.start <= time }.max { $0.value.start < $1.value.start }?.key ?? .start
     }
+
 }
 
 extension Anim {

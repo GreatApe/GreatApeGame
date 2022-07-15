@@ -67,23 +67,26 @@ struct TimeStack<Content: View>: View {
 }
 
 extension TimeStack {
-    init<Step: StepEnum>(steps: [Step: Double],
+    init<Step: StepEnum>(durations: [Step: Double],
                          onFinished: @escaping () -> Void = { },
                          @ViewBuilder content: @escaping (Step) -> Content) {
-        self.timings = TimeStack.stepTimings(steps: steps)
+        let timings = TimeStack.stepTimings(durations: durations)
+        self.timings = timings
         self.onFinished = onFinished
-        self.content = { time in content(Anim.currentStep(time: time, timings: steps)) }
+        self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
     }
 
-    private static func stepTimings<Step: StepEnum>(steps: [Step: Double]) -> [AnyHashable: Anim.Timing] {
-        var steps = steps
-        steps[.start] = 0
-        let sorted = steps.sorted { $0.value < $1.value }
-        let timings = zip(sorted, sorted.dropFirst() + [sorted[sorted.endIndex - 1]]).map { this, next in
-            (this.key, Anim.Timing.show(from: this.value, until: next.value, ramp: .abrupt))
+    private static func stepTimings<Step: StepEnum>(durations: [Step: Double]) -> [Step: Anim.Timing] {
+        guard !durations.isEmpty else { return [:] }
+        var elapsed: Double = 0
+        var timings: [Step: Anim.Timing] = [:]
+        for step in Step.allCases {
+            let duration = durations[step, default: 0]
+            timings[step] = .show(from: elapsed, for: duration, ramp: .abrupt)
+            elapsed += duration
         }
 
-        return .init(uniqueKeysWithValues: timings)
+        return timings
     }
 }
 
