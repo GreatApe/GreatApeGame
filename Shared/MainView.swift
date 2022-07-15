@@ -28,7 +28,8 @@ struct MainView: View {
                 SplashScreen(vm: splashVM)
                     .transition(.retro)
             case .welcome:
-                WelcomeScreen(vm: welcomeVM)
+                SplashScreen(vm: splashVM)
+//                WelcomeScreen(vm: welcomeVM)
                     .transition(.retro)
             case .about:
                 AboutScreen(vm: aboutVM)

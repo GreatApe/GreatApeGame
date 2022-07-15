@@ -24,7 +24,7 @@ struct SteppedShape<Step: StepEnum>: Shape {
     }
 
     func path(in rect: CGRect) -> Path {
-        makePath(.init(r: r, step: step), rect)
+        makePath(.init(r: r, currentStep: step), rect)
     }
 }
 
@@ -46,7 +46,7 @@ struct SteppedUnitShape<Step: StepEnum>: Shape {
 
     func path(in rect: CGRect) -> Path {
         Path { path in
-            path.add(points(.init(r: r, step: step)), in: rect)
+            path.add(points(.init(r: r, currentStep: step)), in: rect)
         }
     }
 }
@@ -96,13 +96,13 @@ extension StepEnum {
 
 struct Steps<Step: StepEnum> {
     let r: Double
-    let step: Step
+    let currentStep: Step
 
     subscript(step: Step) -> Double {
-        if self.step == step {
+        if step == currentStep {
             return 1 + r - step.r
         }
 
-        return self.step < step ? 0 : 1
+        return step > currentStep ? 0 : 1
     }
 }

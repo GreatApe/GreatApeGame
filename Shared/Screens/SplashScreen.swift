@@ -12,6 +12,7 @@ struct SplashScreen: View {
 
     var body: some View {
         TimeStack(steps: vm.timings, onFinished: vm.finished) { step in
+            TitleView(step: step)
             UnfairLogoView(step: step)
             UnfairTextView(step: step)
             TapView(perform: vm.tapBackground)
@@ -24,14 +25,52 @@ struct SplashScreen: View {
         let finished: () -> Void
 
         var timings: [LogoStep: Double] {
-            [.wide: 1,
-             .bell: 1.5,
-             .offset: 2,
-             .finish: 40]
+            [
+                .wide: 1,
+                .bell: 1.5,
+                .offset: 2,
+                .titleA: 3 + 2 * 0.1,
+                .titleG: 3 + 2 * 0.2,
+                .titleE2: 3 + 2 * 0.3,
+                .titleR: 3 + 2 * 0.4,
+                .titleA2: 3 + 2 * 0.5,
+                .titleE: 3 + 2 * 0.6,
+                .titleP: 3 + 2 * 0.7,
+                .titleT: 3 + 2 * 0.8,
+                .titleNone: 3 + 2 * 0.9,
+                .titleFull: 3 + 2.2,
+                .finish: 6.5]
         }
     }
 
     static let size: CGSize = .init(width: 609, height: 337.5)
+}
+
+struct TitleView: View {
+    let step: LogoStep
+
+    var body: some View {
+        VStack {
+            HStack {
+                Text("G").opacity(step == .titleG || step == .titleFull ? 1 : 0)
+                Text("R").opacity(step == .titleR || step == .titleFull ? 1 : 0)
+                Text("E").opacity(step == .titleE || step == .titleFull ? 1 : 0)
+                Text("A").opacity(step == .titleA || step == .titleFull ? 1 : 0)
+                Text("T").opacity(step == .titleT || step == .titleFull ? 1 : 0)
+            }
+            HStack {
+                Text("A").opacity(step == .titleA2 || step == .titleFull ? 1 : 0)
+                Text("P").opacity(step == .titleP || step == .titleFull ? 1 : 0)
+                Text("E").opacity(step == .titleE2 || step == .titleFull ? 1 : 0)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: step)
+        .ape(style: .title)
+    }
+
+    var delay: Double {
+        .random(in: 0..<0.1)
+    }
 }
 
 struct UnfairLogoView: View {
@@ -41,16 +80,18 @@ struct UnfairLogoView: View {
         SteppedUnitShape(step: step, points: UnfairLogo.points)
             .stroke(.white, lineWidth: 4)
             .retro()
+            .opacity(hide ? 0 : 1)
             .animation(.spring(), value: step)
+            .animation(.easeInOut(duration: 0.5), value: hide)
     }
+
+    private var hide: Bool { step > .offset }
 }
 
 struct UnfairTextView: View {
-    private let show: Bool
-
-    init(step: LogoStep) {
-        self.show = step >= .offset
-    }
+    private var show: Bool { step >= .offset }
+    private var hide: Bool { step > .offset }
+    let step: LogoStep
 
     var body: some View {
         GeometryReader { proxy in
@@ -60,8 +101,9 @@ struct UnfairTextView: View {
                     .ape(style: .logo)
                     .retro()
                     .offset(x: show ? 0 : -0.1 * proxy.size.width, y: proxy.size.height * offset)
-                    .opacity(show ? 1 : 0)
+                    .opacity(show && !hide ? 1 : 0)
                     .animation(.spring(), value: show)
+                    .animation(.easeInOut(duration: 0.5), value: hide)
                 Spacer()
             }
         }
@@ -75,6 +117,16 @@ enum LogoStep: Int, StepEnum {
     case wide
     case bell
     case offset
+    case titleG
+    case titleR
+    case titleE
+    case titleA
+    case titleT
+    case titleA2
+    case titleP
+    case titleE2
+    case titleNone
+    case titleFull
     case finish
 }
 
@@ -83,6 +135,8 @@ struct UnfairLogo {
         let wide = steps[.wide]
         let bell = steps[.bell]
         let offset = steps[.offset]
+
+        print("\(steps.r): \(steps.currentStep) wide: \(wide)")
 
         let peak: UnitPoint = .center + bell * peakShift * peakHeight * .up
         let trough: UnitPoint = peak + bell * peakHeight * .down
