@@ -20,15 +20,6 @@ struct SplashScreen: View {
         .frame(width: Self.size.width, height: Self.size.height)
     }
 
-    func comp() {
-        var elapsed: Double = 0
-        var timings: [LogoStep: Double] = [.start: 0]
-        for (this, next) in zip(LogoStep.allCases, LogoStep.allCases.dropFirst()) {
-            elapsed += vm.durations[this, default: 0]
-            timings[next] = elapsed
-        }
-    }
-
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
@@ -36,8 +27,8 @@ struct SplashScreen: View {
         let durations: [LogoStep: Double] = [.start: 0.5,
                                              .wide: 0.5,
                                              .bell: 0.5,
-                                             .offset: 0.8,
-                                             .blank: 0.3,
+                                             .offset: 1,
+                                             .blank: 0.5,
                                              .titleA: 0.2,
                                              .titleG: 0.2,
                                              .titleE2: 0.2,
@@ -73,10 +64,6 @@ struct TitleView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: step)
         .ape(style: .title)
-    }
-
-    var delay: Double {
-        .random(in: 0..<0.1)
     }
 }
 
