@@ -96,6 +96,10 @@ struct AppState {
         return achieved + [.init(level: last.level + 1, time: last.time, achieved: false)]
     }
 
+    var hasFinishedRound: Bool {
+        !bestTimes.isEmpty
+    }
+
     func shouldLevelUp(after result: PlayResult) -> Bool {
         let tries = result.level == 2 ? 1 : 5
         let last5 = results.suffix(tries).filter { $0.success && $0.level == result.level }
@@ -234,6 +238,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                     state.screen = .ready(.normal(.display, nil))
                 case .ready(.normal(_, let messages?)) where messages.stay:
                     state.screen = .ready(.normal(.display, nil))
+                case .ready(.normal) where !state.hasFinishedRound:
+                    state.screen = .ready(.normal(.display, .initialHelp))
+                    print("SHOW HELP")
                 default:
                     break
             }

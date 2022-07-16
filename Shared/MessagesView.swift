@@ -55,6 +55,7 @@ struct Messages: Equatable {
     static let levelChange: Self = .init(strings: [.levelChange])
     static let copied: Self = .init(strings: [.copied], stay: true)
     static let didReset: Self = .init(strings: [.didReset], stay: true)
+    static let initialHelp: Self = .init(strings: [.initialHelp])
 
     static func levelUp(_ level: Int) -> Self {
         .init(strings: String.levelUp(boxes: level), delay: 1)
@@ -87,6 +88,8 @@ extension String {
     static let copied = "Your best times have been copied to the clipboard"
 
     static let didReset = "All scores have been cleared"
+
+    static let initialHelp = "Tap the ring to play"
 
     static func levelUp(boxes: Int) -> [String] {
         if boxes == 3 {

@@ -57,7 +57,7 @@ struct ReadyScreen: View {
             Group {
                 RingButton(ringSize: vm.buttonSize, action: vm.tapRing)
                     .position(vm.readyButtonPosition)
-                if !vm.hideScore {
+                if vm.hasFinishedRound {
                     MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
                         .position(vm.menuButtonPosition)
                     Button(action: vm.tapScoreLine) {
@@ -100,6 +100,7 @@ struct ReadyScreen: View {
         let time: Double
         let achievedTime: Bool
         let scoreboardLines: [ScoreboardLine]
+        let hasFinishedRound: Bool
         let tapScoreLine: () -> Void
         let tapShare: () -> Void
         let tapScoreboard: (ScoreboardLine) -> Void
@@ -113,10 +114,8 @@ struct ReadyScreen: View {
             return entries.map(\.item)
         }
 
-        var showScoreboard: Bool { state == .scoreboard && !hideScore }
+        var showScoreboard: Bool { state == .scoreboard && hasFinishedRound }
         var scoreboard: [ScoreboardLine] { showScoreboard ? scoreboardLines : [] }
-
-        var hideScore: Bool { !scoreboardLines.contains(where: \.achieved) }
 
         var menuButtonPosition: CGPoint { insetRect[.bottomTrailing] }
         var readyButtonPosition: CGPoint { insetRect[.bottomLeading] }

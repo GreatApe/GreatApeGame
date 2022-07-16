@@ -17,9 +17,12 @@ struct ScoreView: View {
         TimelineView(.animation) { context in
             let instant = context.date.timeIntervalSince(appearanceDate)
             let values = vm.values(at: instant)
-            HStack {
+            HStack(spacing: 5) {
                 LevelBoxView(vm: .init(level: values.level, phase: values.boxPhase))
+                    .padding(.horizontal, 5)
                 TimeView(time: values.time.tick)
+                Text("s")
+                    .ape(style: .smallText)
             }
             .animation(.spring(), value: values.level)
             .retro()
@@ -47,8 +50,7 @@ struct ScoreView: View {
                     self.inititalValues = .init(level: oldLevel, time: time, boxPhase: .start)
                     self.phaseValues = [(1, .init(level: oldLevel, time: time, boxPhase: .flash)),
                                         (2, .init(level: oldLevel, time: time, boxPhase: .slide)),
-                                        (2 + slideDuration, .init(level: level, time: time, boxPhase: .slide))
-                    ]
+                                        (2 + slideDuration, .init(level: level, time: time, boxPhase: .slide))]
             }
         }
 
@@ -78,7 +80,7 @@ struct TimeView: View {
     let time: Double
 
     var body: some View {
-        Text(verbatim: "2345")
+        Text(verbatim: "0.00")
             .ape()
             .opacity(0)
             .modifier(TimeModifier(time: time))
