@@ -67,6 +67,16 @@ struct TimeStack<Content: View>: View {
 }
 
 extension TimeStack {
+    init(durations: [Double],
+         delay: Double = 0,
+         onFinished: @escaping () -> Void = { },
+         @ViewBuilder content: @escaping (Int) -> Content) {
+        let timings = TimeStack.timings(durations: durations, delay: delay)
+        self.timings = timings
+        self.onFinished = onFinished
+        self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
+    }
+
     init<Step: StepEnum>(durations: [Step: Double],
                          onFinished: @escaping () -> Void = { },
                          @ViewBuilder content: @escaping (Step) -> Content) {
@@ -74,6 +84,23 @@ extension TimeStack {
         self.timings = timings
         self.onFinished = onFinished
         self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
+    }
+
+    private static func timings(durations: [Double], delay: Double) -> [Int: Anim.Timing] {
+        guard !durations.isEmpty else { return [:] }
+        var elapsed: Double = delay
+        var timings: [Int: Anim.Timing] = [:]
+        for (step, duration) in durations.enumerated() {
+            timings[step] = .show(from: elapsed, for: duration, ramp: .abrupt)
+            elapsed += duration
+        }
+
+        print("===")
+        for i in durations.indices {
+            print("\(i): \(timings[i]?.start ?? -1)")
+        }
+
+        return timings
     }
 
     private static func stepTimings<Step: StepEnum>(durations: [Step: Double]) -> [Step: Anim.Timing] {

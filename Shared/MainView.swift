@@ -75,7 +75,6 @@ struct MainView: View {
               tapRing: store[.tapRing],
               tapMenuButton: store[.tapMenuButton],
               tappedAd: { store.send(.tappedAd($0)) })
-
     }
 
     private var playVM: PlayScreen.ViewModel {

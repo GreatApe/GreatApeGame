@@ -89,7 +89,7 @@ struct ApeModifier: ViewModifier {
 
         var size: Double {
             switch self {
-                case .smallText, .boxes, .ad:
+                case .smallText, .boxes:
                     return 30
                 case .largeText:
                     return 50
@@ -99,6 +99,8 @@ struct ApeModifier: ViewModifier {
                     return 150
                 case .linkHeader, .link:
                     return 35
+                case .ad:
+                    return 25
             }
         }
     }

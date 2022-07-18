@@ -62,6 +62,7 @@ struct ReadyScreen: View {
                         .position(vm.menuButtonPosition)
                     if let adVM = adVM {
                         AdTextView(vm: adVM)
+                            .padding(.horizontal, vm.buttonSize + 50)
                             .position(vm.adTextPosition)
                     }
                     Button(action: vm.tapScoreLine) {
@@ -117,7 +118,7 @@ struct ReadyScreen: View {
         let tapBackground: () -> Void
         let tapRing: () -> Void
         let tapMenuButton: () -> Void
-        let tappedAd: (String) -> Void
+        let tappedAd: (URL) -> Void
 
         var menuItems: [MenuItem] {
             guard case .menu(let entries) = state else { return [] }
@@ -202,9 +203,9 @@ struct AdTextView: View {
     let vm: ViewModel
 
     var body: some View {
-        if let urlString = vm.url {
+        if let urlString = vm.url, let url = URL(string: urlString) {
             Button {
-                vm.tappedAd(urlString)
+                vm.tappedAd(url)
             } label: {
                 text
             }
@@ -214,14 +215,18 @@ struct AdTextView: View {
     }
 
     private var text: some View {
-        Text("")
-            .ape(style: .logo)
-            .retro()
+        TimeStack(durations: [2, 2, 2, 2, .infinity], delay: 1) { index in
+            if vm.labels.indices.contains(index - 1) {
+                Text(vm.labels[index - 1])
+            }
+        }
+        .ape(style: .ad)
+        .retro()
     }
 
     struct ViewModel {
         let labels: [String]
         let url: String?
-        let tappedAd: (String) -> Void
+        let tappedAd: (URL) -> Void
     }
 }

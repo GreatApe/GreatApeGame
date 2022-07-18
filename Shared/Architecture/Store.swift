@@ -17,7 +17,8 @@ enum Constants {
     static let startLevel: Int = 2
     static let startTime: Double = 1
     static let timeDeltaSuccess: Double = 0.05
-    static let timeDeltaFailure: Double = 0.025
+    static let timeDeltaEasier: Double = 0.05
+    static let timeDeltaEasierStill: Double = 0.1
 }
 
 final class Store: ObservableObject {
@@ -38,6 +39,13 @@ class AppEnvironment {
     @UserDefault(key: "hasSeenIntro", defaultValue: false) var hasSeenIntro: Bool
 //    var hasSeenIntro: Bool { get { false } set { _ = newValue } }
     let persistence: PersistenceController = .shared
+
+    var adInfos: [AdInfo]
+
+    init() {
+        self.adInfos = [.init(strings: ["You like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Tap to reserve your @username"],
+                             url: "https://keeptalking.fm")]
+    }
 }
 
 enum AppAction {
@@ -56,7 +64,7 @@ enum AppAction {
     case finishedAbout
 
     case tapAboutMenu(AboutLink)
-    case tappedAd(String)
+    case tappedAd(URL)
 
     case tapBackground
 
@@ -101,14 +109,23 @@ struct AppState {
         !bestTimes.isEmpty
     }
 
-    func shouldLevelUp(after result: PlayResult) -> Bool {
-        let tries = result.level == 2 ? 1 : 5
-        let last5 = results.suffix(tries).filter { $0.success && $0.level == result.level }
-        return last5.count == tries && bestTimes[result.level + 1] == nil
+    func shouldShowAd() -> Bool {
+        results.filter(\.success).count > 10 && Int.random(in: 0..<10) == 0
     }
 
-    func shouldMakeEasier(after result: PlayResult) -> Bool {
-        results.suffix(3).filter { !$0.success && $0.time == result.time }.count == 3
+    func shouldMakeItEasier() -> Bool {
+        results.suffix(3).allSatisfy { !$0.success && $0.time == results.last?.time }
+    }
+
+    func shouldMakeItEasierStill() -> Bool {
+        results.suffix(6).allSatisfy { !$0.success }
+    }
+
+    func shouldLevelUp() -> Bool {
+        guard let lastResult = results.last else { return false }
+        let tries = lastResult.level == 2 ? 1 : 2 + lastResult.level
+        let last5 = results.suffix(tries).filter { $0.success && $0.level == lastResult.level }
+        return last5.count == tries && bestTimes[lastResult.level + 1] == nil
     }
 
     mutating func addResults(_ newResults: [PlayResult]) {
@@ -257,36 +274,42 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.addResults([result])
             try? environment.persistence.save(result: result)
 
-            if state.shouldLevelUp(after: result) {
+            if state.shouldLevelUp() {
                 let level = state.level + 1
                 state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level), nil))
                 state.level = level
             } else if result.success {
-                state.screen = .ready(.normal(.success(oldTime: state.time), .success(), nil))
+                let adInfo = state.shouldShowAd() ? environment.adInfos.randomElement() : nil
+                state.screen = .ready(.normal(.success(oldTime: state.time), .success(), adInfo))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
-            } else if state.shouldMakeEasier(after: result) {
+            } else if state.shouldMakeItEasier() {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
-                state.time += max(0.01, state.time * Constants.timeDeltaFailure)
+                state.time += max(0.01, state.time * Constants.timeDeltaEasier)
+            } else if state.shouldMakeItEasierStill() {
+                state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
+                state.time += max(0.01, state.time * Constants.timeDeltaEasierStill)
             } else {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain, nil))
             }
 
         case .tapAboutMenu(let link):
+            let urlString: String
             switch link {
                 case .kpri:
-                    openLink(urlString: "https://www.kyoto-u.ac.jp/en/research/fields/research-institutes/primate-research-institute-pri")
+                    urlString = "https://www.kyoto-u.ac.jp/en/research/fields/research-institutes/primate-research-institute-pri"
                 case .ayumu:
-                    openLink(urlString: "https://www.pri.kyoto-u.ac.jp/sections/langint/ai/en/friends/ayumu.html")
+                    urlString = "https://www.pri.kyoto-u.ac.jp/sections/langint/ai/en/friends/ayumu.html"
                 case .unfairAdvantage:
-                    openLink(urlString: "https://unfair.me")
+                    urlString = "https://unfair.me"
             }
-        case .tappedAd(let urlString):
-            openLink(urlString: urlString)
+            guard let url = URL(string: urlString) else { return }
+            openLink(url: url)
+        case .tappedAd(let url):
+            openLink(url: url)
     }
 }
 
-private func openLink(urlString: String) {
-    guard let url = URL(string: urlString) else { return }
+private func openLink(url: URL) {
     UIApplication.shared.open(url)
 }
 
