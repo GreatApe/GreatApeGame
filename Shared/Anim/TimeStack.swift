@@ -15,7 +15,7 @@ struct TimeStack<Content: View>: View {
     private let onFinished: () -> Void
     private let content: (Double) -> Content
 
-    init(@ViewBuilder content: @escaping (Double) -> Content) {
+    init(@ViewBuilder contentAtTime content: @escaping (Double) -> Content) {
         self.timings = [:]
         self.onFinished = { }
         self.content = content
@@ -67,16 +67,44 @@ struct TimeStack<Content: View>: View {
 }
 
 extension TimeStack {
-    init(durations: [Double],
-         delay: Double = 0,
-         onFinished: @escaping () -> Void = { },
-         @ViewBuilder content: @escaping (Int) -> Content) {
-        let timings = TimeStack.timings(durations: durations, delay: delay)
-        self.timings = timings
-        self.onFinished = onFinished
-        self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
+    init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
+                                                                        configuration: Anim.Timing.Configuration,
+                                                                        animator: AnimatorType.Type,
+                                                                        onFinished: @escaping () -> Void = { },
+                                                                        @ViewBuilder content: @escaping (Data.Element) -> V)
+    where Content == ForEach<Array<(offset: Int, element: Data.Element)>, Int, AnimatedView<AnimatorType, V>> {
+        self.init(timings: .sequenced(data.count, config: configuration), onFinished: onFinished) { time in
+            ForEach(Array(data.enumerated()), id: \.offset) { (offset, dataElement) in
+                AnimatedView(animator: AnimatorType.self, tag: offset + 1, content: content(dataElement))
+            }
+        }
     }
 
+//    init(durations: [Double],
+//         delay: Double = 0,
+//         onFinished: @escaping () -> Void = { },
+//         @ViewBuilder content: @escaping (Int) -> Content) {
+//        let timings = TimeStack.timings(durations: durations, delay: delay)
+//        self.delay = delay
+//        self.timings = timings
+//        self.onFinished = onFinished
+//        self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
+//    }
+//
+//    private static func timings(durations: [Double], delay: Double) -> [Int: Anim.Timing] {
+//        guard !durations.isEmpty else { return [:] }
+//        var elapsed: Double = delay
+//        var timings: [Int: Anim.Timing] = [:]
+//        for (step, duration) in durations.enumerated() {
+//            timings[step] = .show(from: elapsed, for: duration, ramp: .abrupt)
+//            elapsed += duration
+//        }
+//
+//        return timings
+//    }
+}
+
+extension TimeStack {
     init<Step: StepEnum>(durations: [Step: Double],
                          onFinished: @escaping () -> Void = { },
                          @ViewBuilder content: @escaping (Step) -> Content) {
@@ -84,23 +112,6 @@ extension TimeStack {
         self.timings = timings
         self.onFinished = onFinished
         self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
-    }
-
-    private static func timings(durations: [Double], delay: Double) -> [Int: Anim.Timing] {
-        guard !durations.isEmpty else { return [:] }
-        var elapsed: Double = delay
-        var timings: [Int: Anim.Timing] = [:]
-        for (step, duration) in durations.enumerated() {
-            timings[step] = .show(from: elapsed, for: duration, ramp: .abrupt)
-            elapsed += duration
-        }
-
-        print("===")
-        for i in durations.indices {
-            print("\(i): \(timings[i]?.start ?? -1)")
-        }
-
-        return timings
     }
 
     private static func stepTimings<Step: StepEnum>(durations: [Step: Double]) -> [Step: Anim.Timing] {
@@ -123,18 +134,67 @@ extension Dictionary where Key == Int, Value == Anim.Timing {
         return .init(uniqueKeysWithValues: keysAndValues)
     }
 
-//    static func sequenced(_ durations: [Double], overlap: Double) -> Self {
-//        let sorted = Set(startTimes + [0]).sorted().enumerated()
-//
-//        let timings = zip(sorted, sorted.dropFirst()).map { this, next in
-//            (this.offset, Anim.Timing.show(from: this.element, until: next.element, ramp: .abrupt))
-//        }
-//
-//        print("====")
-//        for xxx in timings {
-//            print("\(xxx.0): \(xxx.1.start) -- \(xxx.1.duration) -- \(xxx.1.end)")
-//        }
-//
-//        return .init(uniqueKeysWithValues: timings)
-//    }
+    static func sequenced(_ items: Int, config: Anim.Timing.Configuration) -> Self {
+        let overlap = config.join.overlap(rampTime: config.rampTime)
+
+        let timings = (0...items).map { i -> (Int, Anim.Timing) in
+            if i == 0 {
+                return (0, .show(from: 0, for: config.delay, ramp: .over(config.rampTime)))
+            } else {
+                let thisDuration = config.stay && i == items ? .infinity : config.duration
+                return (i, .show(from: config.delay + Double(i - 1) * (config.duration - overlap), for: thisDuration, ramp: .over(config.rampTime)))
+            }
+        }
+
+        print("====")
+        for xxx in timings {
+            print("\(xxx.0): \(xxx.1.start) -- \(xxx.1.duration) -- \(xxx.1.end)")
+        }
+
+        return .init(uniqueKeysWithValues: timings)
+    }
 }
+
+extension Anim.Timing {
+    struct Configuration: Equatable {
+        let delay: Double
+        let duration: Double
+        let rampTime: Double
+        let join: Anim.Join
+        let stay: Bool
+
+        init(delay: Double, duration: Double, rampTime: Double, join: Anim.Join = .crossFade, stay: Bool = false) {
+            self.delay = delay
+            self.duration = duration
+            self.rampTime = rampTime
+            self.join = join
+            self.stay = stay
+        }
+    }
+}
+
+extension Anim {
+    enum Join: Equatable {
+        case gap(time: Double)
+        case juxtapose
+        case mix(Double)
+        case crossFade // mix(1)
+        case overlap(time: Double)
+
+        func overlap(rampTime: Double) -> Double {
+            switch self {
+                case .gap(let time):
+                    return -time
+                case .juxtapose:
+                    return 0
+                case .mix(let amount):
+                    return amount.clamped(between: 0, and: 2) * rampTime
+                case .crossFade:
+                    return rampTime
+                case .overlap(let time):
+                    return 2 * rampTime + time
+            }
+        }
+    }
+}
+

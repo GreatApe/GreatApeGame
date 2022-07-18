@@ -44,7 +44,7 @@ class AppEnvironment {
 
     init() {
         self.adInfos = [.init(strings: ["You like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Tap to reserve your @username"],
-                             url: "https://keeptalking.fm")]
+                              url: "https://keeptalking.fm")]
     }
 }
 
@@ -110,7 +110,8 @@ struct AppState {
     }
 
     func shouldShowAd() -> Bool {
-        results.filter(\.success).count > 10 && Int.random(in: 0..<10) == 0
+        true
+//        results.filter(\.success).count > 10 && Int.random(in: 0..<10) == 0
     }
 
     func shouldMakeItEasier() -> Bool {

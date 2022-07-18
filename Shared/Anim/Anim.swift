@@ -70,7 +70,7 @@ enum Anim {
             self.rampInDelay = rampInDelay
         }
 
-        private static let standardRampTime: Double = 0.1
+        static let standardRampTime: Double = 0.1
     }
 
     static func currentStep<Step: Startable>(time: Double, timings: [Step: Anim.Timing]) -> Step {

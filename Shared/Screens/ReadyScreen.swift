@@ -215,18 +215,18 @@ struct AdTextView: View {
     }
 
     private var text: some View {
-        TimeStack(durations: [2, 2, 2, 2, .infinity], delay: 1) { index in
-            if vm.labels.indices.contains(index - 1) {
-                Text(vm.labels[index - 1])
-            }
+        TimeStack(forEach: vm.labels, configuration: vm.config, animator: MessageFade.self) { label in
+            Text(label)
+                .retro()
         }
         .ape(style: .ad)
-        .retro()
     }
 
     struct ViewModel {
         let labels: [String]
         let url: String?
         let tappedAd: (URL) -> Void
+
+        let config: Anim.Timing.Configuration = .init(delay: 5, duration: 2.5, rampTime: 0.3, join: .juxtapose, stay: true)
     }
 }
