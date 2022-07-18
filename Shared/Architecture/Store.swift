@@ -56,6 +56,7 @@ enum AppAction {
     case finishedAbout
 
     case tapAboutMenu(AboutLink)
+    case tappedAd(String)
 
     case tapBackground
 
@@ -144,11 +145,18 @@ struct AppState {
 }
 
 enum ReadyState: Equatable {
-    case normal(ScoreLine, Messages?)
+    case normal(ScoreLine, Messages?, AdInfo?)
     case menu([MenuEntry])
     case scoreboard
 
+    static let standard: ReadyState = .normal(.display, nil, nil)
+
     static let mainMenu: ReadyState = .menu(apeMenu)
+}
+
+struct AdInfo: Equatable {
+    let strings: [String]
+    let url: String?
 }
 
 enum ScoreLine: Equatable {
@@ -178,7 +186,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             guard case .ready(.scoreboard) = state.screen else { break }
             state.level = line.level
             state.time = line.time
-            state.screen = .ready(.normal(.display, nil))
+            state.screen = .ready(.standard)
 
         case .tapMenuButton:
             guard case .ready = state.screen else { break }
@@ -198,49 +206,48 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                             try? environment.persistence.resetResults()
                             state.clearResults()
                             state.setupLevelAndTime()
-                            state.screen = .ready(.normal(.display, .didReset))
+                            state.screen = .ready(.normal(.display, .didReset, nil))
                         case .shareScore:
                             UIPasteboard.general.string = state.bestTimes.shareString
-                            state.screen = .ready(.normal(.display, .copied))
+                            state.screen = .ready(.normal(.display, .copied, nil))
                         case .playIntro:
                             state.screen = .welcome
                         default:
-                            state.screen = .ready(.normal(.display, nil))
+                            state.screen = .ready(.standard)
                     }
                 case .error:
-                    state.screen = .ready(.normal(.display, nil))
+                    state.screen = .ready(.standard)
             }
 
         case .tapShare:
             UIPasteboard.general.string = state.bestTimes.shareString
-            state.screen = .ready(.normal(.display, .copied))
+            state.screen = .ready(.normal(.display, .copied, nil))
 
         case .finishedSplash:
             guard case .splash = state.screen else { break }
             if environment.hasSeenIntro {
-                state.screen = .ready(.normal(.display, nil))
+                state.screen = .ready(.standard)
             } else {
                 state.screen = .welcome
             }
 
         case .finishedIntro:
             guard case .welcome = state.screen else { break }
-            state.screen = .ready(.normal(.display, nil))
+            state.screen = .ready(.standard)
             environment.hasSeenIntro = true
 
         case .finishedAbout:
             guard case .about = state.screen else { break }
-            state.screen = .ready(.normal(.display, nil))
+            state.screen = .ready(.standard)
 
         case .tapBackground:
             switch state.screen {
                 case .splash where environment.hasSeenIntro, .welcome where environment.hasSeenIntro, .ready(.menu), .ready(.scoreboard):
-                    state.screen = .ready(.normal(.display, nil))
-                case .ready(.normal(_, let messages?)) where messages.stay:
-                    state.screen = .ready(.normal(.display, nil))
+                    state.screen = .ready(.standard)
+                case .ready(.normal(_, let messages?, _)) where messages.stay:
+                    state.screen = .ready(.standard)
                 case .ready(.normal) where !state.hasFinishedRound:
-                    state.screen = .ready(.normal(.display, .initialHelp))
-                    print("SHOW HELP")
+                    state.screen = .ready(.normal(.display, .initialHelp, nil))
                 default:
                     break
             }
@@ -252,16 +259,16 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
             if state.shouldLevelUp(after: result) {
                 let level = state.level + 1
-                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level)))
+                state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level), nil))
                 state.level = level
             } else if result.success {
-                state.screen = .ready(.normal(.success(oldTime: state.time), .success()))
+                state.screen = .ready(.normal(.success(oldTime: state.time), .success(), nil))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
             } else if state.shouldMakeEasier(after: result) {
-                state.screen = .ready(.normal(.failure(oldTime: state.time), .easier))
+                state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
                 state.time += max(0.01, state.time * Constants.timeDeltaFailure)
             } else {
-                state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain))
+                state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain, nil))
             }
 
         case .tapAboutMenu(let link):
@@ -273,6 +280,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .unfairAdvantage:
                     openLink(urlString: "https://unfair.me")
             }
+        case .tappedAd(let urlString):
+            openLink(urlString: urlString)
     }
 }
 

@@ -66,14 +66,16 @@ struct MainView: View {
               time: store.state.time,
               achievedTime: store.state.achievedTime,
               scoreboardLines: store.state.scoreboardLines,
-              hasFinishedRound: store.state.hasFinishedRound,
+              hasFinishedARound: store.state.hasFinishedRound,
               tapScoreLine: store[.tapScoreLine],
               tapShare: store[.tapShare],
               tapScoreboard: { store.send(.tapScoreboard($0)) },
               tapMenu: { store.send(.tapMenu($0)) },
               tapBackground: store[.tapBackground],
               tapRing: store[.tapRing],
-              tapMenuButton: store[.tapMenuButton])
+              tapMenuButton: store[.tapMenuButton],
+              tappedAd: { store.send(.tappedAd($0)) })
+
     }
 
     private var playVM: PlayScreen.ViewModel {

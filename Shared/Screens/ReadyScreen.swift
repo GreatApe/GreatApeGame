@@ -57,9 +57,13 @@ struct ReadyScreen: View {
             Group {
                 RingButton(ringSize: vm.buttonSize, action: vm.tapRing)
                     .position(vm.readyButtonPosition)
-                if vm.hasFinishedRound {
+                if vm.hasFinishedARound {
                     MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
                         .position(vm.menuButtonPosition)
+                    if let adVM = adVM {
+                        AdTextView(vm: adVM)
+                            .position(vm.adTextPosition)
+                    }
                     Button(action: vm.tapScoreLine) {
                         ScoreView(vm: scoreVM)
                     }
@@ -73,7 +77,7 @@ struct ReadyScreen: View {
     // View helpers
 
     private var scoreVM: ScoreView.ViewModel? {
-        guard case .normal(let scoreLine, _) = vm.state else { return nil }
+        guard case .normal(let scoreLine, _, _) = vm.state else { return nil }
         return .init(level: vm.level,
                      time: vm.time,
                      scoreLine: scoreLine,
@@ -81,8 +85,13 @@ struct ReadyScreen: View {
     }
 
     private var messageVM: MessagesView.ViewModel? {
-        guard case .normal(_, let message) = vm.state else { return nil }
+        guard case .normal(_, let message?, _) = vm.state else { return nil }
         return message
+    }
+
+    private var adVM: AdTextView.ViewModel? {
+        guard case .normal(_, _, let adInfo?) = vm.state else { return nil }
+        return .init(labels: adInfo.strings, url: adInfo.url, tappedAd: vm.tappedAd)
     }
 
     private var scoreboardVM: ScoreboardView.ViewModel {
@@ -100,7 +109,7 @@ struct ReadyScreen: View {
         let time: Double
         let achievedTime: Bool
         let scoreboardLines: [ScoreboardLine]
-        let hasFinishedRound: Bool
+        let hasFinishedARound: Bool
         let tapScoreLine: () -> Void
         let tapShare: () -> Void
         let tapScoreboard: (ScoreboardLine) -> Void
@@ -108,17 +117,20 @@ struct ReadyScreen: View {
         let tapBackground: () -> Void
         let tapRing: () -> Void
         let tapMenuButton: () -> Void
+        let tappedAd: (String) -> Void
 
         var menuItems: [MenuItem] {
             guard case .menu(let entries) = state else { return [] }
             return entries.map(\.item)
         }
 
-        var showScoreboard: Bool { state == .scoreboard && hasFinishedRound }
+        var showScoreboard: Bool { state == .scoreboard && hasFinishedARound }
         var scoreboard: [ScoreboardLine] { showScoreboard ? scoreboardLines : [] }
 
         var menuButtonPosition: CGPoint { insetRect[.bottomTrailing] }
         var readyButtonPosition: CGPoint { insetRect[.bottomLeading] }
+        var adTextPosition: CGPoint { insetRect[.bottom] }
+
         var buttonSize: CGFloat { size.smallerSide * Constants.controlSize }
 
         private var insetRect: CGRect { .init(origin: .zero, size: size).insetBy(dx: buttonMargin, dy: buttonMargin) }
@@ -184,4 +196,32 @@ struct RingButton: View {
     }
 
     private let ringWidthRatio: CGFloat = 0.14
+}
+
+struct AdTextView: View {
+    let vm: ViewModel
+
+    var body: some View {
+        if let urlString = vm.url {
+            Button {
+                vm.tappedAd(urlString)
+            } label: {
+                text
+            }
+        } else {
+            text
+        }
+    }
+
+    private var text: some View {
+        Text("")
+            .ape(style: .logo)
+            .retro()
+    }
+
+    struct ViewModel {
+        let labels: [String]
+        let url: String?
+        let tappedAd: (String) -> Void
+    }
 }
