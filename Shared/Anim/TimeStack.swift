@@ -146,11 +146,6 @@ extension Dictionary where Key == Int, Value == Anim.Timing {
             }
         }
 
-        print("====")
-        for xxx in timings {
-            print("\(xxx.0): \(xxx.1.start) -- \(xxx.1.duration) -- \(xxx.1.end)")
-        }
-
         return .init(uniqueKeysWithValues: timings)
     }
 }

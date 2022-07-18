@@ -11,22 +11,12 @@ struct MessagesView: View {
     let vm: ViewModel
 
     var body: some View {
-        TimeStack(timings: .ordered(timings)) { time in
-            ForEach(Array(vm.strings.enumerated()), id: \.offset) { (index, string) in
-                Text(string)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .ape(style: .largeText)
-                    .animated(using: MessageFade.self, tag: index)
-                    .retro()
-            }
+        TimeStack(forEach: vm.strings, configuration: vm.config, animator: MessageFade.self) { string in
+            Text(string)
+                .fixedSize(horizontal: false, vertical: true)
+                .retro()
         }
-    }
-
-    private var timings: [Anim.Timing] {
-        vm.strings.indices.map { index in
-            let duration = vm.stay && index == vm.strings.endIndex - 1 ? .infinity : vm.timePerMessage
-            return .show(from: vm.timePerMessage * Double(index) + vm.delay, for: duration, ramp: .over(0.3))
-        }
+        .ape(style: .largeText)
     }
 
     typealias ViewModel = Messages
@@ -44,6 +34,10 @@ struct Messages: Equatable {
     var timePerMessage: Double = 2.5
     var stay: Bool = false
     var small: Bool = false
+
+    var config: Anim.Timing.Configuration {
+        .init(delay: delay, duration: timePerMessage, rampTime: 0.3, join: .juxtapose, stay: stay)
+    }
 
     static func success() -> Self {
         .init(strings: String.successStrings.randomElement().asArray)
