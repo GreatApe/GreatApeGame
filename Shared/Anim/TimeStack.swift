@@ -79,29 +79,6 @@ extension TimeStack {
             }
         }
     }
-
-//    init(durations: [Double],
-//         delay: Double = 0,
-//         onFinished: @escaping () -> Void = { },
-//         @ViewBuilder content: @escaping (Int) -> Content) {
-//        let timings = TimeStack.timings(durations: durations, delay: delay)
-//        self.delay = delay
-//        self.timings = timings
-//        self.onFinished = onFinished
-//        self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
-//    }
-//
-//    private static func timings(durations: [Double], delay: Double) -> [Int: Anim.Timing] {
-//        guard !durations.isEmpty else { return [:] }
-//        var elapsed: Double = delay
-//        var timings: [Int: Anim.Timing] = [:]
-//        for (step, duration) in durations.enumerated() {
-//            timings[step] = .show(from: elapsed, for: duration, ramp: .abrupt)
-//            elapsed += duration
-//        }
-//
-//        return timings
-//    }
 }
 
 extension TimeStack {
@@ -147,49 +124,6 @@ extension Dictionary where Key == Int, Value == Anim.Timing {
         }
 
         return .init(uniqueKeysWithValues: timings)
-    }
-}
-
-extension Anim.Timing {
-    struct Configuration: Equatable {
-        let delay: Double
-        let duration: Double
-        let rampTime: Double
-        let join: Anim.Join
-        let stay: Bool
-
-        init(delay: Double, duration: Double, rampTime: Double, join: Anim.Join = .crossFade, stay: Bool = false) {
-            self.delay = delay
-            self.duration = duration
-            self.rampTime = rampTime
-            self.join = join
-            self.stay = stay
-        }
-    }
-}
-
-extension Anim {
-    enum Join: Equatable {
-        case gap(time: Double)
-        case juxtapose
-        case mix(Double)
-        case crossFade // mix(1)
-        case overlap(time: Double)
-
-        func overlap(rampTime: Double) -> Double {
-            switch self {
-                case .gap(let time):
-                    return -time
-                case .juxtapose:
-                    return 0
-                case .mix(let amount):
-                    return amount.clamped(between: 0, and: 2) * rampTime
-                case .crossFade:
-                    return rampTime
-                case .overlap(let time):
-                    return 2 * rampTime + time
-            }
-        }
     }
 }
 
