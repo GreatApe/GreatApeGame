@@ -266,6 +266,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                         case .shareScore:
                             UIPasteboard.general.string = state.bestTimes.shareString
                             state.screen = .ready(.normal(.display, .copied, nil))
+                        case .gamecenter:
+                            break // TODO: open gamecenter
                         case .playIntro:
                             state.screen = .welcome
                         default:
@@ -280,7 +282,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.screen = .ready(.normal(.display, .copied, nil))
 
         case .tapGameCenter:
-            break
+            break // TODO: open gamecenter
 
         case .finishedSplash:
             guard case .splash = state.screen else { break }

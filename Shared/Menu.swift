@@ -12,6 +12,7 @@ enum MenuItem: Int, Equatable {
     case playIntro
     case shareScore
     case reset
+    case gamecenter
 
     case reallyReset
     case cancelReset
@@ -30,6 +31,7 @@ ApeMenu {
         Row(.reallyReset)
         Row(.cancelReset)
     }
+    Row(.gamecenter)
 }
 
 typealias ApeMenu = [MenuEntry]

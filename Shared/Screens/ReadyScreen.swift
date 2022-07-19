@@ -162,6 +162,8 @@ struct ReadyScreen: View {
                     return Text("Share my score")
                 case .reset:
                     return Text("Reset scores")
+                case .gamecenter:
+                    return Text("GameCenter")
                 case .reallyReset:
                     return Text("Reset all my scores")
                 case .cancelReset:

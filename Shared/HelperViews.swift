@@ -72,6 +72,7 @@ struct ApeModifier: ViewModifier {
         case smallText
         case boxes
         case largeText
+        case menu
         case title
         case logo
         case linkHeader
@@ -80,7 +81,7 @@ struct ApeModifier: ViewModifier {
 
         var fontName: String {
             switch self {
-                case .smallText, .largeText, .link, .linkHeader, .title:
+                case .smallText, .largeText, .menu, .link, .linkHeader, .title:
                     return "AmericanTypeWriter"
                 case .boxes, .logo, .ad:
                     return "Futura Medium"
@@ -93,6 +94,8 @@ struct ApeModifier: ViewModifier {
                     return 30
                 case .largeText:
                     return 50
+                case .menu:
+                    return 45
                 case .logo:
                     return 61
                 case .title:
