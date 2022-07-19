@@ -227,6 +227,6 @@ struct AdTextView: View {
         let url: String?
         let tappedAd: (URL) -> Void
 
-        let config: Anim.Timing.Configuration = .init(delay: 5, duration: 2.5, rampTime: 0.3, join: .juxtapose, stay: true)
+        let config: Aneem.Timing.Configuration = .init(delay: 5, duration: 2.5, rampTime: 0.3, join: .juxtapose, stay: true)
     }
 }

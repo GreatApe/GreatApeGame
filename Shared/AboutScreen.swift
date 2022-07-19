@@ -41,7 +41,7 @@ struct AboutScreen: View {
         let tapLink: (AboutLink) -> Void
         let links: [AboutLink] = [.ayumu, .kpri]
 //        let links: [AboutLink] = [.ayumu, .kpri, .unfairAdvantage]
-        let ramp: Anim.Ramp = .assymetric(in: 0.3, out: 0.3)
+        let ramp: Aneem.Ramp = .assymetric(in: 0.3, out: 0.3)
     }
 }
 

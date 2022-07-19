@@ -1,5 +1,5 @@
 //
-//  Anim.swift
+//  Aneem.swift
 //  GreatApeGame (iOS)
 //
 //  Created by Gustaf Kugelberg on 10/07/2022.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum Anim {
+enum Aneem {
     enum Phase: Equatable {
         case before
         case during
@@ -53,10 +53,10 @@ enum Anim {
             let delay: Double
             let duration: Double
             let rampTime: Double
-            let join: Anim.Join
+            let join: Aneem.Join
             let stay: Bool
 
-            init(delay: Double, duration: Double, rampTime: Double, join: Anim.Join = .crossFade, stay: Bool = false) {
+            init(delay: Double, duration: Double, rampTime: Double, join: Aneem.Join = .crossFade, stay: Bool = false) {
                 self.delay = delay
                 self.duration = duration
                 self.rampTime = rampTime
@@ -112,12 +112,12 @@ enum Anim {
         }
     }
 
-    static func currentStep<Step: Startable>(time: Double, timings: [Step: Anim.Timing]) -> Step {
+    static func currentStep<Step: Startable>(time: Double, timings: [Step: Aneem.Timing]) -> Step {
         timings.filter { $0.value.start <= time }.max { $0.value.start < $1.value.start }?.key ?? .start
     }
 }
 
-extension Anim {
+extension Aneem {
     fileprivate struct PhasesKey: EnvironmentKey {
         static let defaultValue: [AnyHashable: Phase] = [:]
     }
@@ -140,33 +140,33 @@ extension Anim {
 }
 
 extension EnvironmentValues {
-    var animPhases: [AnyHashable: Anim.Phase] {
-        get { self[Anim.PhasesKey.self] }
-        set { self[Anim.PhasesKey.self] = newValue }
+    var animPhases: [AnyHashable: Aneem.Phase] {
+        get { self[Aneem.PhasesKey.self] }
+        set { self[Aneem.PhasesKey.self] = newValue }
     }
 
-    var animRamps: [AnyHashable: Anim.Ramp] {
-        get { self[Anim.RampsKey.self] }
-        set { self[Anim.RampsKey.self] = newValue }
+    var animRamps: [AnyHashable: Aneem.Ramp] {
+        get { self[Aneem.RampsKey.self] }
+        set { self[Aneem.RampsKey.self] = newValue }
     }
 
-    var animRamp: Anim.Ramp {
-        get { self[Anim.RampKey.self] }
-        set { self[Anim.RampKey.self] = newValue }
+    var animRamp: Aneem.Ramp {
+        get { self[Aneem.RampKey.self] }
+        set { self[Aneem.RampKey.self] = newValue }
     }
 
-    var animDefaultRamp: Anim.Ramp {
-        get { self[Anim.DefaultRampKey.self] }
-        set { self[Anim.DefaultRampKey.self] = newValue }
+    var animDefaultRamp: Aneem.Ramp {
+        get { self[Aneem.DefaultRampKey.self] }
+        set { self[Aneem.DefaultRampKey.self] = newValue }
     }
 
     var animTransition: AnyTransition {
-        get { self[Anim.TransitionKey.self] }
-        set { self[Anim.TransitionKey.self] = newValue }
+        get { self[Aneem.TransitionKey.self] }
+        set { self[Aneem.TransitionKey.self] = newValue }
     }
 }
 
-extension Anim.Phase: CustomStringConvertible {
+extension Aneem.Phase: CustomStringConvertible {
     var description: String {
         switch self {
             case .before: return "Before"

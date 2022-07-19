@@ -11,7 +11,7 @@ struct TimeStack<Content: View>: View {
     @Environment(\.animDefaultRamp) private var defaultRamp
     @State private var start: Date = .now
     @State private var didFinish: Bool = false
-    private let timings: [AnyHashable: Anim.Timing]
+    private let timings: [AnyHashable: Aneem.Timing]
     private let onFinished: () -> Void
     private let content: (Double) -> Content
 
@@ -21,7 +21,7 @@ struct TimeStack<Content: View>: View {
         self.content = content
     }
 
-    init<Tag: Hashable>(timings: [Tag: Anim.Timing],
+    init<Tag: Hashable>(timings: [Tag: Aneem.Timing],
                         onFinished: @escaping () -> Void = { },
                         @ViewBuilder content: @escaping (Double) -> Content) {
         self.timings = timings
@@ -49,13 +49,13 @@ struct TimeStack<Content: View>: View {
         .environment(\.animRamps, ramps)
     }
 
-    func defaultRamp(_ ramp: Anim.Ramp) -> some View {
+    func defaultRamp(_ ramp: Aneem.Ramp) -> some View {
         self.environment(\.animDefaultRamp, ramp)
     }
 
     private let epsilon: Double = 0.01
 
-    private func phase(time: Double, timing: Anim.Timing) -> Anim.Phase {
+    private func phase(time: Double, timing: Aneem.Timing) -> Aneem.Phase {
         let ramp = timing.ramp ?? defaultRamp
         let startFadeOut = timing.start + timing.duration - ramp.rampOut
         switch time {
@@ -68,7 +68,7 @@ struct TimeStack<Content: View>: View {
 
 extension TimeStack {
     init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
-                                                                        configuration: Anim.Timing.Configuration,
+                                                                        configuration: Aneem.Timing.Configuration,
                                                                         animator: AnimatorType.Type,
                                                                         onFinished: @escaping () -> Void = { },
                                                                         @ViewBuilder content: @escaping (Data.Element) -> V)
@@ -88,13 +88,13 @@ extension TimeStack {
         let timings = TimeStack.stepTimings(durations: durations)
         self.timings = timings
         self.onFinished = onFinished
-        self.content = { time in content(Anim.currentStep(time: time, timings: timings)) }
+        self.content = { time in content(Aneem.currentStep(time: time, timings: timings)) }
     }
 
-    private static func stepTimings<Step: StepEnum>(durations: [Step: Double]) -> [Step: Anim.Timing] {
+    private static func stepTimings<Step: StepEnum>(durations: [Step: Double]) -> [Step: Aneem.Timing] {
         guard !durations.isEmpty else { return [:] }
         var elapsed: Double = 0
-        var timings: [Step: Anim.Timing] = [:]
+        var timings: [Step: Aneem.Timing] = [:]
         for step in Step.allCases {
             let duration = durations[step, default: 0]
             timings[step] = .show(from: elapsed, for: duration, ramp: .abrupt)
@@ -105,16 +105,16 @@ extension TimeStack {
     }
 }
 
-extension Dictionary where Key == Int, Value == Anim.Timing {
-    static func ordered(_ timings: [Anim.Timing]) -> Self {
+extension Dictionary where Key == Int, Value == Aneem.Timing {
+    static func ordered(_ timings: [Aneem.Timing]) -> Self {
         let keysAndValues = timings.enumerated().map { ($0.offset, $0.element) }
         return .init(uniqueKeysWithValues: keysAndValues)
     }
 
-    static func sequenced(_ items: Int, config: Anim.Timing.Configuration) -> Self {
+    static func sequenced(_ items: Int, config: Aneem.Timing.Configuration) -> Self {
         let overlap = config.join.overlap(rampTime: config.rampTime)
 
-        let timings = (0...items).map { i -> (Int, Anim.Timing) in
+        let timings = (0...items).map { i -> (Int, Aneem.Timing) in
             if i == 0 {
                 return (0, .show(from: 0, for: config.delay, ramp: .over(config.rampTime)))
             } else {

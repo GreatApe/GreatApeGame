@@ -35,7 +35,7 @@ struct Messages: Equatable {
     var stay: Bool = false
     var small: Bool = false
 
-    var config: Anim.Timing.Configuration {
+    var config: Aneem.Timing.Configuration {
         .init(delay: delay, duration: timePerMessage, rampTime: 0.3, join: .juxtapose, stay: stay)
     }
 

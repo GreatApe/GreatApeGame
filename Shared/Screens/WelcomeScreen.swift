@@ -37,7 +37,7 @@ struct WelcomeScreen: View {
     struct ViewModel {
         let tapBackground: () -> Void
         let finished: () -> Void
-        let timings: [Int: Anim.Timing] = [1: .show(from: 1, for: 2.5),
+        let timings: [Int: Aneem.Timing] = [1: .show(from: 1, for: 2.5),
                                            2: .show(from: 4, for: 2.5),
                                            3: .show(from: 7, for: 13, ramp: .over(0.3)),
                                            4: .show(from: 20, for: 2)]

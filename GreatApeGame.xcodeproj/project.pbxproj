@@ -31,7 +31,7 @@
 		22A4BB8028763BFE00FFFAE4 /* SteppedShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7F28763BFE00FFFAE4 /* SteppedShape.swift */; };
 		22A4BB82287AF54B00FFFAE4 /* TimedShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB81287AF54B00FFFAE4 /* TimedShape.swift */; };
 		22A4BB85287AF59600FFFAE4 /* TapStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB84287AF59600FFFAE4 /* TapStack.swift */; };
-		22A4BB89287AF67A00FFFAE4 /* Anim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB88287AF67A00FFFAE4 /* Anim.swift */; };
+		22A4BB89287AF67A00FFFAE4 /* Aneem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB88287AF67A00FFFAE4 /* Aneem.swift */; };
 		22A4BB8B287AF69600FFFAE4 /* AnimatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8A287AF69600FFFAE4 /* AnimatedView.swift */; };
 		22A4BB8D287AF6C400FFFAE4 /* Animators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8C287AF6C400FFFAE4 /* Animators.swift */; };
 		22A4BB8F287AFC3400FFFAE4 /* VideoClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */; };
@@ -65,7 +65,7 @@
 		22A4BB7F28763BFE00FFFAE4 /* SteppedShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteppedShape.swift; sourceTree = "<group>"; };
 		22A4BB81287AF54B00FFFAE4 /* TimedShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimedShape.swift; sourceTree = "<group>"; };
 		22A4BB84287AF59600FFFAE4 /* TapStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapStack.swift; sourceTree = "<group>"; };
-		22A4BB88287AF67A00FFFAE4 /* Anim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Anim.swift; sourceTree = "<group>"; };
+		22A4BB88287AF67A00FFFAE4 /* Aneem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aneem.swift; sourceTree = "<group>"; };
 		22A4BB8A287AF69600FFFAE4 /* AnimatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedView.swift; sourceTree = "<group>"; };
 		22A4BB8C287AF6C400FFFAE4 /* Animators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animators.swift; sourceTree = "<group>"; };
 		22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoClipView.swift; sourceTree = "<group>"; };
@@ -110,7 +110,7 @@
 				223BEB6C284D5AB20053E5A8 /* GeometryExtensions.swift */,
 				223BEB4A284D580D0053E5A8 /* Persistence.swift */,
 				22A4BB87287AF61F00FFFAE4 /* Architecture */,
-				22A4BB83287AF56800FFFAE4 /* Anim */,
+				22A4BB83287AF56800FFFAE4 /* Aneem */,
 				223BEB4B284D58100053E5A8 /* Assets.xcassets */,
 				223BEB46284D580D0053E5A8 /* GreatApeGame.xcdatamodeld */,
 				227DF99D2861BD8B003EA6BC /* AyumuShort.mp4 */,
@@ -126,10 +126,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		22A4BB83287AF56800FFFAE4 /* Anim */ = {
+		22A4BB83287AF56800FFFAE4 /* Aneem */ = {
 			isa = PBXGroup;
 			children = (
-				22A4BB88287AF67A00FFFAE4 /* Anim.swift */,
+				22A4BB88287AF67A00FFFAE4 /* Aneem.swift */,
 				22A4BB7D2874F68F00FFFAE4 /* TimeStack.swift */,
 				22A4BB84287AF59600FFFAE4 /* TapStack.swift */,
 				22A4BB8C287AF6C400FFFAE4 /* Animators.swift */,
@@ -137,7 +137,7 @@
 				22A4BB7F28763BFE00FFFAE4 /* SteppedShape.swift */,
 				22A4BB81287AF54B00FFFAE4 /* TimedShape.swift */,
 			);
-			path = Anim;
+			path = Aneem;
 			sourceTree = "<group>";
 		};
 		22A4BB86287AF5F700FFFAE4 /* Screens */ = {
@@ -247,7 +247,7 @@
 				223BEB83284D5B0B0053E5A8 /* Menu.swift in Sources */,
 				223BEB72284D5AB20053E5A8 /* ScoreView.swift in Sources */,
 				22A4BB8F287AFC3400FFFAE4 /* VideoClipView.swift in Sources */,
-				22A4BB89287AF67A00FFFAE4 /* Anim.swift in Sources */,
+				22A4BB89287AF67A00FFFAE4 /* Aneem.swift in Sources */,
 				223BEB76284D5AB20053E5A8 /* ReadyScreen.swift in Sources */,
 				223BEB7C284D5AB20053E5A8 /* HelperViews.swift in Sources */,
 				223BEB74284D5AB20053E5A8 /* GeometryExtensions.swift in Sources */,

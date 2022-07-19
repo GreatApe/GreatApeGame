@@ -9,15 +9,15 @@ import SwiftUI
 
 struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     @Environment(\.animDefaultRamp) private var defaultRamp
-    @State private var phases: [AnyHashable: Anim.Phase] = [:]
+    @State private var phases: [AnyHashable: Aneem.Phase] = [:]
     @State private var currentTag: Tag = .start
     private var onFinished: () -> Void
     private let order: [Tag]
-    private let ramps: [Tag: Anim.Ramp]
+    private let ramps: [Tag: Aneem.Ramp]
     private let content: (Tag) -> Content
 
     init<Order: Collection>(order: Order,
-                            ramps: [Tag: Anim.Ramp] = [:],
+                            ramps: [Tag: Aneem.Ramp] = [:],
                             onFinished: @escaping () -> Void = { },
                             @ViewBuilder content: @escaping (Tag) -> Content) where Order.Element == Tag {
         self.onFinished = onFinished
@@ -37,7 +37,7 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
         .onAppear(perform: setupTags)
     }
 
-    func defaultRamp(_ ramp: Anim.Ramp) -> some View {
+    func defaultRamp(_ ramp: Aneem.Ramp) -> some View {
         self.environment(\.animDefaultRamp, ramp)
     }
 
@@ -65,7 +65,7 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
 
 extension TapStack where Tag: StepEnum {
     init(stepped: Tag.Type,
-         ramps: [Tag: Anim.Ramp] = [:],
+         ramps: [Tag: Aneem.Ramp] = [:],
          onFinished: @escaping () -> Void = { },
          @ViewBuilder content: @escaping (Tag) -> Content) {
         self.order = Array(Tag.allCases)
@@ -77,7 +77,7 @@ extension TapStack where Tag: StepEnum {
 
 extension TapStack {
     init<Tags: RandomAccessCollection, V: View, AnimatorType: Animator>(forEachTag tags: Tags,
-                                                                        ramp: Anim.Ramp = .standard,
+                                                                        ramp: Aneem.Ramp = .standard,
                                                                         animator: AnimatorType.Type,
                                                                         onFinished: @escaping () -> Void = { },
                                                                         @ViewBuilder content: @escaping (Tag) -> V)
@@ -91,7 +91,7 @@ extension TapStack {
     }
 
     init<Data: RandomAccessCollection, V: View, AnimatorType: Animator>(forEach data: Data,
-                                                                        ramp: Anim.Ramp = .standard,
+                                                                        ramp: Aneem.Ramp = .standard,
                                                                         animator: AnimatorType.Type,
                                                                         onFinished: @escaping () -> Void = { },
                                                                         @ViewBuilder content: @escaping (Data.Element) -> V)

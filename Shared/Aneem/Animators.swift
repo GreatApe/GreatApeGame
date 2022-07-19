@@ -8,7 +8,7 @@
 import SwiftUI
 
 protocol Animator: ViewModifier {
-    init(phase: Anim.Phase)
+    init(phase: Aneem.Phase)
 }
 
 // MARK: Message Fade
@@ -21,7 +21,7 @@ struct MessageFade: Animator, Animatable {
         get { x }
     }
 
-    init(phase: Anim.Phase) {
+    init(phase: Aneem.Phase) {
         self.x = phase.x
     }
 
@@ -60,7 +60,7 @@ struct SimpleFade: Animator, Animatable {
         get { x }
     }
 
-    init(phase: Anim.Phase) {
+    init(phase: Aneem.Phase) {
         self.x = phase.x
     }
 
@@ -82,7 +82,7 @@ struct TransitionAnimator: Animator {
 
     private let showing: Bool
 
-    init(phase: Anim.Phase) {
+    init(phase: Aneem.Phase) {
         self.showing = phase == .during
     }
 
