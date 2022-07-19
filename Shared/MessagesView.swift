@@ -45,11 +45,8 @@ struct Messages: Equatable {
 
     static let tryAgain: Self = .init(strings: [.tryAgain])
     static let easier: Self = .init(strings: [.easier])
-    static let scoreboard: Self = .init(strings: [.scoreboard])
-    static let levelChange: Self = .init(strings: [.levelChange])
     static let copied: Self = .init(strings: [.copied], stay: true)
     static let didReset: Self = .init(strings: [.didReset], stay: true)
-    static let initialHelp: Self = .init(strings: [.initialHelp])
 
     static func levelUp(_ level: Int) -> Self {
         .init(strings: String.levelUp(boxes: level), delay: 1)
@@ -75,21 +72,30 @@ extension String {
 
     static let easier = "Let's make it easier"
 
-    static let scoreboard = "Tap the score to see all your best times in the scoreboard"
-
-    static let levelChange = "Tap a line on the scoreboard to try that level"
-
     static let copied = "Your best times have been copied to the clipboard"
 
     static let didReset = "All scores have been cleared"
-
-    static let initialHelp = "Tap the ring to play"
 
     static func levelUp(boxes: Int) -> [String] {
         if boxes == 3 {
             return ["Good job!", "Now let's try with 3 boxes"]
         } else {
             return ["This is getting easy", "Let's try \(boxes) boxes"]
+        }
+    }
+
+    static func helpMessage(_ type: HelpType) -> String {
+        switch type {
+            case .ring:
+                return "Tap the ring to play"
+            case .menuButton:
+                return "Tap the menu button for more options"
+            case .scoreboard:
+                return "Tap the score to see your scoreboard"
+            case .levelChange:
+                return "Tap a line on the scoreboard to change levels"
+            case .gameCenter:
+                return "Challenge friends in the GameCenter, on the scoreboard"
         }
     }
 }

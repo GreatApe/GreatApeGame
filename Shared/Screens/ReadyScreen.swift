@@ -60,8 +60,8 @@ struct ReadyScreen: View {
                 if vm.hasFinishedARound {
                     MenuButton(side: vm.buttonSize, action: vm.tapMenuButton)
                         .position(vm.menuButtonPosition)
-                    if let adVM = adVM {
-                        AdTextView(vm: adVM)
+                    if let bottomVM = bottomVM {
+                        BottomMessageView(vm: bottomVM)
                             .padding(.horizontal, vm.buttonSize + 50)
                             .position(vm.adTextPosition)
                     }
@@ -90,9 +90,14 @@ struct ReadyScreen: View {
         return message
     }
 
-    private var adVM: AdTextView.ViewModel? {
-        guard case .normal(_, _, let adInfo?) = vm.state else { return nil }
-        return .init(labels: adInfo.strings, url: adInfo.url, tappedAd: vm.tappedAd)
+    private var bottomVM: BottomMessageView.ViewModel? {
+        guard case .normal(_, _, let message?) = vm.state else { return nil }
+        switch message {
+            case .ad(let adInfo):
+                return .init(labels: adInfo.strings, url: adInfo.url, stay: true, tappedAd: vm.tappedAd)
+            case .help(let type):
+                return .init(labels: [.helpMessage(type)], url: nil, stay: false, tappedAd: nil)
+        }
     }
 
     private var scoreboardVM: ScoreboardView.ViewModel {
@@ -199,13 +204,13 @@ struct RingButton: View {
     private let ringWidthRatio: CGFloat = 0.14
 }
 
-struct AdTextView: View {
+struct BottomMessageView: View {
     let vm: ViewModel
 
     var body: some View {
-        if let urlString = vm.url, let url = URL(string: urlString) {
+        if let urlString = vm.url, let url = URL(string: urlString), let action = vm.tappedAd {
             Button {
-                vm.tappedAd(url)
+                action(url)
             } label: {
                 text
             }
@@ -225,8 +230,9 @@ struct AdTextView: View {
     struct ViewModel {
         let labels: [String]
         let url: String?
-        let tappedAd: (URL) -> Void
+        let stay: Bool
+        let tappedAd: ((URL) -> Void)?
 
-        let config: Aneem.Timing.Configuration = .init(delay: 5, duration: 2.5, rampTime: 0.3, join: .juxtapose, stay: true)
+        var config: Aneem.Timing.Configuration { .init(delay: 5, duration: stay ? 2.5 : 5, rampTime: 0.3, join: .juxtapose, stay: stay) }
     }
 }

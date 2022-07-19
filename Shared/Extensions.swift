@@ -44,3 +44,23 @@ extension Double {
         return s * s
     }
 }
+
+extension Collection {
+    public func min<C: Comparable>(by keyPath: KeyPath<Element, C>)  -> Element? {
+        self.min { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
+    }
+}
+
+extension Array where Element: Equatable {
+    mutating public func remove(_ element: Element) {
+        removeAll { $0 == element }
+    }
+}
+
+extension Array {
+    public func shifted(by distance: Int = 1) -> Self {
+        let dist = ((distance % count) + count) % count
+        return dropFirst(dist) + Array(prefix(dist))
+    }
+}
+

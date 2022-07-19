@@ -37,14 +37,35 @@ final class Store: ObservableObject {
 
 class AppEnvironment {
     @UserDefault(key: "hasSeenIntro", defaultValue: false) var hasSeenIntro: Bool
-//    var hasSeenIntro: Bool { get { false } set { _ = newValue } }
+    @UserDefault(key: "helpMessagesLeft", defaultValue: HelpType.allCases.map(\.rawValue)) private var helpMessagesLeft: [HelpType.RawValue]
     let persistence: PersistenceController = .shared
+
+    var firstRemainingHelp: HelpType? {
+        helpMessagesLeft.first.flatMap(HelpType.init)
+    }
+
+    func shiftRemainingHelp() {
+        helpMessagesLeft = helpMessagesLeft.shifted()
+        print("Shifed: \(helpMessagesLeft.compactMap(HelpType.init))")
+    }
+
+    func removeHelpMessage(_ type: HelpType) {
+        helpMessagesLeft.remove(type.rawValue)
+        print("REMOVED \(type)")
+    }
+
+    func helpMessageRemains(_ type: HelpType) -> Bool {
+        helpMessagesLeft.contains(type.rawValue)
+    }
 
     var adInfos: [AdInfo]
 
     init() {
-        self.adInfos = [.init(strings: ["You like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Tap to reserve your @username"],
-                              url: "https://keeptalking.fm")]
+        let strings = ["You like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Tap to reserve your @username"]
+        self.adInfos = [.init(strings: strings, url: "https://keeptalking.fm")]
+
+        helpMessagesLeft = HelpType.allCases.map(\.rawValue)
+        hasSeenIntro = false
     }
 }
 
@@ -109,6 +130,10 @@ struct AppState {
         !bestTimes.isEmpty
     }
 
+    func shouldShowHelp() -> Bool {
+        Int.random(in: 0..<4) == 0
+    }
+
     func shouldShowAd() -> Bool {
         results.filter(\.success).count > 10 && Int.random(in: 0..<10) == 0
     }
@@ -162,13 +187,26 @@ struct AppState {
 }
 
 enum ReadyState: Equatable {
-    case normal(ScoreLine, Messages?, AdInfo?)
+    case normal(ScoreLine, Messages?, BottomMessage?)
     case menu([MenuEntry])
     case scoreboard
 
     static let standard: ReadyState = .normal(.display, nil, nil)
 
     static let mainMenu: ReadyState = .menu(apeMenu)
+}
+
+enum BottomMessage: Equatable {
+    case help(HelpType)
+    case ad(AdInfo)
+}
+
+enum HelpType: Int, Equatable, CaseIterable {
+    case ring
+    case menuButton
+    case scoreboard
+    case levelChange
+    case gameCenter
 }
 
 struct AdInfo: Equatable {
@@ -194,20 +232,24 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
         case .tapRing:
             guard case .ready = state.screen else { break }
             state.screen = .playing
+            environment.removeHelpMessage(.ring)
 
         case .tapScoreLine:
             guard case .ready = state.screen else { break }
             state.screen = .ready(.scoreboard)
+            environment.removeHelpMessage(.scoreboard)
 
         case .tapScoreboard(let line):
             guard case .ready(.scoreboard) = state.screen else { break }
             state.level = line.level
             state.time = line.time
             state.screen = .ready(.standard)
+            environment.removeHelpMessage(.levelChange)
 
         case .tapMenuButton:
             guard case .ready = state.screen else { break }
             state.screen = .ready(.mainMenu)
+            environment.removeHelpMessage(.menuButton)
 
         case .tapMenu(let item):
             guard case .ready(.menu(let entries)) = state.screen else { break }
@@ -250,8 +292,12 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
         case .finishedIntro:
             guard case .welcome = state.screen else { break }
-            state.screen = .ready(.standard)
             environment.hasSeenIntro = true
+            if environment.helpMessageRemains(.ring) {
+                state.screen = .ready(.normal(.display, nil, .help(.ring)))
+            } else {
+                state.screen = .ready(.standard)
+            }
 
         case .finishedAbout:
             guard case .about = state.screen else { break }
@@ -263,8 +309,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                     state.screen = .ready(.standard)
                 case .ready(.normal(_, let messages?, _)) where messages.stay:
                     state.screen = .ready(.standard)
-                case .ready(.normal) where !state.hasFinishedRound:
-                    state.screen = .ready(.normal(.display, .initialHelp, nil))
                 default:
                     break
             }
@@ -274,13 +318,22 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.addResults([result])
             try? environment.persistence.save(result: result)
 
+            func bottomMessage() -> BottomMessage? {
+                if state.shouldShowHelp(), let help = environment.firstRemainingHelp {
+                    environment.shiftRemainingHelp()
+                    return .help(help)
+                } else if state.shouldShowAd(), let adInfo = environment.adInfos.randomElement() {
+                    return .ad(adInfo)
+                }
+                return nil
+            }
+
             if state.shouldLevelUp() {
                 let level = state.level + 1
                 state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level), nil))
                 state.level = level
             } else if result.success {
-                let adInfo = state.shouldShowAd() ? environment.adInfos.randomElement() : nil
-                state.screen = .ready(.normal(.success(oldTime: state.time), .success(), adInfo))
+                state.screen = .ready(.normal(.success(oldTime: state.time), .success(), bottomMessage()))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
             } else if state.shouldMakeItEasier() {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
@@ -289,7 +342,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
                 state.time += max(0.01, state.time * Constants.timeDeltaEasierStill)
             } else {
-                state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain, nil))
+                state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain, bottomMessage()))
             }
 
         case .tapAboutMenu(let link):
