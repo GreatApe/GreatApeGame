@@ -27,8 +27,8 @@ struct MainView: View {
             case .splash:
                 SplashScreen(vm: splashVM)
                     .transition(.retro)
-            case .welcome:
-                WelcomeScreen(vm: welcomeVM)
+            case .welcome(let text):
+                WelcomeScreen(vm: welcomeVM(text: text))
                     .transition(.retro)
             case .about:
                 AboutScreen(vm: aboutVM)
@@ -48,10 +48,10 @@ struct MainView: View {
         )
     }
 
-    private var welcomeVM: WelcomeScreen.ViewModel {
-        .init(tapBackground: store[.tapBackground],
-              finished: store[.finishedIntro]
-        )
+    private func welcomeVM(text: Bool) -> WelcomeScreen.ViewModel {
+        .init(text: text,
+              tapBackground: store[.tapBackground],
+              finished: store[.finishedIntro])
     }
 
     private var aboutVM: AboutScreen.ViewModel {

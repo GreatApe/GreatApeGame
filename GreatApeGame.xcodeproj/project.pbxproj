@@ -22,9 +22,9 @@
 		223BEB83284D5B0B0053E5A8 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB80284D5B0B0053E5A8 /* Menu.swift */; };
 		223BEB84284D5B0B0053E5A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB81284D5B0B0053E5A8 /* Models.swift */; };
 		223BEB85284D5B0B0053E5A8 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB82284D5B0B0053E5A8 /* Store.swift */; };
+		223F15D2288771AB00333701 /* AyumuPrepared.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 223F15D1288771AB00333701 /* AyumuPrepared.mp4 */; };
 		226E5CEE285C8FDF0022BB3A /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226E5CED285C8FC20022BB3A /* MessagesView.swift */; };
 		227DF99C2861B7E1003EA6BC /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227DF99B2861B7E1003EA6BC /* WelcomeScreen.swift */; };
-		227DF99E2861BD8B003EA6BC /* AyumuShort.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 227DF99D2861BD8B003EA6BC /* AyumuShort.mp4 */; };
 		22A4BB7A2874EC9500FFFAE4 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */; };
 		22A4BB7C2874F02D00FFFAE4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */; };
 		22A4BB7E2874F68F00FFFAE4 /* TimeStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB7D2874F68F00FFFAE4 /* TimeStack.swift */; };
@@ -56,9 +56,9 @@
 		223BEB81284D5B0B0053E5A8 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		223BEB82284D5B0B0053E5A8 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GreatApeGame--iOS--Info.plist"; sourceTree = "<group>"; };
+		223F15D1288771AB00333701 /* AyumuPrepared.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AyumuPrepared.mp4; sourceTree = "<group>"; };
 		226E5CED285C8FC20022BB3A /* MessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		227DF99B2861B7E1003EA6BC /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
-		227DF99D2861BD8B003EA6BC /* AyumuShort.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AyumuShort.mp4; sourceTree = "<group>"; };
 		22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		22A4BB7B2874F02D00FFFAE4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		22A4BB7D2874F68F00FFFAE4 /* TimeStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeStack.swift; sourceTree = "<group>"; };
@@ -113,7 +113,7 @@
 				22A4BB83287AF56800FFFAE4 /* Aneem */,
 				223BEB4B284D58100053E5A8 /* Assets.xcassets */,
 				223BEB46284D580D0053E5A8 /* GreatApeGame.xcdatamodeld */,
-				227DF99D2861BD8B003EA6BC /* AyumuShort.mp4 */,
+				223F15D1288771AB00333701 /* AyumuPrepared.mp4 */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -218,7 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				227DF99E2861BD8B003EA6BC /* AyumuShort.mp4 in Resources */,
+				223F15D2288771AB00333701 /* AyumuPrepared.mp4 in Resources */,
 				223BEB61284D58100053E5A8 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

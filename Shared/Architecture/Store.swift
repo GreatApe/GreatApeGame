@@ -178,7 +178,7 @@ struct AppState {
 
     enum Screen: Equatable {
         case splash
-        case welcome
+        case welcome(text: Bool)
         case ready(ReadyState)
         case about
         case playing
@@ -269,7 +269,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                         case .gamecenter:
                             break // TODO: open gamecenter
                         case .playIntro:
-                            state.screen = .welcome
+                            state.screen = .welcome(text: false)
                         default:
                             state.screen = .ready(.standard)
                     }
@@ -289,7 +289,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             if environment.hasSeenIntro {
                 state.screen = .ready(.standard)
             } else {
-                state.screen = .welcome
+                state.screen = .welcome(text: true)
             }
 
         case .finishedIntro:

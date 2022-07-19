@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuShort", ofType: "mp4")!)
+private let videoURL = URL(fileURLWithPath: Bundle.main.path(forResource: "AyumuPrepared", ofType: "mp4")!)
 
 struct WelcomeScreen: View {
     let vm: ViewModel
@@ -35,11 +35,19 @@ struct WelcomeScreen: View {
     }
     
     struct ViewModel {
+        let text: Bool
         let tapBackground: () -> Void
         let finished: () -> Void
-        let timings: [Int: Aneem.Timing] = [1: .show(from: 1, for: 2.5),
-                                           2: .show(from: 4, for: 2.5),
-                                           3: .show(from: 7, for: 13, ramp: .over(0.3)),
-                                           4: .show(from: 20, for: 2)]
+
+        var timings: [Int: Aneem.Timing] {
+            text ? timingsWithText : timingsWithoutText
+        }
+
+        private let timingsWithText: [Int: Aneem.Timing] = [1: .show(from: 1, for: 2.5),
+                                                            2: .show(from: 4, for: 2.5),
+                                                            3: .show(from: 7, for: 14, ramp: .over(0.5)),
+                                                            4: .show(from: 20.5, for: 2)]
+
+        private let timingsWithoutText: [Int: Aneem.Timing] = [3: .show(from: 0, for: 14, ramp: .over(0.5))]
     }
 }
