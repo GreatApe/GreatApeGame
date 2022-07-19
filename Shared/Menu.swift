@@ -21,7 +21,7 @@ extension MenuItem: Identifiable {
     var id: Int { rawValue }
 }
 
-let apeMenu =
+let mainMenu =
 ApeMenu {
     Row(.about)
     Row(.playIntro)

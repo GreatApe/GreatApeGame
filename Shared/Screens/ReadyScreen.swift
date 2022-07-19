@@ -28,17 +28,24 @@ struct ReadyScreen: View {
     @ViewBuilder
     private var scoreBoard: some View {
         ScoreboardView(vm: scoreboardVM)
-        if vm.showScoreboard {
+        if vm.showScoreboardButtons {
             HStack {
                 Spacer()
-                Button(action: vm.tapShare) {
-                    Image(systemName: "square.and.arrow.up")
-                        .ape(style: .largeText)
-                        .retro()
-                        .padding()
+                VStack {
+                    Button(action: vm.tapShare) {
+                        Image(systemName: "square.and.arrow.up")
+                            .retro()
+                            .padding()
+                    }
+                    Button(action: vm.tapGameCenter) {
+                        Image(systemName: "gamecontroller")
+                            .retro()
+                            .padding()
+                    }
                 }
             }
-            .transition(.retro(1))
+            .transition(.retro(2))
+            .ape(style: .largeText)
         }
     }
 
@@ -118,6 +125,7 @@ struct ReadyScreen: View {
         let hasFinishedARound: Bool
         let tapScoreLine: () -> Void
         let tapShare: () -> Void
+        let tapGameCenter: () -> Void
         let tapScoreboard: (ScoreboardLine) -> Void
         let tapMenu: (MenuItem) -> Void
         let tapBackground: () -> Void
@@ -129,8 +137,9 @@ struct ReadyScreen: View {
             guard case .menu(let entries) = state else { return [] }
             return entries.map(\.item)
         }
-
         var showScoreboard: Bool { state == .scoreboard && hasFinishedARound }
+        var showScoreboardButtons: Bool { showScoreboard && scoreboardLines.count >= 3 }
+
         var scoreboard: [ScoreboardLine] { showScoreboard ? scoreboardLines : [] }
 
         var menuButtonPosition: CGPoint { insetRect[.bottomTrailing] }

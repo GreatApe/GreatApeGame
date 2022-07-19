@@ -46,12 +46,10 @@ class AppEnvironment {
 
     func shiftRemainingHelp() {
         helpMessagesLeft = helpMessagesLeft.shifted()
-        print("Shifed: \(helpMessagesLeft.compactMap(HelpType.init))")
     }
 
     func removeHelpMessage(_ type: HelpType) {
         helpMessagesLeft.remove(type.rawValue)
-        print("REMOVED \(type)")
     }
 
     func helpMessageRemains(_ type: HelpType) -> Bool {
@@ -65,7 +63,7 @@ class AppEnvironment {
         self.adInfos = [.init(strings: strings, url: "https://keeptalking.fm")]
 
         helpMessagesLeft = HelpType.allCases.map(\.rawValue)
-        hasSeenIntro = false
+//        hasSeenIntro = false
     }
 }
 
@@ -77,6 +75,7 @@ enum AppAction {
     case tapMenuButton
     case tapScoreLine
     case tapShare
+    case tapGameCenter
     case tapScoreboard(ScoreboardLine)
     case tapMenu(MenuItem)
 
@@ -192,8 +191,6 @@ enum ReadyState: Equatable {
     case scoreboard
 
     static let standard: ReadyState = .normal(.display, nil, nil)
-
-    static let mainMenu: ReadyState = .menu(apeMenu)
 }
 
 enum BottomMessage: Equatable {
@@ -248,7 +245,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
         case .tapMenuButton:
             guard case .ready = state.screen else { break }
-            state.screen = .ready(.mainMenu)
+            state.screen = .ready(.menu(mainMenu))
             environment.removeHelpMessage(.menuButton)
 
         case .tapMenu(let item):
@@ -281,6 +278,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
         case .tapShare:
             UIPasteboard.general.string = state.bestTimes.shareString
             state.screen = .ready(.normal(.display, .copied, nil))
+
+        case .tapGameCenter:
+            break
 
         case .finishedSplash:
             guard case .splash = state.screen else { break }

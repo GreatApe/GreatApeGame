@@ -69,6 +69,7 @@ struct MainView: View {
               hasFinishedARound: store.state.hasFinishedRound,
               tapScoreLine: store[.tapScoreLine],
               tapShare: store[.tapShare],
+              tapGameCenter: store[.tapGameCenter],
               tapScoreboard: { store.send(.tapScoreboard($0)) },
               tapMenu: { store.send(.tapMenu($0)) },
               tapBackground: store[.tapBackground],
