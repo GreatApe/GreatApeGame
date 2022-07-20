@@ -322,7 +322,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
             func bottomMessage() -> BottomMessage? {
                 if state.shouldShowHelp(), let help = environment.firstRemainingHelp {
-                    environment.shiftRemainingHelp()
+                    if help != .ring {
+                        environment.shiftRemainingHelp()
+                    }
                     return .help(help)
                 } else if state.shouldShowAd(), let adInfo = environment.adInfos.randomElement() {
                     return .ad(adInfo)
