@@ -23,6 +23,7 @@
 		223BEB84284D5B0B0053E5A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB81284D5B0B0053E5A8 /* Models.swift */; };
 		223BEB85284D5B0B0053E5A8 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB82284D5B0B0053E5A8 /* Store.swift */; };
 		223F15D2288771AB00333701 /* AyumuPrepared.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 223F15D1288771AB00333701 /* AyumuPrepared.mp4 */; };
+		223F15D52888334900333701 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 223F15D42888334900333701 /* GameKit.framework */; };
 		226E5CEE285C8FDF0022BB3A /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226E5CED285C8FC20022BB3A /* MessagesView.swift */; };
 		227DF99C2861B7E1003EA6BC /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227DF99B2861B7E1003EA6BC /* WelcomeScreen.swift */; };
 		22A4BB7A2874EC9500FFFAE4 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */; };
@@ -57,6 +58,7 @@
 		223BEB82284D5B0B0053E5A8 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GreatApeGame--iOS--Info.plist"; sourceTree = "<group>"; };
 		223F15D1288771AB00333701 /* AyumuPrepared.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AyumuPrepared.mp4; sourceTree = "<group>"; };
+		223F15D42888334900333701 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.5.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
 		226E5CED285C8FC20022BB3A /* MessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		227DF99B2861B7E1003EA6BC /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		22A4BB792874EC9500FFFAE4 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				223F15D52888334900333701 /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +92,7 @@
 				223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */,
 				223BEB45284D580D0053E5A8 /* Shared */,
 				223BEB51284D58100053E5A8 /* Products */,
+				223F15D32888334900333701 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -124,6 +128,14 @@
 				223BEB50284D58100053E5A8 /* GreatApeGame.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		223F15D32888334900333701 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				223F15D42888334900333701 /* GameKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		22A4BB83287AF56800FFFAE4 /* Aneem */ = {
@@ -385,6 +397,7 @@
 				INFOPLIST_FILE = "GreatApeGame--iOS--Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = gamekit;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -416,6 +429,7 @@
 				INFOPLIST_FILE = "GreatApeGame--iOS--Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = gamekit;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
