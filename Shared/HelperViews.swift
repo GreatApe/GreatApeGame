@@ -95,7 +95,7 @@ struct ApeModifier: ViewModifier {
                 case .largeText:
                     return 50
                 case .menu:
-                    return 45
+                    return 40
                 case .logo:
                     return 61
                 case .title:
@@ -114,7 +114,7 @@ struct MenuText: View {
 
     var body: some View {
         ReadyScreen.ViewModel.text(for: item)
-            .ape(style: .largeText)
+            .ape(style: .menu)
             .retro()
     }
 }
