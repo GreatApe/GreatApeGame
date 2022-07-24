@@ -16,6 +16,7 @@
 		22385BBA288DB90E005C5B5A /* success_button.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22385BB3288DB90E005C5B5A /* success_button.mp3 */; };
 		22385BBB288DB90E005C5B5A /* banana_down.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22385BB4288DB90E005C5B5A /* banana_down.mp3 */; };
 		22385BBC288DB90E005C5B5A /* game_win.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22385BB5288DB90E005C5B5A /* game_win.mp3 */; };
+		22385BBE288DC389005C5B5A /* Starling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22385BBD288DC389005C5B5A /* Starling.swift */; };
 		223BEB59284D58100053E5A8 /* GreatApeGame.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB46284D580D0053E5A8 /* GreatApeGame.xcdatamodeld */; };
 		223BEB5B284D58100053E5A8 /* GreatApeGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB48284D580D0053E5A8 /* GreatApeGameApp.swift */; };
 		223BEB5D284D58100053E5A8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB49284D580D0053E5A8 /* ContentView.swift */; };
@@ -58,6 +59,7 @@
 		22385BB3288DB90E005C5B5A /* success_button.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = success_button.mp3; sourceTree = "<group>"; };
 		22385BB4288DB90E005C5B5A /* banana_down.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = banana_down.mp3; sourceTree = "<group>"; };
 		22385BB5288DB90E005C5B5A /* game_win.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = game_win.mp3; sourceTree = "<group>"; };
+		22385BBD288DC389005C5B5A /* Starling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Starling.swift; sourceTree = "<group>"; };
 		223BEB47284D580D0053E5A8 /* Shared.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shared.xcdatamodel; sourceTree = "<group>"; };
 		223BEB48284D580D0053E5A8 /* GreatApeGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreatApeGameApp.swift; sourceTree = "<group>"; };
 		223BEB49284D580D0053E5A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 		22385BAD288DB617005C5B5A /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				22385BBD288DC389005C5B5A /* Starling.swift */,
 				22385BAB288D847A005C5B5A /* SoundManager.swift */,
 				22385BAE288DB90E005C5B5A /* SoundEffects */,
 			);
@@ -311,6 +314,7 @@
 				223BEB72284D5AB20053E5A8 /* ScoreView.swift in Sources */,
 				22A4BB8F287AFC3400FFFAE4 /* VideoClipView.swift in Sources */,
 				22A4BB89287AF67A00FFFAE4 /* Aneem.swift in Sources */,
+				22385BBE288DC389005C5B5A /* Starling.swift in Sources */,
 				223BEB76284D5AB20053E5A8 /* ReadyScreen.swift in Sources */,
 				223BEB7C284D5AB20053E5A8 /* HelperViews.swift in Sources */,
 				223BEB74284D5AB20053E5A8 /* GeometryExtensions.swift in Sources */,

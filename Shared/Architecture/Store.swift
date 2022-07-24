@@ -198,7 +198,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.addResults(results)
                 state.setupLevelAndTime()
             }
-            environment.sound.start()
+            for effect in SoundEffect.allCases {
+                environment.starling.load(effect)
+            }
 
         case .finish:
             break
@@ -207,7 +209,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             guard case .ready = state.screen else { break }
             state.screen = .playing
             environment.removeHelpMessage(.ring)
-            environment.sound.play(.tapGeneric)
+            environment.starling.play(.tapGeneric)
 
         case .tapScoreLine:
             guard case .ready = state.screen else { break }

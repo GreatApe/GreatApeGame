@@ -7,68 +7,19 @@
 
 import AVFoundation
 
-class SoundManager {
-    private var player: AVAudioPlayer? = nil
-
-    static let shared = SoundManager()
-
-    func start() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-
-        } catch {
-            print("Failed to start SoundManager \(error)")
-        }
-    }
-
-    func stop() {
-        do {
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        } catch {
-            print("Failed to start stop \(error)")
-        }
-    }
-
-    func play(_ effect: SoundEffect) {
-        guard let url = Bundle.main.url(forResource: Self.file(effect: effect).name, withExtension: "mp3") else { return }
-        guard let player = try? AVAudioPlayer(contentsOf: url) else { return }
-        player.prepareToPlay()
-        player.play()
-        self.player = player
-    }
-
-    private static func file(effect: SoundEffect) -> SoundEffectFile {
-        switch effect {
-            case .greatApeLetter:
-                return .successButton
-            case .tapGeneric:
-                return .successButton
-            case .tapLastBoxSuccess:
-                return .bananaUp
-            case .tapLastBoxFailure:
-                return .bananaDown
-            case .levelUp:
-                return .unlock
-            case .shortenTime:
-                return .gameWin
-            case .openMenu:
-                return .screenSwipe
-            case .selectAction:
-                return .selectAButton
-        }
-    }
-}
-
-enum SoundEffect {
+enum SoundEffect: String, CaseIterable {
     case greatApeLetter
     case tapGeneric
     case tapLastBoxSuccess
     case tapLastBoxFailure
     case levelUp
-    case shortenTime
+    case gameSuccess
     case openMenu
     case selectAction
+
+    var id: SoundIdentifier {
+        rawValue
+    }
 }
 
 enum SoundEffectFile: String {
@@ -85,5 +36,36 @@ enum SoundEffectFile: String {
 
     var name: String {
         rawValue
+    }
+}
+
+extension Starling {
+    func load(_ effect: SoundEffect) {
+        load(resource: Starling.file(effect: effect).name, type: "mp3", for: effect.id)
+    }
+
+    func play(_ effect: SoundEffect) {
+        play(effect.id)
+    }
+
+    private static func file(effect: SoundEffect) -> SoundEffectFile {
+        switch effect {
+            case .greatApeLetter:
+                return .successButton
+            case .tapGeneric:
+                return .successButton
+            case .tapLastBoxSuccess:
+                return .bananaUp
+            case .tapLastBoxFailure:
+                return .bananaDown
+            case .levelUp:
+                return .unlock
+            case .gameSuccess:
+                return .gameWin
+            case .openMenu:
+                return .screenSwipe
+            case .selectAction:
+                return .selectAButton
+        }
     }
 }
