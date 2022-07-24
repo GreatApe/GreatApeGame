@@ -31,6 +31,9 @@ struct ContentView: View {
         .onAppear {
             store.send(.startup)
         }
+        .onDisappear {
+            store.send(.finish)
+        }
     }
 
     private var scale: CGFloat {

@@ -58,6 +58,7 @@ struct AboutLine: View {
 enum AboutLink: Int, Identifiable, Equatable {
     case kpri
     case ayumu
+    case greatApe
     case unfairAdvantage
 
     var string: String {
@@ -66,6 +67,8 @@ enum AboutLink: Int, Identifiable, Equatable {
                 return "Kyoto Primate Research Institute"
             case .ayumu:
                 return "Ayumu the chimpanzee"
+            case .greatApe:
+                return "Great Ape Game"
             case .unfairAdvantage:
                 return "Unfair Advantage Studios"
         }

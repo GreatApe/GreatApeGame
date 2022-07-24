@@ -35,40 +35,9 @@ final class Store: ObservableObject {
     }
 }
 
-class AppEnvironment {
-    @UserDefault(key: "hasSeenIntro", defaultValue: false) var hasSeenIntro: Bool
-    @UserDefault(key: "helpMessagesLeft", defaultValue: HelpType.allCases.map(\.rawValue)) private var helpMessagesLeft: [HelpType.RawValue]
-    let persistence: PersistenceController = .shared
-
-    var firstRemainingHelp: HelpType? {
-        helpMessagesLeft.first.flatMap(HelpType.init)
-    }
-
-    func shiftRemainingHelp() {
-        helpMessagesLeft = helpMessagesLeft.shifted()
-    }
-
-    func removeHelpMessage(_ type: HelpType) {
-        helpMessagesLeft.remove(type.rawValue)
-    }
-
-    func helpMessageRemains(_ type: HelpType) -> Bool {
-        helpMessagesLeft.contains(type.rawValue)
-    }
-
-    var adInfos: [AdInfo]
-
-    init() {
-        let strings = ["You like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Tap to reserve your @username"]
-        self.adInfos = [.init(strings: strings, url: "https://keeptalking.fm")]
-
-        helpMessagesLeft = HelpType.allCases.map(\.rawValue)
-//        hasSeenIntro = false
-    }
-}
-
 enum AppAction {
     case startup
+    case finish
 
     // Ready
     case tapRing
@@ -113,6 +82,10 @@ struct AppState {
     var screen: Screen = .splash
 
     // Computed
+
+    var totalScore: Int {
+        Int(ceil(bestTimes.reduce(0) { $0 + Double($1.key * $1.key) / $1.value }))
+    }
 
     var achievedTime: Bool {
         guard let bestTime = bestTimes[level] else { return false }
@@ -225,11 +198,16 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.addResults(results)
                 state.setupLevelAndTime()
             }
+            environment.sound.start()
+
+        case .finish:
+            break
 
         case .tapRing:
             guard case .ready = state.screen else { break }
             state.screen = .playing
             environment.removeHelpMessage(.ring)
+            environment.sound.play(.tapGeneric)
 
         case .tapScoreLine:
             guard case .ready = state.screen else { break }
@@ -356,11 +334,14 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                     urlString = "https://www.kyoto-u.ac.jp/en/research/fields/research-institutes/primate-research-institute-pri"
                 case .ayumu:
                     urlString = "https://www.pri.kyoto-u.ac.jp/sections/langint/ai/en/friends/ayumu.html"
+                case .greatApe:
+                    urlString = "https://greatapegame.com"
                 case .unfairAdvantage:
                     urlString = "https://unfair.me"
             }
             guard let url = URL(string: urlString) else { return }
             openLink(url: url)
+
         case .tappedAd(let url):
             openLink(url: url)
     }
