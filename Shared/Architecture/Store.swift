@@ -41,6 +41,7 @@ enum AppAction {
 
     // Ready
     case tapRing
+    case tapBox
     case tapMenuButton
     case tapScoreLine
     case tapShare
@@ -50,9 +51,10 @@ enum AppAction {
 
     case finishedSplash
     case finishedIntro
-    case finishedAbout
 
-    case tapAboutMenu(AboutLink)
+    case tapNextAbout
+    case finishedAbout
+    case tapAboutLink(AboutLink)
     case tappedAd(URL)
 
     case tapBackground
@@ -198,9 +200,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.addResults(results)
                 state.setupLevelAndTime()
             }
-            for effect in SoundEffect.allCases {
-                environment.starling.load(effect)
-            }
+            Sounds.shared.start(effects: Sounds.Effect.allCases)
 
         case .finish:
             break
@@ -209,12 +209,17 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             guard case .ready = state.screen else { break }
             state.screen = .playing
             environment.removeHelpMessage(.ring)
-            environment.starling.play(.tapGeneric)
+            Haptics.shared.play(.click)
+            break
+
+        case .tapBox:
+            Haptics.shared.play(.click)
 
         case .tapScoreLine:
             guard case .ready = state.screen else { break }
             state.screen = .ready(.scoreboard)
             environment.removeHelpMessage(.scoreboard)
+            Sounds.shared.play(.openMenu)
 
         case .tapScoreboard(let line):
             guard case .ready(.scoreboard) = state.screen else { break }
@@ -222,11 +227,13 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.time = line.time
             state.screen = .ready(.standard)
             environment.removeHelpMessage(.levelChange)
+            Sounds.shared.play(.selectAction)
 
         case .tapMenuButton:
             guard case .ready = state.screen else { break }
             state.screen = .ready(.menu(mainMenu))
             environment.removeHelpMessage(.menuButton)
+            Sounds.shared.play(.openMenu)
 
         case .tapMenu(let item):
             guard case .ready(.menu(let entries)) = state.screen else { break }
@@ -234,7 +241,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             switch entries.row(with: item) {
                 case .subMenu(let newEntries):
                     state.screen = .ready(.menu(newEntries))
+                    Sounds.shared.play(.openMenu)
                 case .action(let item):
+                    Sounds.shared.play(.selectAction)
                     switch item {
                         case .about:
                             state.screen = .about
@@ -260,9 +269,11 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
         case .tapShare:
             UIPasteboard.general.string = state.bestTimes.shareString
             state.screen = .ready(.normal(.display, .copied, nil))
+            Sounds.shared.play(.selectAction)
 
         case .tapGameCenter:
-            break // TODO: open gamecenter
+            Sounds.shared.play(.selectAction)
+            // TODO: open gamecenter
 
         case .finishedSplash:
             guard case .splash = state.screen else { break }
@@ -281,16 +292,22 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.screen = .ready(.standard)
             }
 
+        case .tapNextAbout:
+            Haptics.shared.play(.click)
+
         case .finishedAbout:
             guard case .about = state.screen else { break }
             state.screen = .ready(.standard)
+            Haptics.shared.play(.click)
 
         case .tapBackground:
             switch state.screen {
                 case .splash where environment.hasSeenIntro, .welcome where environment.hasSeenIntro, .ready(.menu), .ready(.scoreboard):
                     state.screen = .ready(.standard)
+                    Haptics.shared.play(.click)
                 case .ready(.normal(_, let messages?, _)) where messages.stay:
                     state.screen = .ready(.standard)
+                    Haptics.shared.play(.click)
                 default:
                     break
             }
@@ -319,6 +336,10 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             } else if result.success {
                 state.screen = .ready(.normal(.success(oldTime: state.time), .success(), bottomMessage()))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
+
+                Sounds.shared.play(.tapLastBoxSuccess)
+                Haptics.shared.play(.success)
+
             } else if state.shouldMakeItEasier() {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
                 state.time += max(0.01, state.time * Constants.timeDeltaEasier)
@@ -329,7 +350,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain, bottomMessage()))
             }
 
-        case .tapAboutMenu(let link):
+        case .tapAboutLink(let link):
             let urlString: String
             switch link {
                 case .kpri:
@@ -341,11 +362,13 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .unfairAdvantage:
                     urlString = "https://unfair.me"
             }
+            Haptics.shared.play(.click)
             guard let url = URL(string: urlString) else { return }
             openLink(url: url)
 
         case .tappedAd(let url):
             openLink(url: url)
+            Haptics.shared.play(.click)
     }
 }
 

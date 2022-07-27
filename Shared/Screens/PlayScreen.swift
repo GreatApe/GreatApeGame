@@ -44,6 +44,8 @@ struct PlayScreen: View {
             boxes.remove(at: 0)
             if boxes.isEmpty {
                 vm.finished(after: elapsed)
+            } else {
+                vm.onTap()
             }
         } else {
             vm.missed(at: box.number, after: elapsed)
@@ -74,6 +76,7 @@ struct PlayScreen: View {
         let size: CGSize
         let level: Int
         let time: Double
+        let onTap: () -> Void
         let played: (PlayResult) -> Void
 
         var boxSize: CGFloat {

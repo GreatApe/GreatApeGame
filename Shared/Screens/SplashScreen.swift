@@ -12,6 +12,7 @@ struct SplashScreen: View {
 
     var body: some View {
         TimeStack(durations: vm.durations, onFinished: vm.finished) { step in
+            let _ = print("STEP: \(step)")
             TitleView(step: step)
             UnfairLogoView(step: step)
             UnfairTextView(step: step)

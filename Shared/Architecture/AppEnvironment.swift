@@ -12,7 +12,6 @@ class AppEnvironment {
     @UserDefault(key: "hasSeenIntro", defaultValue: false) var hasSeenIntro: Bool
     @UserDefault(key: "helpMessagesLeft", defaultValue: HelpType.allCases.map(\.rawValue)) private var helpMessagesLeft: [HelpType.RawValue]
     let persistence: PersistenceController = .shared
-    let starling: Starling = .init()
 
     var firstRemainingHelp: HelpType? {
         helpMessagesLeft.first.flatMap(HelpType.init)

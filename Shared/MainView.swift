@@ -55,8 +55,9 @@ struct MainView: View {
     }
 
     private var aboutVM: AboutScreen.ViewModel {
-        .init(finished: store[.finishedAbout],
-              tapLink: { store.send(.tapAboutMenu($0)) })
+        .init(tapNext: store[.tapNextAbout],
+              finished: store[.finishedAbout],
+              tapLink: { store.send(.tapAboutLink($0)) })
     }
 
     private func readyVM(state: ReadyState) -> ReadyScreen.ViewModel {
@@ -82,6 +83,7 @@ struct MainView: View {
         .init(size: size,
               level: store.state.level,
               time: store.state.time,
+              onTap: store[.tapBox],
               played: { store.send(.played($0)) })
     }
 }
