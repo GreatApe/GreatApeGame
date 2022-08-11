@@ -109,7 +109,7 @@ struct AppState {
     }
 
     func shouldShowAd() -> Bool {
-        results.filter(\.success).count > 10 && Int.random(in: 0..<10) == 0
+        results.filter(\.success).count > 20 && Int.random(in: 0..<50) == 0
     }
 
     func shouldMakeItEasier() -> Bool {

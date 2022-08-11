@@ -233,6 +233,8 @@ struct BottomMessageView: View {
     private var text: some View {
         TimeStack(forEach: vm.labels, configuration: vm.config, animator: MessageFade.self) { label in
             Text(label)
+                .lineLimit(2)
+                .minimumScaleFactor(0.5)
                 .retro()
         }
         .ape(style: .ad)
