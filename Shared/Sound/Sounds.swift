@@ -95,9 +95,9 @@ class Haptics {
         }
 
         do {
-            let hapticEngine = try CHHapticEngine()
-            hapticEngine.isAutoShutdownEnabled = true
-            self.engine = hapticEngine
+            let engine = try CHHapticEngine()
+            engine.isAutoShutdownEnabled = true
+            self.engine = engine
         } catch {
             print("Haptic engine Creation Error: \(error)")
             self.engine = nil
@@ -127,34 +127,14 @@ class Haptics {
 
     func playClick() {
         _ = try? clickPlayer?.start(atTime: CHHapticTimeImmediate)
-        return
-
-        do {
-            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(p1))
-
-            let burr = CHHapticEvent(eventType: .hapticContinuous, parameters: [sharpness], relativeTime: 0, duration: p3 + p4)
-
-            let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
-                                               controlPoints: [.init(relativeTime: 0, value: 0),
-                                                               .init(relativeTime: p3, value: Float(p2)),
-                                                               .init(relativeTime: p3 + p4, value: Float(p2))],
-                                               relativeTime: 0)
-
-            let pattern = try CHHapticPattern(events: [burr], parameterCurves: [curve])
-            let player = try engine?.makePlayer(with: pattern)
-            try player?.start(atTime: 0)
-        } catch {
-            print("ERROR: \(error)")
-        }
     }
 
     func play(_ effect: Effect) {
-        print("Play \(effect)")
-        guard let hapticEngine = engine else { return }
+        guard let engine = engine else { return }
         do {
-            try hapticEngine.start()
+            try engine.start()
             let pattern = try pattern(for: effect)
-            let player = try hapticEngine.makePlayer(with: pattern)
+            let player = try engine.makePlayer(with: pattern)
             try player.start(atTime: CHHapticTimeImmediate)
         } catch {
             print("Failed to play slice: \(error)")

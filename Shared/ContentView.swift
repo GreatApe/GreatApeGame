@@ -8,62 +8,6 @@
 import SwiftUI
 import CoreData
 
-func printAll() {
-    print("P1: \(p1), P2: \(p2), P3: \(p3), P4: \(p4)")
-}
-
-struct DebugView: View {
-    @State var s1: Double = 0.2
-    @State var s2: Double = 0.7
-    @State var s3: Double = 0.7
-    @State var s4: Double = 0.5
-    @State var s5: Double = 0.12
-    @State var s6: Double = 0.3
-
-    var body: some View {
-        VStack {
-            Slider(value: $s1, in: 0...1)
-            Slider(value: $s2, in: 0...1)
-            Slider(value: $s3, in: 0...1)
-            Slider(value: $s4, in: 0...1)
-//            Slider(value: $s5, in: 0...0.1)
-//            Slider(value: $s6, in: 0...0.5)
-        }
-        .padding(.horizontal, 200)
-        .onChange(of: s1) { value in
-            p1 = value
-            printAll()
-        }
-        .onChange(of: s2) { value in
-            p2 = value
-            printAll()
-        }
-        .onChange(of: s3) { value in
-            p3 = value
-            printAll()
-        }
-        .onChange(of: s4) { value in
-            p4 = value
-            printAll()
-        }
-        .onChange(of: s5) { value in
-            p5 = value
-            printAll()
-        }
-        .onChange(of: s6) { value in
-            p6 = value
-            printAll()
-        }
-    }
-}
-
-public var p1: Double = 0.2
-public var p2: Double = 0.7
-public var p3: Double = 0.7
-public var p4: Double = 0.5
-public var p5: Double = 0.12
-public var p6: Double = 0.3
-
 struct ContentView: View {
     @EnvironmentObject private var store: Store
 
@@ -73,7 +17,6 @@ struct ContentView: View {
                 let size = boardSize * proxy.size
                 Image("OS-Background")
                     .resizable(resizingMode: .stretch)
-//                    .overlay(DebugView())
                 MainView(size: size)
                     .frame(width: size.width, height: size.height)
                     .scaleEffect(1 / scaleFactor)
