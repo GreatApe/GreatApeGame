@@ -178,7 +178,7 @@ enum HelpType: Int, Equatable, CaseIterable {
     case menuButton
     case scoreboard
     case levelChange
-    case gameCenter
+//    case gameCenter
 }
 
 struct AdInfo: Equatable {
@@ -200,26 +200,25 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 state.addResults(results)
                 state.setupLevelAndTime()
             }
-            Sounds.shared.start(effects: Sounds.Effect.allCases)
+            Haptics.shared.start()
 
         case .finish:
-            break
+            Haptics.shared.stop()
 
         case .tapRing:
             guard case .ready = state.screen else { break }
             state.screen = .playing
             environment.removeHelpMessage(.ring)
-            Haptics.shared.play(.click)
-            break
+            Haptics.shared.playClick()
 
         case .tapBox:
-            Haptics.shared.play(.click)
+            Haptics.shared.playClick()
 
         case .tapScoreLine:
             guard case .ready = state.screen else { break }
             state.screen = .ready(.scoreboard)
             environment.removeHelpMessage(.scoreboard)
-            Sounds.shared.play(.openMenu)
+            Haptics.shared.play(.openMenu)
 
         case .tapScoreboard(let line):
             guard case .ready(.scoreboard) = state.screen else { break }
@@ -227,13 +226,13 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.time = line.time
             state.screen = .ready(.standard)
             environment.removeHelpMessage(.levelChange)
-            Sounds.shared.play(.selectAction)
+            Haptics.shared.play(.selectAction)
 
         case .tapMenuButton:
             guard case .ready = state.screen else { break }
             state.screen = .ready(.menu(mainMenu))
             environment.removeHelpMessage(.menuButton)
-            Sounds.shared.play(.openMenu)
+            Haptics.shared.play(.openMenu)
 
         case .tapMenu(let item):
             guard case .ready(.menu(let entries)) = state.screen else { break }
@@ -241,9 +240,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             switch entries.row(with: item) {
                 case .subMenu(let newEntries):
                     state.screen = .ready(.menu(newEntries))
-                    Sounds.shared.play(.openMenu)
+                    Haptics.shared.playClick()
                 case .action(let item):
-                    Sounds.shared.play(.selectAction)
+                    Haptics.shared.play(.selectAction)
                     switch item {
                         case .about:
                             state.screen = .about
@@ -269,10 +268,10 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
         case .tapShare:
             UIPasteboard.general.string = state.bestTimes.shareString
             state.screen = .ready(.normal(.display, .copied, nil))
-            Sounds.shared.play(.selectAction)
+            Haptics.shared.play(.selectAction)
 
         case .tapGameCenter:
-            Sounds.shared.play(.selectAction)
+            Haptics.shared.play(.selectAction)
             // TODO: open gamecenter
 
         case .finishedSplash:
@@ -293,21 +292,22 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             }
 
         case .tapNextAbout:
-            Haptics.shared.play(.click)
+            Haptics.shared.playClick()
 
         case .finishedAbout:
             guard case .about = state.screen else { break }
             state.screen = .ready(.standard)
-            Haptics.shared.play(.click)
 
         case .tapBackground:
             switch state.screen {
-                case .splash where environment.hasSeenIntro, .welcome where environment.hasSeenIntro, .ready(.menu), .ready(.scoreboard):
+                case .splash where environment.hasSeenIntro, .welcome where environment.hasSeenIntro:
                     state.screen = .ready(.standard)
-                    Haptics.shared.play(.click)
+                case .ready(.menu), .ready(.scoreboard):
+                    state.screen = .ready(.standard)
+                    Haptics.shared.playClick()
                 case .ready(.normal(_, let messages?, _)) where messages.stay:
                     state.screen = .ready(.standard)
-                    Haptics.shared.play(.click)
+                    Haptics.shared.playClick()
                 default:
                     break
             }
@@ -329,6 +329,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 return nil
             }
 
+            Haptics.shared.play(result.success ? .success : .failure)
+
             if state.shouldLevelUp() {
                 let level = state.level + 1
                 state.screen = .ready(.normal(.levelUp(oldLevel: state.level), .levelUp(level), nil))
@@ -336,10 +338,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             } else if result.success {
                 state.screen = .ready(.normal(.success(oldTime: state.time), .success(), bottomMessage()))
                 state.time -= max(0.01, state.time * Constants.timeDeltaSuccess)
-
-                Sounds.shared.play(.tapLastBoxSuccess)
-                Haptics.shared.play(.success)
-
             } else if state.shouldMakeItEasier() {
                 state.screen = .ready(.normal(.failure(oldTime: state.time), .easier, nil))
                 state.time += max(0.01, state.time * Constants.timeDeltaEasier)
@@ -362,13 +360,13 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .unfairAdvantage:
                     urlString = "https://unfair.me"
             }
-            Haptics.shared.play(.click)
+            Haptics.shared.playClick()
             guard let url = URL(string: urlString) else { return }
             openLink(url: url)
 
         case .tappedAd(let url):
             openLink(url: url)
-            Haptics.shared.play(.click)
+            Haptics.shared.playClick()
     }
 }
 

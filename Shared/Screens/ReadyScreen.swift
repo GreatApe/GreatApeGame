@@ -37,11 +37,11 @@ struct ReadyScreen: View {
                             .retro()
                             .padding()
                     }
-                    Button(action: vm.tapGameCenter) {
-                        Image(systemName: "gamecontroller")
-                            .retro()
-                            .padding()
-                    }
+//                    Button(action: vm.tapGameCenter) {
+//                        Image(systemName: "gamecontroller")
+//                            .retro()
+//                            .padding()
+//                    }
                 }
             }
             .transition(.retro(2))

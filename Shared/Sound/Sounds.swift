@@ -6,35 +6,31 @@
 //
 
 import AVFoundation
+import CoreHaptics
 
-class Sounds {
-    private var players: [Effect: AVAudioPlayer] = [:]
+class LoopPlayer {
+    enum LoopPlayerError: Error { case missingFile }
 
-    static let shared = Sounds()
+    private let player: AVAudioPlayer?
 
-    func start(effects: [Effect]) {
-        for effect in effects {
-            players[effect] = Self.createPlayer(effect)
-        }
+    init() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .measurement)
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
-
+            self.player = Self.createPlayer()
         } catch {
             print("Failed to start SoundManager \(error)")
+            self.player = nil
+            return
         }
     }
 
-    func prepare(_ effect: Effect) {
-        players[effect]?.prepareToPlay()
-    }
-
-    func play(_ effect: Effect) {
-        players[effect]?.play()
+    func play() {
+        player?.play()
     }
 
     func stop() {
-        players.removeAll()
+        player?.stop()
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         } catch {
@@ -42,71 +38,58 @@ class Sounds {
         }
     }
 
-    private static func createPlayer(_ effect: Effect) -> AVAudioPlayer {
-        guard let url = Bundle.main.url(forResource: file(effect: effect).name, withExtension: "mp3"),
-              let player = try? AVAudioPlayer(contentsOf: url) else { return .init() }
+    private static func createPlayer() -> AVAudioPlayer? {
+        guard let url = Bundle.main.url(forResource: "game_loop_v1", withExtension: "mp3"),
+              let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
+
+        player.numberOfLoops = -1
 
         return player
     }
+}
 
-    private static func file(effect: Effect) -> File {
-        switch effect {
-            case .tapLastBoxSuccess:
-                return .bananaUp
-            case .tapLastBoxFailure:
-                return .bananaDown
-            case .levelUp:
-                return .gameWin
-            case .openMenu:
-                return .screenSwipe
-            case .selectAction:
-                return .selectAButton
-        }
-    }
+enum SoundFile: String, CaseIterable {
+    case bananaUp = "banana_up"
+    case bananaDown = "banana_down"
 
-    enum Effect: String, CaseIterable, Hashable {
-        case tapLastBoxSuccess
-        case tapLastBoxFailure
-        case levelUp
-        case openMenu
-        case selectAction
-    }
+    case gameWin = "game_win"
 
-    enum File: String {
-        case bananaUp = "banana_up"
-        case bananaDown = "banana_down"
+    case screenSwipe = "screen_swipe"
+    case selectAButton = "select_a_button"
 
-        case gameWin = "game_win"
+    case successButton = "success_button"
+    case screenSwipe2 = "screen_swipe_v2"
 
-        case screenSwipe = "screen_swipe"
-        case selectAButton = "select_a_button"
-
-        var name: String {
-            rawValue
-        }
+    var name: String {
+        rawValue
     }
 }
 
-import CoreHaptics
-
 class Haptics {
     enum Effect: Hashable, CaseIterable {
-        case click
+        case showLogo
+        case showAllLetters
         case success
         case failure
         case openMenu
         case selectAction
     }
 
-    private let hapticEngine: CHHapticEngine?
+    enum HapticsError: Error {
+        case missingAudioFile
+    }
 
-    private var audioResources: [Effect: CHHapticAudioResourceID] = [:]
+    private let engine: CHHapticEngine?
+
+    private var audioResources: [SoundFile: CHHapticAudioResourceID] = [:]
 
     static let shared = Haptics()
 
+    private var clickPlayer: CHHapticPatternPlayer? = nil
+
     init() {
         guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
-            self.hapticEngine = nil
+            self.engine = nil
             print("Haptics not supported on hardware")
             return
         }
@@ -114,27 +97,63 @@ class Haptics {
         do {
             let hapticEngine = try CHHapticEngine()
             hapticEngine.isAutoShutdownEnabled = true
-            try hapticEngine.start()
-            self.hapticEngine = hapticEngine
+            self.engine = hapticEngine
         } catch {
             print("Haptic engine Creation Error: \(error)")
-            self.hapticEngine = nil
-        }
-
-        for effect in Effect.allCases {
-            audioResources[effect] = audioResource(for: effect)
+            self.engine = nil
         }
     }
 
-    func prepare(_ effect: Effect) {
+    func start() {
+        do {
+            try engine?.start()
+            for file in SoundFile.allCases {
+                loadAudioResource(file: file)
+            }
+            try makeClickPlayer()
+        } catch {
+            print("Haptic engine failed to start: \(error)")
+        }
+    }
+
+    private func loadAudioResource(file: SoundFile) {
+        guard let path = Bundle.main.url(forResource: file.name, withExtension: "mp3") else { return }
+        audioResources[file] = try? engine?.registerAudioResource(path)
+    }
+
+    func stop() {
+        engine?.stop()
+    }
+
+    func playClick() {
+        _ = try? clickPlayer?.start(atTime: CHHapticTimeImmediate)
+        return
+
+        do {
+            let sharpness = CHHapticEventParameter(parameterID: .hapticSharpness, value: Float(p1))
+
+            let burr = CHHapticEvent(eventType: .hapticContinuous, parameters: [sharpness], relativeTime: 0, duration: p3 + p4)
+
+            let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
+                                               controlPoints: [.init(relativeTime: 0, value: 0),
+                                                               .init(relativeTime: p3, value: Float(p2)),
+                                                               .init(relativeTime: p3 + p4, value: Float(p2))],
+                                               relativeTime: 0)
+
+            let pattern = try CHHapticPattern(events: [burr], parameterCurves: [curve])
+            let player = try engine?.makePlayer(with: pattern)
+            try player?.start(atTime: 0)
+        } catch {
+            print("ERROR: \(error)")
+        }
     }
 
     func play(_ effect: Effect) {
-        guard let hapticEngine = hapticEngine else { return }
-
+        print("Play \(effect)")
+        guard let hapticEngine = engine else { return }
         do {
             try hapticEngine.start()
-            let pattern = try Self.pattern(for: effect)
+            let pattern = try pattern(for: effect)
             let player = try hapticEngine.makePlayer(with: pattern)
             try player.start(atTime: CHHapticTimeImmediate)
         } catch {
@@ -142,33 +161,34 @@ class Haptics {
         }
     }
 
-    private func audioResource(for effect: Effect) -> CHHapticAudioResourceID? {
-        guard let filename = Self.resourceFilename(for: effect),
-              let path = Bundle.main.url(forResource: filename, withExtension: "mp3") else { return nil }
+    // Patterns
 
-        return try? hapticEngine?.registerAudioResource(path)
-    }
-
-    private static func resourceFilename(for effect: Effect) -> String? {
-        switch effect {
-            case .click:
-                return nil
-            case .success:
-                return nil
-            case .failure:
-                return nil
-            case .openMenu:
-                return nil
-            case .selectAction:
-                return nil
-        }
+    private func makeClickPlayer() throws {
+        let pattern = try clickPattern()
+        clickPlayer = try engine?.makePlayer(with: pattern)
     }
 
     // Patterns
 
-    private static func pattern(for effect: Effect) throws -> CHHapticPattern {
+    private func clickPattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.successButton] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [], relativeTime: 0)
+
+        let click = CHHapticEvent(
+            eventType: .hapticTransient,
+            parameters: [
+                .init(parameterID: .hapticIntensity, value: 1.0),
+                .init(parameterID: .hapticSharpness, value: 1.0)
+            ],
+            relativeTime: 0)
+
+        return try CHHapticPattern(events: [click, sound], parameters: [])
+    }
+
+    private func pattern(for effect: Effect) throws -> CHHapticPattern {
         switch effect {
-            case .click: return try clickPattern()
+            case .showLogo: return try showLogoPattern()
+            case .showAllLetters: return try showAllLettersPattern()
             case .success: return try successPattern()
             case .failure: return try failurePattern()
             case .openMenu: return try openMenuPattern()
@@ -176,63 +196,104 @@ class Haptics {
         }
     }
 
-    private static func clickPattern() throws -> CHHapticPattern {
-        let click = CHHapticEvent(
-            eventType: .hapticTransient,
-            parameters: [
-                .init(parameterID: .hapticIntensity, value: 1.0),
-                .init(parameterID: .hapticSharpness, value: 1.0)
-            ],
-            relativeTime: 0)
+    private func showLogoPattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.screenSwipe2] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
 
-        return try CHHapticPattern(events: [click], parameters: [])
+        let burr = CHHapticEvent(eventType: .hapticContinuous,
+                                 parameters: [.init(parameterID: .hapticSharpness, value: 1)],
+                                 relativeTime: 0,
+                                 duration: 0.73)
+
+        let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
+                                           controlPoints: [.init(relativeTime: 0, value: 0),
+                                                           .init(relativeTime: 0.73, value: 0.5)],
+                                           relativeTime: 0)
+
+        return try CHHapticPattern(events: [sound, burr], parameterCurves: [curve])
     }
 
-    private static func successPattern() throws -> CHHapticPattern {
-        let click = CHHapticEvent(
-            eventType: .hapticTransient,
-            parameters: [
-                .init(parameterID: .hapticIntensity, value: 1.0),
-                .init(parameterID: .hapticSharpness, value: 1.0)
-            ],
-            relativeTime: 0)
+    private func showAllLettersPattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.screenSwipe] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
 
-        return try CHHapticPattern(events: [click], parameters: [])
+        let burr = CHHapticEvent(eventType: .hapticContinuous,
+                                 parameters: [.init(parameterID: .hapticSharpness, value: 0.75)],
+                                 relativeTime: 0,
+                                 duration: 0.84)
+
+        let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
+                                           controlPoints: [.init(relativeTime: 0, value: 0),
+                                                           .init(relativeTime: 0.64, value: 0.7),
+                                                           .init(relativeTime: 0.84, value: 0.7)],
+                                           relativeTime: 0)
+
+        return try CHHapticPattern(events: [sound, burr], parameterCurves: [curve])
     }
 
-    private static func failurePattern() throws -> CHHapticPattern {
-        let click = CHHapticEvent(
-            eventType: .hapticTransient,
-            parameters: [
-                .init(parameterID: .hapticIntensity, value: 1.0),
-                .init(parameterID: .hapticSharpness, value: 1.0)
-            ],
-            relativeTime: 0)
+    private func successPattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.bananaUp] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
 
-        return try CHHapticPattern(events: [click], parameters: [])
+        let burr = CHHapticEvent(eventType: .hapticContinuous,
+                                 parameters: [.init(parameterID: .hapticSharpness, value: 0.9)],
+                                 relativeTime: 0,
+                                 duration: 0.42)
+
+        let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
+                                           controlPoints: [.init(relativeTime: 0, value: 0),
+                                                           .init(relativeTime: 0.06, value: 0.5),
+                                                           .init(relativeTime: 0.1, value: 0),
+                                                           .init(relativeTime: 0.42, value: 1)],
+                                           relativeTime: 0)
+
+        return try CHHapticPattern(events: [sound, burr], parameterCurves: [curve])
     }
 
-    private static func openMenuPattern() throws -> CHHapticPattern {
-        let click = CHHapticEvent(
-            eventType: .hapticTransient,
-            parameters: [
-                .init(parameterID: .hapticIntensity, value: 1.0),
-                .init(parameterID: .hapticSharpness, value: 1.0)
-            ],
-            relativeTime: 0)
+    private func failurePattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.bananaDown] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
 
-        return try CHHapticPattern(events: [click], parameters: [])
+        let burr = CHHapticEvent(eventType: .hapticContinuous,
+                                 parameters: [.init(parameterID: .hapticSharpness, value: 0.3)],
+                                 relativeTime: 0,
+                                 duration: 1)
+
+        let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
+                                           controlPoints: [.init(relativeTime: 0, value: 1),
+                                                           .init(relativeTime: 1, value: 0)],
+                                           relativeTime: 0)
+
+        return try CHHapticPattern(events: [sound, burr], parameterCurves: [curve])
     }
 
-    private static func selectActionPattern() throws -> CHHapticPattern {
+    private func openMenuPattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.screenSwipe] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
+
         let click = CHHapticEvent(
             eventType: .hapticTransient,
             parameters: [
-                .init(parameterID: .hapticIntensity, value: 1.0),
-                .init(parameterID: .hapticSharpness, value: 1.0)
+                .init(parameterID: .hapticIntensity, value: 0.6),
+                .init(parameterID: .hapticSharpness, value: 1)
             ],
             relativeTime: 0)
 
-        return try CHHapticPattern(events: [click], parameters: [])
+        return try CHHapticPattern(events: [click, sound], parameters: [])
+    }
+
+    private func selectActionPattern() throws -> CHHapticPattern {
+        guard let id = audioResources[.selectAButton] else { throw HapticsError.missingAudioFile }
+        let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
+
+        let click = CHHapticEvent(
+            eventType: .hapticTransient,
+            parameters: [
+                .init(parameterID: .hapticIntensity, value: 0.6),
+                .init(parameterID: .hapticSharpness, value: 0.8)
+            ],
+            relativeTime: 0)
+
+        return try CHHapticPattern(events: [click, sound], parameters: [])
     }
 }

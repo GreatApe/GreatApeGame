@@ -53,6 +53,8 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
     private func onTap() {
         phases[currentTag] = .after
         let current = order.firstIndex(of: currentTag) ?? 0
+        onTapped()
+
         guard order.indices.contains(current + 1) else {
             let delay = (ramps[currentTag] ?? defaultRamp).rampOut
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
@@ -61,7 +63,6 @@ struct TapStack<Tag: Hashable & Startable, Content: View>: View {
             return
         }
 
-        onTapped()
         currentTag = order[current + 1]
         phases[currentTag] = .during
     }

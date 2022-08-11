@@ -12,10 +12,9 @@ struct SplashScreen: View {
 
     var body: some View {
         TimeStack(durations: vm.durations, onFinished: vm.finished) { step in
-            let _ = print("STEP: \(step)")
-            TitleView(step: step)
             UnfairLogoView(step: step)
             UnfairTextView(step: step)
+            TitleView(step: step)
             TapView(perform: vm.tapBackground)
         }
         .frame(width: Self.size.width, height: Self.size.height)
@@ -65,6 +64,15 @@ struct TitleView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: step)
         .ape(style: .title)
+        .onChange(of: step) { s in
+            if s == .bell {
+                Haptics.shared.play(.showLogo)
+            } else if s == .titleFull {
+                Haptics.shared.play(.showAllLetters)
+            } else if LogoStep.letters.contains(s) {
+                Haptics.shared.playClick()
+            }
+        }
     }
 }
 
@@ -78,6 +86,9 @@ struct UnfairLogoView: View {
             .opacity(hide ? 0 : 1)
             .animation(.spring(), value: step)
             .animation(.easeInOut(duration: 0.5), value: hide)
+            .onAppear {
+
+            }
     }
 
     private var hide: Bool { step > .offset }
@@ -107,7 +118,7 @@ struct UnfairTextView: View {
     private let offset: CGFloat = 0.5 + 0.5 * (1 - UnfairLogo.peakShift) + UnfairLogo.margin
 }
 
-enum LogoStep: Int, StepEnum {
+enum LogoStep: Int, StepEnum, Hashable {
     case start
     case wide
     case bell
@@ -124,6 +135,8 @@ enum LogoStep: Int, StepEnum {
     case titleNone
     case titleFull
     case finish
+
+    static let letters: Set<LogoStep> = [.titleA, .titleG, .titleE2, .titleR, .titleA2, .titleE, .titleP, .titleT]
 }
 
 struct UnfairLogo {
