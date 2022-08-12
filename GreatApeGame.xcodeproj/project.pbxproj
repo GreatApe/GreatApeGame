@@ -23,6 +23,8 @@
 		22385BCE28A6E8A6005C5B5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22385BCD28A6E8A5005C5B5A /* Assets.xcassets */; };
 		22385BD128A6E8A6005C5B5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22385BD028A6E8A6005C5B5A /* Preview Assets.xcassets */; };
 		22385BD628A6E8A6005C5B5A /* GreatApeAppClip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = 22385BC728A6E8A4005C5B5A /* GreatApeAppClip.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		22385BDC28A6EF8F005C5B5A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22385BDB28A6EF8F005C5B5A /* Constants.swift */; };
+		22385BDD28A6EF8F005C5B5A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22385BDB28A6EF8F005C5B5A /* Constants.swift */; };
 		223BEB59284D58100053E5A8 /* GreatApeGame.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB46284D580D0053E5A8 /* GreatApeGame.xcdatamodeld */; };
 		223BEB5B284D58100053E5A8 /* GreatApeGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB48284D580D0053E5A8 /* GreatApeGameApp.swift */; };
 		223BEB5D284D58100053E5A8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB49284D580D0053E5A8 /* ContentView.swift */; };
@@ -98,6 +100,7 @@
 		22385BD028A6E8A6005C5B5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		22385BD228A6E8A6005C5B5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22385BD328A6E8A6005C5B5A /* GreatApeAppClip.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GreatApeAppClip.entitlements; sourceTree = "<group>"; };
+		22385BDB28A6EF8F005C5B5A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Shared/Constants.swift; sourceTree = "<group>"; };
 		223BEB47284D580D0053E5A8 /* Shared.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shared.xcdatamodel; sourceTree = "<group>"; };
 		223BEB48284D580D0053E5A8 /* GreatApeGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreatApeGameApp.swift; sourceTree = "<group>"; };
 		223BEB49284D580D0053E5A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -200,6 +203,7 @@
 		223BEB40284D580D0053E5A8 = {
 			isa = PBXGroup;
 			children = (
+				22385BDB28A6EF8F005C5B5A /* Constants.swift */,
 				223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */,
 				223BEB45284D580D0053E5A8 /* Shared */,
 				22385BC828A6E8A4005C5B5A /* GreatApeAppClip */,
@@ -400,6 +404,7 @@
 			files = (
 				22385BCC28A6E8A4005C5B5A /* ContentView.swift in Sources */,
 				22385BCA28A6E8A4005C5B5A /* GreatApeAppClipApp.swift in Sources */,
+				22385BDD28A6EF8F005C5B5A /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,6 +417,7 @@
 				223BEB84284D5B0B0053E5A8 /* Models.swift in Sources */,
 				223BEB5B284D58100053E5A8 /* GreatApeGameApp.swift in Sources */,
 				227DF99C2861B7E1003EA6BC /* WelcomeScreen.swift in Sources */,
+				22385BDC28A6EF8F005C5B5A /* Constants.swift in Sources */,
 				223BEB78284D5AB20053E5A8 /* MainView.swift in Sources */,
 				223BEB5F284D58100053E5A8 /* Persistence.swift in Sources */,
 				226E5CEE285C8FDF0022BB3A /* MessagesView.swift in Sources */,

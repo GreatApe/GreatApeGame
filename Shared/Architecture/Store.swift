@@ -9,18 +9,6 @@ import Foundation
 import SwiftUI
 import Combine
 
-enum Constants {
-    static let rows: Int = 7
-    static let columns: Int = 10
-    static let margin: CGFloat = 0.14
-    static let controlSize: CGFloat = 0.14
-    static let startLevel: Int = 2
-    static let startTime: Double = 1
-    static let timeDeltaSuccess: Double = 0.05
-    static let timeDeltaEasier: Double = 0.05
-    static let timeDeltaEasierStill: Double = 0.1
-}
-
 final class Store: ObservableObject {
     @Published var state: AppState = .init()
     let environment = AppEnvironment()

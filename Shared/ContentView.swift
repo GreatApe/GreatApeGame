@@ -10,6 +10,9 @@ import CoreData
 
 struct ContentView: View {
     @EnvironmentObject private var store: Store
+    @Environment(\.constants.scaleFactor) private var scaleFactor
+    @Environment(\.constants.horizontalPadding) private var horizontalPadding
+    @Environment(\.constants.boardSize) private var boardSize
 
     var body: some View {
         GeometryReader { proxy in
@@ -22,6 +25,7 @@ struct ContentView: View {
                     .scaleEffect(1 / scaleFactor)
                 Image("OS-Foreground-wide")
                     .resizable(resizingMode: .stretch)
+                    .padding(.horizontal, horizontalPadding * size.width)
                     .allowsHitTesting(false)
             }
         }
@@ -44,10 +48,6 @@ struct ContentView: View {
                 return scaleFactor
         }
     }
-
-    private let boardSize: CGSize = .init(width: 0.75, height: 0.9)
-
-    private let scaleFactor: CGFloat = 1.22
 }
 
 /*
