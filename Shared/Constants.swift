@@ -19,30 +19,55 @@ struct Constants {
     static let timeDeltaEasier: Double = 0.05
     static let timeDeltaEasierStill: Double = 0.1
 
-    let boardSize: CGSize
-    let scaleFactor: CGFloat
-    let horizontalPadding: CGFloat
+    static let idiom: UIUserInterfaceIdiom = UIDevice.current.userInterfaceIdiom
 
-    init(ipad: Bool) {
-        if ipad {
-            self.boardSize = .init(width: 0.84, height: 0.77)
-            self.scaleFactor = 1
-            self.horizontalPadding = -0.2
-        } else {
-            self.boardSize = .init(width: 0.75, height: 0.9)
-            self.scaleFactor = 1.22
-            self.horizontalPadding = 0
+    static let idiomatic: Idiomatic = .init(ipad: idiom == .pad)
+
+    struct Idiomatic {
+        private let ipad: Bool
+        let boardSize: CGSize
+        let scaleFactor: CGFloat
+        let horizontalPadding: CGFloat
+
+        func fontName(for style: TextStyle) -> String {
+            switch style {
+                case .smallText, .largeText, .menu, .link, .linkHeader, .title:
+                    return "AmericanTypeWriter"
+                case .boxes, .logo, .ad:
+                    return "Futura Medium"
+            }
         }
-    }
-}
 
-struct ConstantsKey: EnvironmentKey {
-    static let defaultValue: Constants = .init(ipad: false)
-}
+        func fontSize(for style: TextStyle) -> Double {
+            switch style {
+                case .smallText, .boxes:
+                    return ipad ? 50 : 30
+                case .largeText:
+                    return ipad ? 60 : 50
+                case .menu:
+                    return ipad ? 60 : 40
+                case .logo:
+                    return 61
+                case .title:
+                    return 150
+                case .linkHeader, .link:
+                    return ipad ? 45 : 35
+                case .ad:
+                    return ipad ? 35 : 25
+            }
+        }
 
-extension EnvironmentValues {
-    var constants: Constants {
-        get { self[ConstantsKey.self] }
-        set { self[ConstantsKey.self] = newValue }
+        init(ipad: Bool) {
+            self.ipad = ipad
+            if ipad {
+                self.boardSize = .init(width: 0.84, height: 0.77)
+                self.scaleFactor = 1
+                self.horizontalPadding = -0.2
+            } else {
+                self.boardSize = .init(width: 0.75, height: 0.9)
+                self.scaleFactor = 1.22
+                self.horizontalPadding = 0
+            }
+        }
     }
 }

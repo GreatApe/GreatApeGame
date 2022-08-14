@@ -49,7 +49,7 @@ extension String {
 }
 
 extension View {
-    func ape(style: ApeModifier.Style = .smallText) -> some View {
+    func ape(style: TextStyle = .smallText) -> some View {
         modifier(ApeModifier(style: style))
     }
 }
@@ -57,8 +57,8 @@ extension View {
 struct ApeModifier: ViewModifier {
     private let font: Font
 
-    init(style: Style) {
-        self.font = .custom(style.fontName, size: style.size, relativeTo: .title)
+    init(style: TextStyle) {
+        self.font = .custom(Constants.idiomatic.fontName(for: style), size: Constants.idiomatic.fontSize(for: style), relativeTo: .title)
     }
 
     func body(content: Content) -> some View {
@@ -67,47 +67,20 @@ struct ApeModifier: ViewModifier {
             .font(font)
             .foregroundColor(.white)
     }
-
-    enum Style: Equatable {
-        case smallText
-        case boxes
-        case largeText
-        case menu
-        case title
-        case logo
-        case linkHeader
-        case link
-        case ad
-
-        var fontName: String {
-            switch self {
-                case .smallText, .largeText, .menu, .link, .linkHeader, .title:
-                    return "AmericanTypeWriter"
-                case .boxes, .logo, .ad:
-                    return "Futura Medium"
-            }
-        }
-
-        var size: Double {
-            switch self {
-                case .smallText, .boxes:
-                    return 30
-                case .largeText:
-                    return 50
-                case .menu:
-                    return 40
-                case .logo:
-                    return 61
-                case .title:
-                    return 150
-                case .linkHeader, .link:
-                    return 35
-                case .ad:
-                    return 25
-            }
-        }
-    }
 }
+
+enum TextStyle: Equatable {
+    case smallText
+    case boxes
+    case largeText
+    case menu
+    case title
+    case logo
+    case linkHeader
+    case link
+    case ad
+}
+
 
 struct MenuText: View {
     let item: MenuItem

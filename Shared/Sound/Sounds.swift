@@ -180,35 +180,14 @@ class Haptics {
         guard let id = audioResources[.screenSwipe2] else { throw HapticsError.missingAudioFile }
         let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
 
-        let burr = CHHapticEvent(eventType: .hapticContinuous,
-                                 parameters: [.init(parameterID: .hapticSharpness, value: 1)],
-                                 relativeTime: 0,
-                                 duration: 0.73)
-
-        let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
-                                           controlPoints: [.init(relativeTime: 0, value: 0),
-                                                           .init(relativeTime: 0.73, value: 0.5)],
-                                           relativeTime: 0)
-
-        return try CHHapticPattern(events: [sound, burr], parameterCurves: [curve])
+        return try CHHapticPattern(events: [sound], parameters: [])
     }
 
     private func showAllLettersPattern() throws -> CHHapticPattern {
         guard let id = audioResources[.screenSwipe] else { throw HapticsError.missingAudioFile }
         let sound = CHHapticEvent(audioResourceID: id, parameters: [.init(parameterID: .audioVolume, value: 0.5)], relativeTime: 0)
 
-        let burr = CHHapticEvent(eventType: .hapticContinuous,
-                                 parameters: [.init(parameterID: .hapticSharpness, value: 0.75)],
-                                 relativeTime: 0,
-                                 duration: 0.84)
-
-        let curve = CHHapticParameterCurve(parameterID: .hapticIntensityControl,
-                                           controlPoints: [.init(relativeTime: 0, value: 0),
-                                                           .init(relativeTime: 0.64, value: 0.7),
-                                                           .init(relativeTime: 0.84, value: 0.7)],
-                                           relativeTime: 0)
-
-        return try CHHapticPattern(events: [sound, burr], parameterCurves: [curve])
+        return try CHHapticPattern(events: [sound], parameters: [])
     }
 
     private func successPattern() throws -> CHHapticPattern {

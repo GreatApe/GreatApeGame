@@ -24,7 +24,6 @@
 		22385BD128A6E8A6005C5B5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22385BD028A6E8A6005C5B5A /* Preview Assets.xcassets */; };
 		22385BD628A6E8A6005C5B5A /* GreatApeAppClip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = 22385BC728A6E8A4005C5B5A /* GreatApeAppClip.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		22385BDC28A6EF8F005C5B5A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22385BDB28A6EF8F005C5B5A /* Constants.swift */; };
-		22385BDD28A6EF8F005C5B5A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22385BDB28A6EF8F005C5B5A /* Constants.swift */; };
 		223BEB59284D58100053E5A8 /* GreatApeGame.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB46284D580D0053E5A8 /* GreatApeGame.xcdatamodeld */; };
 		223BEB5B284D58100053E5A8 /* GreatApeGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB48284D580D0053E5A8 /* GreatApeGameApp.swift */; };
 		223BEB5D284D58100053E5A8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BEB49284D580D0053E5A8 /* ContentView.swift */; };
@@ -404,7 +403,6 @@
 			files = (
 				22385BCC28A6E8A4005C5B5A /* ContentView.swift in Sources */,
 				22385BCA28A6E8A4005C5B5A /* GreatApeAppClipApp.swift in Sources */,
-				22385BDD28A6EF8F005C5B5A /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

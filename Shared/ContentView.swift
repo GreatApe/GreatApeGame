@@ -10,22 +10,19 @@ import CoreData
 
 struct ContentView: View {
     @EnvironmentObject private var store: Store
-    @Environment(\.constants.scaleFactor) private var scaleFactor
-    @Environment(\.constants.horizontalPadding) private var horizontalPadding
-    @Environment(\.constants.boardSize) private var boardSize
 
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                let size = boardSize * proxy.size
+                let size = Constants.idiomatic.boardSize * proxy.size
                 Image("OS-Background")
                     .resizable(resizingMode: .stretch)
                 MainView(size: size)
                     .frame(width: size.width, height: size.height)
-                    .scaleEffect(1 / scaleFactor)
+                    .scaleEffect(1 / Constants.idiomatic.scaleFactor)
                 Image("OS-Foreground-wide")
                     .resizable(resizingMode: .stretch)
-                    .padding(.horizontal, horizontalPadding * size.width)
+                    .padding(.horizontal, Constants.idiomatic.horizontalPadding * size.width)
                     .allowsHitTesting(false)
             }
         }
@@ -45,7 +42,7 @@ struct ContentView: View {
             case .splash, .welcome:
                 return 1
             default:
-                return scaleFactor
+                return Constants.idiomatic.scaleFactor
         }
     }
 }

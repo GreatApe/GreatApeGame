@@ -131,6 +131,5 @@ struct NumberView: View {
         Text("\(number)")
             .font(.system(size: size))
             .foregroundColor(.white)
-            .retro()
     }
 }

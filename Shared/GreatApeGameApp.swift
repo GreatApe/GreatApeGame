@@ -15,7 +15,6 @@ struct GreatApeGameApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(Store())
-                .environment(\.constants, .init(ipad: true))
 //                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

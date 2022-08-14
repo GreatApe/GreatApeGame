@@ -44,7 +44,7 @@ struct ReadyScreen: View {
 //                    }
                 }
             }
-            .transition(.retro(2))
+            .transition(.retro(1))
             .ape(style: .largeText)
         }
     }
