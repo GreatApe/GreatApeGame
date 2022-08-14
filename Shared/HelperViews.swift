@@ -81,7 +81,6 @@ enum TextStyle: Equatable {
     case ad
 }
 
-
 struct MenuText: View {
     let item: MenuItem
 

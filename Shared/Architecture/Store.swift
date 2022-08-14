@@ -345,7 +345,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 case .ayumu:
                     urlString = "https://www.pri.kyoto-u.ac.jp/sections/langint/ai/en/friends/ayumu.html"
                 case .greatApe:
-                    urlString = "https://greatapegame.com"
+                    urlString = "https://greatapegame.com/info"
                 case .unfairAdvantage:
                     urlString = "https://unfair.me"
             }
