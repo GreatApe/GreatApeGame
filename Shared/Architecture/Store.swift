@@ -16,10 +16,10 @@ final class Store: ObservableObject {
     private var bag: Set<AnyCancellable> = []
 
     func send(_ action: AppAction) {
-        print("=====")
-        print("Action: \(action)")
+//        print("=====")
+//        print("Action: \(action)")
         reducer(&state, action: action, environment: environment)
-        print("State: \(state)")
+//        print("State: \(state)")
     }
 }
 
@@ -97,8 +97,7 @@ struct AppState {
     }
 
     func shouldShowAd() -> Bool {
-        true
-//        results.filter(\.success).count > 20 && Int.random(in: 0..<50) == 0
+        results.filter(\.success).count > 20 && Int.random(in: 0..<50) == 0
     }
 
     func shouldMakeItEasier() -> Bool {
