@@ -173,7 +173,7 @@ struct ReadyScreen: View {
                 case .reset:
                     return Text("Reset scores")
                 case .gamecenter:
-                    return Text("GameCenter")
+                    return Text("Game Center")
                 case .reallyReset:
                     return Text("Reset all my scores")
                 case .cancelReset:
