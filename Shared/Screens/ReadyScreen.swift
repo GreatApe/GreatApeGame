@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import GameCenterUI
 
 struct ReadyScreen: View {
+    @Environment(\.gameCenterIsAuthenticated) private var gameCenterIsAuthenticated
+    @State private var showGameCenter = false
+
     let vm: ViewModel
 
     var body: some View {
@@ -21,6 +25,7 @@ struct ReadyScreen: View {
             message
             controls
         }
+        .enableGameCenter()
     }
 
     // View components
@@ -37,11 +42,21 @@ struct ReadyScreen: View {
                             .retro()
                             .padding()
                     }
-//                    Button(action: vm.tapGameCenter) {
-//                        Image(systemName: "gamecontroller")
-//                            .retro()
-//                            .padding()
-//                    }
+                    if gameCenterIsAuthenticated {
+                        Button(action: vm.tapGameCenter) {
+                            Image(systemName: "gamecontroller")
+                                .retro()
+                                .padding()
+                        }
+                        .gameCenter(
+                            isPresented: $showGameCenter,
+                            launchOption: .leaderBoardID(
+                                id: "",
+                                playerScope: .global,
+                                timeScope: .allTime
+                            )
+                        )
+                    }
                 }
             }
             .transition(.retro(1))

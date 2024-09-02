@@ -1,0 +1,15 @@
+{
+  "originHash" : "7b1097b019591dcb726212dcc3f97ffa26d79f1f00e0657fb8d35af1931db34f",
+  "pins" : [
+    {
+      "identity" : "gamecenterui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/berikv/GameCenterUI",
+      "state" : {
+        "revision" : "528c270cc26dc848e0358afce6caf5f2d50cb376",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

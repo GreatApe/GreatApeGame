@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "D1E669E9-C3BB-467B-BA74-E27E72DA47F8"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4169748D-70D5-42E0-BA76-989DE6954B8C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../Library/Developer/Xcode/DerivedData/GreatApeGame-fqzmypzglcnyvdffzzhxrcjftbxm/SourcePackages/checkouts/GameCenterUI/Sources/GameCenterUI/GameCenterAuthentication.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "body(content:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "4169748D-70D5-42E0-BA76-989DE6954B8C - 7e215fabeb4f05f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in GameCenterUI.OpenGameCenterModifier.body(content: SwiftUI._ViewModifier_Content&lt;GameCenterUI.OpenGameCenterModifier&gt;) -&gt; some"
+                  moduleName = "GreatApeGame"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/gustafkugelberg/Library/Developer/Xcode/DerivedData/GreatApeGame-fqzmypzglcnyvdffzzhxrcjftbxm/SourcePackages/checkouts/GameCenterUI/Sources/GameCenterUI/GameCenterAuthentication.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "81"
+                  endingLineNumber = "81">
+               </Location>
+               <Location
+                  uuid = "4169748D-70D5-42E0-BA76-989DE6954B8C - 7e215fabeb4f05f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in GameCenterUI.OpenGameCenterModifier.body(content: SwiftUI._ViewModifier_Content&lt;GameCenterUI.OpenGameCenterModifier&gt;) -&gt; some"
+                  moduleName = "GreatApeGame"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/gustafkugelberg/Library/Developer/Xcode/DerivedData/GreatApeGame-fqzmypzglcnyvdffzzhxrcjftbxm/SourcePackages/checkouts/GameCenterUI/Sources/GameCenterUI/GameCenterAuthentication.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "81"
+                  endingLineNumber = "81">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

@@ -55,6 +55,7 @@
 		22A4BB8D287AF6C400FFFAE4 /* Animators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8C287AF6C400FFFAE4 /* Animators.swift */; };
 		22A4BB8F287AFC3400FFFAE4 /* VideoClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */; };
 		22A4BB91287B1A4B00FFFAE4 /* AboutScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */; };
+		A498710A2C84BDFA00426E27 /* GameCenterUI in Frameworks */ = {isa = PBXBuildFile; productRef = A49871092C84BDFA00426E27 /* GameCenterUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +133,7 @@
 		22A4BB8C287AF6C400FFFAE4 /* Animators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animators.swift; sourceTree = "<group>"; };
 		22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoClipView.swift; sourceTree = "<group>"; };
 		22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutScreen.swift; sourceTree = "<group>"; };
+		A49871072C81DD1E00426E27 /* GreatApeGame (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreatApeGame (iOS).entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				223F15D52888334900333701 /* GameKit.framework in Frameworks */,
+				A498710A2C84BDFA00426E27 /* GameCenterUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +205,7 @@
 		223BEB40284D580D0053E5A8 = {
 			isa = PBXGroup;
 			children = (
+				A49871072C81DD1E00426E27 /* GreatApeGame (iOS).entitlements */,
 				223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */,
 				223BEB45284D580D0053E5A8 /* Shared */,
 				22385BC828A6E8A4005C5B5A /* GreatApeAppClip */,
@@ -325,6 +329,9 @@
 				22385BD528A6E8A6005C5B5A /* PBXTargetDependency */,
 			);
 			name = "GreatApeGame (iOS)";
+			packageProductDependencies = (
+				A49871092C84BDFA00426E27 /* GameCenterUI */,
+			);
 			productName = "GreatApeGame (iOS)";
 			productReference = 223BEB50284D58100053E5A8 /* GreatApeGame.app */;
 			productType = "com.apple.product-type.application";
@@ -356,6 +363,9 @@
 				Base,
 			);
 			mainGroup = 223BEB40284D580D0053E5A8;
+			packageReferences = (
+				A49871082C84BDFA00426E27 /* XCRemoteSwiftPackageReference "GameCenterUI" */,
+			);
 			productRefGroup = 223BEB51284D58100053E5A8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -461,7 +471,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GreatApeAppClip/GreatApeAppClip.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_ASSET_PATHS = "\"GreatApeAppClip/Preview Content\"";
 				DEVELOPMENT_TEAM = FCKFZCVFD6;
 				ENABLE_PREVIEWS = YES;
@@ -480,7 +490,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = me.unfair.GreatApeGame.Clip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -496,7 +506,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GreatApeAppClip/GreatApeAppClip.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_ASSET_PATHS = "\"GreatApeAppClip/Preview Content\"";
 				DEVELOPMENT_TEAM = FCKFZCVFD6;
 				ENABLE_PREVIEWS = YES;
@@ -515,7 +525,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = me.unfair.GreatApeGame.Clip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -646,6 +656,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "GreatApeGame (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = FCKFZCVFD6;
@@ -679,6 +690,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "GreatApeGame (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = FCKFZCVFD6;
@@ -738,6 +750,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A49871082C84BDFA00426E27 /* XCRemoteSwiftPackageReference "GameCenterUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/berikv/GameCenterUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A49871092C84BDFA00426E27 /* GameCenterUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A49871082C84BDFA00426E27 /* XCRemoteSwiftPackageReference "GameCenterUI" */;
+			productName = GameCenterUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		223BEB46284D580D0053E5A8 /* GreatApeGame.xcdatamodeld */ = {

@@ -27,23 +27,14 @@ struct ScoreboardLine: Identifiable, Equatable {
 typealias ScoreDictionary = [Int: Double]
 
 extension ScoreDictionary {
-    var score: Int {
-        map(scoreContribution).reduce(0, +)
-    }
-
     var ordered: [(level: Int, time: Double)] {
         sorted { $0.key < $1.key }
             .map { (level: $0.key, time: $0.value) }
     }
 
     var shareString: String {
-//        ordered.map(shareDescription).joined(separator: "\n") + "\ngreatapegame.com/\(score)bananas"
         ordered.map(shareDescription).joined(separator: "\n") + "\ngreatapegame.com"
     }
-}
-
-func scoreContribution(level: Int, time: Double) -> Int {
-    Int(round(Double(level * level) / time))
 }
 
 func shareDescription(level: Int, time: Double) -> String {

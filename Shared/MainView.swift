@@ -11,10 +11,6 @@ extension Store {
     subscript(action: AppAction) -> () -> Void {
         { [weak self] in self?.send(action) }
     }
-
-//    subscript<T>(function: @escaping (T) -> AppAction) -> (T) -> Void {
-//        { [weak self] in self?.send(function($0)) }
-//    }
 }
 
 struct MainView: View {
