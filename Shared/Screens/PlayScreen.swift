@@ -48,7 +48,11 @@ struct PlayScreen: View {
                 vm.onTap()
             }
         } else {
-            vm.missed(at: box.number, after: elapsed)
+            showNumbers = true
+            Task {
+                try await Task.sleep(nanoseconds: 700_000 * MSEC_PER_SEC)
+                await vm.missed(at: box.number, after: elapsed)
+            }
         }
     }
 
@@ -86,6 +90,7 @@ struct PlayScreen: View {
             return min(width, height)
         }
 
+        @MainActor
         func missed(at number: Int, after elapsed: Double) {
             played(.init(level: level, time: time, missedBox: number, elapsed: elapsed))
         }
