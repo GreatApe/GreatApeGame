@@ -1,15 +1,6 @@
 import Foundation
 import SwiftUI
 import Combine
-import GameKit
-
-enum Leaderboard {
-    static let overall: String = "overall-leaderboard"
-
-    static func level(_ level: Int) -> String {
-        "level-\(level)-leaderboard"
-    }
-}
 
 final class Store: ObservableObject {
     @Published var state: AppState = .init()
@@ -46,8 +37,6 @@ enum AppAction {
 
     case tapBackground
 
-    case setShowGameCenter(Bool)
-
     // Playing
     case played(PlayResult)
 }
@@ -72,6 +61,7 @@ struct AppState {
 
     var screen: Screen = .splash
 
+    var showOverallScore: Bool = false
     var showGameCenter: Bool = false
 
     // Computed
@@ -255,7 +245,8 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 UIPasteboard.general.string = state.bestTimes.shareString
                 state.screen = .ready(.normal(.display, .copied, nil))
             case .gamecenter:
-                print("Should open gamecenter")
+                state.showOverallScore = true
+                state.showGameCenter = true
             case .playIntro:
                 state.screen = .welcome(text: false)
             default:
@@ -313,7 +304,9 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
 
     case .played(let result):
         guard case .playing = state.screen else { break }
+        let oldTotalScore = state.totalScore
         let newRecord = state.addResults([result])
+        let newTotalScore = state.totalScore
         try? environment.persistence.save(result: result)
 
         func bottomMessage() -> BottomMessage? {
@@ -347,36 +340,12 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
             state.screen = .ready(.normal(.failure(oldTime: state.time), .tryAgain, bottomMessage()))
         }
 
-        if let newRecord {
-            GKLeaderboard.submitScore(
-                state.totalScore,
-                context: 0,
-                player: GKLocalPlayer.local,
-                leaderboardIDs: [Leaderboard.overall],
-                completionHandler: { [score = state.totalScore] error in
-                    if let error {
-                        print("Failed to report score \(score) to gamecenter: \(error)")
-                    } else {
-                        print("Reported \(score) to gamecenter")
-                    }
-                }
-            )
+        if newTotalScore > oldTotalScore {
+            Leaderboard.reportTotalScore(newTotalScore)
+        }
 
-            if newRecord.0 >= 3 {
-                GKLeaderboard.submitScore(
-                    Int(ceil(1000 * newRecord.1)),
-                    context: newRecord.0,
-                    player: GKLocalPlayer.local,
-                    leaderboardIDs: [Leaderboard.level(newRecord.0)],
-                    completionHandler: { error in
-                        if let error {
-                            print("Failed to report level \(newRecord.0) score to gamecenter: \(error)")
-                        } else {
-                            print("Reported level \(newRecord.0) score to gamecenter")
-                        }
-                    }
-                )
-            }
+        if let newRecord, newRecord.0 >= 3 {
+            Leaderboard.reportTime(newRecord.1, level: newRecord.0)
         }
 
     case .tapAboutLink(let link):
@@ -398,9 +367,6 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
     case .tappedAd(let url):
         openLink(url: url)
         Haptics.shared.playClick()
-
-    case .setShowGameCenter(let show):
-        state.showGameCenter = show
     }
 }
 

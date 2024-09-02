@@ -20,22 +20,23 @@ struct MainView: View {
 
     var body: some View {
         switch store.state.screen {
-            case .splash:
-                SplashScreen(vm: splashVM)
-                    .transition(.retro)
-            case .welcome(let text):
-                WelcomeScreen(vm: welcomeVM(text: text))
-                    .transition(.retro)
-            case .about:
-                AboutScreen(vm: aboutVM)
-                    .transition(.retro)
-            case .ready(let state):
-                ReadyScreen(vm: readyVM(state: state))
-                    .transition(.retro)
-                    .enableGameCenter()
-            case .playing:
-                PlayScreen(vm: playVM)
-                    .transition(.retro)
+        case .splash:
+            SplashScreen(vm: splashVM)
+                .transition(.retro)
+        case .welcome(let text):
+            WelcomeScreen(vm: welcomeVM(text: text))
+                .transition(.retro)
+        case .about:
+            AboutScreen(vm: aboutVM)
+                .transition(.retro)
+        case .ready(let state):
+            let ready = readyVM(state: state)
+            ReadyScreen(vm: readyVM(state: state))
+                .transition(.retro)
+                .enableGameCenter()
+        case .playing:
+            PlayScreen(vm: playVM)
+                .transition(.retro)
         }
     }
 
@@ -64,11 +65,16 @@ struct MainView: View {
               time: store.state.time,
               achievedTime: store.state.achievedTime,
               scoreboardLines: store.state.scoreboardLines,
-              hasFinishedARound: store.state.hasFinishedRound, 
-              showGameCenter: store.state.showGameCenter,
+              hasFinishedARound: store.state.hasFinishedRound,
+              showGameCenter: Binding {
+            store.state.showGameCenter
+        } set: {
+            store.state.showGameCenter = $0
+            store.state.showOverallScore = false
+        },
+              leaderboardToShow: store.state.showOverallScore ? .overall : .level(store.state.level),
               tapScoreLine: store[.tapScoreLine],
               tapShare: store[.tapShare],
-              tapGameCenter: store[.tapGameCenter],
               tapScoreboard: { store.send(.tapScoreboard($0)) },
               tapMenu: { store.send(.tapMenu($0)) },
               tapBackground: store[.tapBackground],
@@ -76,7 +82,7 @@ struct MainView: View {
               tapMenuButton: store[.tapMenuButton],
               tappedAd: { store.send(.tappedAd($0)) })
     }
-
+    
     private var playVM: PlayScreen.ViewModel {
         .init(size: size,
               level: store.state.level,

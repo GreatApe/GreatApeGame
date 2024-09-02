@@ -55,6 +55,7 @@
 		22A4BB8D287AF6C400FFFAE4 /* Animators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8C287AF6C400FFFAE4 /* Animators.swift */; };
 		22A4BB8F287AFC3400FFFAE4 /* VideoClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */; };
 		22A4BB91287B1A4B00FFFAE4 /* AboutScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */; };
+		A48A8A752C85F31B008D647C /* Leaderboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48A8A742C85F2E8008D647C /* Leaderboard.swift */; };
 		A498710A2C84BDFA00426E27 /* GameCenterUI in Frameworks */ = {isa = PBXBuildFile; productRef = A49871092C84BDFA00426E27 /* GameCenterUI */; };
 /* End PBXBuildFile section */
 
@@ -133,6 +134,7 @@
 		22A4BB8C287AF6C400FFFAE4 /* Animators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animators.swift; sourceTree = "<group>"; };
 		22A4BB8E287AFC3400FFFAE4 /* VideoClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoClipView.swift; sourceTree = "<group>"; };
 		22A4BB90287B1A4B00FFFAE4 /* AboutScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutScreen.swift; sourceTree = "<group>"; };
+		A48A8A742C85F2E8008D647C /* Leaderboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Leaderboard.swift; sourceTree = "<group>"; };
 		A49871072C81DD1E00426E27 /* GreatApeGame (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreatApeGame (iOS).entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -205,6 +207,7 @@
 		223BEB40284D580D0053E5A8 = {
 			isa = PBXGroup;
 			children = (
+				A48A8A742C85F2E8008D647C /* Leaderboard.swift */,
 				A49871072C81DD1E00426E27 /* GreatApeGame (iOS).entitlements */,
 				223BEB86284D5EDA0053E5A8 /* GreatApeGame--iOS--Info.plist */,
 				223BEB45284D580D0053E5A8 /* Shared */,
@@ -420,6 +423,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A48A8A752C85F31B008D647C /* Leaderboard.swift in Sources */,
 				223BEB7A284D5AB20053E5A8 /* Scoreboard.swift in Sources */,
 				22A4BB7C2874F02D00FFFAE4 /* Extensions.swift in Sources */,
 				223BEB84284D5B0B0053E5A8 /* Models.swift in Sources */,

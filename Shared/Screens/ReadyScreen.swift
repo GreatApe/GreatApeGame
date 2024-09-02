@@ -24,14 +24,7 @@ struct ReadyScreen: View {
             message
             controls
         }
-        .gameCenter(
-            isPresented: vm.showGameCenterBinding,
-            launchOption: .leaderBoardID(
-                id: Leaderboard.overall,
-                playerScope: .global,
-                timeScope: .allTime
-            )
-        )
+        .gameCenter(show: vm.showGameCenter, leaderboard: vm.leaderboardToShow)
     }
 
     // View components
@@ -50,7 +43,7 @@ struct ReadyScreen: View {
                     }
                     if gameCenterIsAuthenticated {
                         Button {
-                            vm.tapGameCenter()
+                            vm.showGameCenter.wrappedValue = true
                         } label: {
                             Image(systemName: "gamecontroller")
                                 .retro()
@@ -138,17 +131,18 @@ struct ReadyScreen: View {
         let achievedTime: Bool
         let scoreboardLines: [ScoreboardLine]
         let hasFinishedARound: Bool
-        let showGameCenter: Bool
+
+        let showGameCenter: Binding<Bool>
+        let leaderboardToShow: Leaderboard
+
         let tapScoreLine: () -> Void
         let tapShare: () -> Void
-        let tapGameCenter: () -> Void
         let tapScoreboard: (ScoreboardLine) -> Void
         let tapMenu: (MenuItem) -> Void
         let tapBackground: () -> Void
         let tapRing: () -> Void
         let tapMenuButton: () -> Void
         let tappedAd: (URL) -> Void
-        var showGameCenterBinding: Binding<Bool>
 
         var menuItems: [MenuItem] {
             guard case .menu(let entries) = state else { return [] }
