@@ -1,6 +1,7 @@
 import Foundation
 import GameKit
 import SwiftUI
+import GameCenterUI
 
 enum Leaderboard: String {
     var id: String { rawValue }
@@ -56,45 +57,30 @@ enum Leaderboard: String {
     }
 }
 
-//extension View {
-//    func gameCenter(
-//        show: Binding<Bool>,
-//        leaderboard: Leaderboard
-//    ) -> some View {
-//        gameCenter(
-//            isPresented: show,
-//            launchOption: .leaderBoardID(
-//                id: Leaderboard.overall.id,
-//                playerScope: .global,
-//                timeScope: .allTime
-//            )
-//        )
-//    }
-//}
-
 extension View {
-    public func gameCenter(
-        leaderboard: Binding<Leaderboard?>,
-    ) -> some View {
-        modifier(GameCenterModifier(
-            isPresented: isPresented,
-            launchOption: launchOption))
+    func gameCenter(leaderboard: Binding<Leaderboard?>) -> some View {
+        modifier(LeaderboardModifier(leaderboard: leaderboard))
     }
 }
 
-private struct GameCenterModifier: ViewModifier {
+private struct LeaderboardModifier: ViewModifier {
     @Binding var leaderboard: Leaderboard?
 
     @StateObject var controller = GameCenterController()
 
     func body(content: Content) -> some View {
-        content
-//        content.onChange(of: isPresented) { isPresented in
-//            if isPresented {
-//                GameCenterController.shared.present(launchOption: launchOption)
-//                GameCenterController.shared.onDidFinish = onDidFinish
-//            }
-//        }
+        content.onChange(of: leaderboard) { leaderboard in
+            if let leaderboard {
+                GameCenterController.shared.present(
+                    launchOption: .leaderBoardID(
+                        id: leaderboard.id,
+                        playerScope: .global,
+                        timeScope: .allTime
+                    )
+                )
+                GameCenterController.shared.onDidFinish = onDidFinish
+            }
+        }
     }
 
     func onDidFinish() {

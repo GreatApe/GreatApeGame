@@ -61,8 +61,7 @@ struct AppState {
 
     var screen: Screen = .splash
 
-    var showOverallScore: Bool = false
-    var showGameCenter: Bool = false
+    var showLeaderboard: Leaderboard? = nil
 
     // Computed
 
@@ -245,8 +244,7 @@ private func reducer(_ state: inout AppState, action: AppAction, environment: Ap
                 UIPasteboard.general.string = state.bestTimes.shareString
                 state.screen = .ready(.normal(.display, .copied, nil))
             case .gamecenter:
-                state.showOverallScore = true
-                state.showGameCenter = true
+                state.showLeaderboard = .overall
             case .playIntro:
                 state.screen = .welcome(text: false)
             default:

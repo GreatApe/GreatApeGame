@@ -30,7 +30,6 @@ struct MainView: View {
             AboutScreen(vm: aboutVM)
                 .transition(.retro)
         case .ready(let state):
-            let ready = readyVM(state: state)
             ReadyScreen(vm: readyVM(state: state))
                 .transition(.retro)
                 .enableGameCenter()
@@ -66,13 +65,7 @@ struct MainView: View {
               achievedTime: store.state.achievedTime,
               scoreboardLines: store.state.scoreboardLines,
               hasFinishedARound: store.state.hasFinishedRound,
-              showGameCenter: Binding {
-            store.state.showGameCenter
-        } set: {
-            store.state.showGameCenter = $0
-            store.state.showOverallScore = false
-        },
-              leaderboardToShow: store.state.showOverallScore ? .overall : .level(store.state.level),
+              showLeaderboard: Binding { store.state.showLeaderboard } set: { store.state.showLeaderboard = $0 },
               tapScoreLine: store[.tapScoreLine],
               tapShare: store[.tapShare],
               tapScoreboard: { store.send(.tapScoreboard($0)) },

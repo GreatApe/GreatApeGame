@@ -24,7 +24,7 @@ struct ReadyScreen: View {
             message
             controls
         }
-        .gameCenter(show: vm.showGameCenter, leaderboard: vm.leaderboardToShow)
+        .gameCenter(leaderboard: vm.showLeaderboard)
     }
 
     // View components
@@ -43,7 +43,7 @@ struct ReadyScreen: View {
                     }
                     if gameCenterIsAuthenticated {
                         Button {
-                            vm.showGameCenter.wrappedValue = true
+                            vm.showLeaderboard.wrappedValue = .level(vm.level)
                         } label: {
                             Image(systemName: "gamecontroller")
                                 .retro()
@@ -132,8 +132,7 @@ struct ReadyScreen: View {
         let scoreboardLines: [ScoreboardLine]
         let hasFinishedARound: Bool
 
-        let showGameCenter: Binding<Bool>
-        let leaderboardToShow: Leaderboard
+        let showLeaderboard: Binding<Leaderboard?>
 
         let tapScoreLine: () -> Void
         let tapShare: () -> Void
