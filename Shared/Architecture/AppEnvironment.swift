@@ -29,10 +29,10 @@ class AppEnvironment {
         helpMessagesLeft.contains(type.rawValue)
     }
 
-    var adInfos: [AdInfo]
+    var adInfos: [AdInfo] = []
 
     init() {
-        let strings = ["Like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Reserve your @username now"]
-        self.adInfos = [.init(strings: strings, url: "https://keeptalking.fm")]
+//        let strings = ["Like podcasts?", "You'll love KeepTalking", "The social network about podcasts", "Reserve your @username now"]
+//        self.adInfos = [.init(strings: strings, url: "https://keeptalking.fm")]
     }
 }

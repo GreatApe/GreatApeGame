@@ -32,6 +32,7 @@ struct MainView: View {
             case .ready(let state):
                 ReadyScreen(vm: readyVM(state: state))
                     .transition(.retro)
+                    .enableGameCenter()
             case .playing:
                 PlayScreen(vm: playVM)
                     .transition(.retro)
@@ -63,7 +64,8 @@ struct MainView: View {
               time: store.state.time,
               achievedTime: store.state.achievedTime,
               scoreboardLines: store.state.scoreboardLines,
-              hasFinishedARound: store.state.hasFinishedRound,
+              hasFinishedARound: store.state.hasFinishedRound, 
+              showGameCenter: store.state.showGameCenter,
               tapScoreLine: store[.tapScoreLine],
               tapShare: store[.tapShare],
               tapGameCenter: store[.tapGameCenter],

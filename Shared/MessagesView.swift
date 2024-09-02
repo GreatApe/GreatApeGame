@@ -94,8 +94,8 @@ extension String {
                 return "Tap the score to see your scoreboard"
             case .levelChange:
                 return "Tap a line on the scoreboard to change levels"
-//            case .gameCenter:
-//                return "Challenge friends in the GameCenter, on the scoreboard"
+            case .gameCenter:
+                return "Challenge friends in the GameCenter, on the scoreboard"
         }
     }
 }

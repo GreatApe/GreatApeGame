@@ -10,7 +10,6 @@ import GameCenterUI
 
 struct ReadyScreen: View {
     @Environment(\.gameCenterIsAuthenticated) private var gameCenterIsAuthenticated
-    @State private var showGameCenter = false
 
     let vm: ViewModel
 
@@ -25,7 +24,14 @@ struct ReadyScreen: View {
             message
             controls
         }
-        .enableGameCenter()
+        .gameCenter(
+            isPresented: vm.showGameCenterBinding,
+            launchOption: .leaderBoardID(
+                id: Leaderboard.overall,
+                playerScope: .global,
+                timeScope: .allTime
+            )
+        )
     }
 
     // View components
@@ -43,19 +49,13 @@ struct ReadyScreen: View {
                             .padding()
                     }
                     if gameCenterIsAuthenticated {
-                        Button(action: vm.tapGameCenter) {
+                        Button {
+                            vm.tapGameCenter()
+                        } label: {
                             Image(systemName: "gamecontroller")
                                 .retro()
                                 .padding()
                         }
-                        .gameCenter(
-                            isPresented: $showGameCenter,
-                            launchOption: .leaderBoardID(
-                                id: "",
-                                playerScope: .global,
-                                timeScope: .allTime
-                            )
-                        )
                     }
                 }
             }
@@ -138,6 +138,7 @@ struct ReadyScreen: View {
         let achievedTime: Bool
         let scoreboardLines: [ScoreboardLine]
         let hasFinishedARound: Bool
+        let showGameCenter: Bool
         let tapScoreLine: () -> Void
         let tapShare: () -> Void
         let tapGameCenter: () -> Void
@@ -147,6 +148,7 @@ struct ReadyScreen: View {
         let tapRing: () -> Void
         let tapMenuButton: () -> Void
         let tappedAd: (URL) -> Void
+        var showGameCenterBinding: Binding<Bool>
 
         var menuItems: [MenuItem] {
             guard case .menu(let entries) = state else { return [] }

@@ -31,7 +31,7 @@ ApeMenu {
         Row(.reallyReset)
         Row(.cancelReset)
     }
-//    Row(.gamecenter)
+    Row(.gamecenter)
 }
 
 typealias ApeMenu = [MenuEntry]
